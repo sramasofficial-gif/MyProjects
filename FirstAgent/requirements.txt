@@ -1,0 +1,2 @@
+# Requirements for MyCopilot Agent
+# Currently no external dependencies
