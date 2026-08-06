@@ -98,12 +98,14 @@ agent = SimpleCopilotAgent()
 agent.respond("Hello Copilot!")
 agent.use_skill("calculator", "add", 5, 7)
 agent.use_skill("calculator", "multiply", 3, 4)
+agent.invoke_tool("calculator.add", a=5, b=7)
+agent.invoke_tool("calculator", action="multiply", a=3, b=4)
 
 Expected output style:
 
 MyCopilot says: You said 'Hello Copilot!'
 Result: 12
-Resu*t: 12
+Result: 12
 
 ## Safe Change Guidance
 

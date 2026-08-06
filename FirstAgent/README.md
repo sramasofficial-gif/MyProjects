@@ -17,3 +17,19 @@ FirstAgent/
     ├── copilot-instructions.md
     ├── instructions/
     └── prompts/
+```
+
+## Getting Started
+
+Install dependencies and run tests with:
+
+```bash
+pip install -r requirements.txt
+python -m pytest -q tests/
+```
+
+## Copilot Chat Integration
+
+This project exposes tool-style actions for Copilot chat.
+Use `agent.invoke_tool("calculator.add", a=5, b=7)` for direct tool invocation.
+For the root tool, use `agent.invoke_tool("calculator", action="add", a=5, b=7)`.

@@ -1,2 +1,3 @@
 # Requirements for MyCopilot Agent
-# Currently no external dependencies
+# Dependencies needed for local testing and development
+pytest
