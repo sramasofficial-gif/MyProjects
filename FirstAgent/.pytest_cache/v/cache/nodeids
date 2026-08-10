@@ -1,0 +1,10 @@
+[
+  "tests/test_agent_tools.py::test_invoke_tool_direct_action",
+  "tests/test_agent_tools.py::test_invoke_tool_root_action",
+  "tests/test_agent_tools.py::test_invoke_tool_unknown_tool_raises",
+  "tests/test_agent_tools.py::test_tool_registry_contains_fully_qualified_names",
+  "tests/test_agent_tools.py::test_unknown_action_returns_message",
+  "tests/test_agent_tools.py::test_unknown_skill_returns_message",
+  "tests/test_agent_tools.py::test_use_skill_add",
+  "tests/test_agent_tools.py::test_use_skill_multiply"
+]

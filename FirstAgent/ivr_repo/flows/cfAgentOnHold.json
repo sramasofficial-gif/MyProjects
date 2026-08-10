@@ -1,0 +1,42 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "a69657fa-7403-4a0c-a628-45abddbd641b",
+  "Metadata": {
+    "entryPointPosition": {
+      "x": 40,
+      "y": 40
+    },
+    "ActionMetadata": {
+      "a69657fa-7403-4a0c-a628-45abddbd641b": {
+        "position": {
+          "x": 272,
+          "y": 80
+        },
+        "parameters": {
+          "Messages": []
+        },
+        "audio": []
+      }
+    },
+    "Annotations": [],
+    "name": "cfAgentOnHold",
+    "description": "",
+    "type": "agentHold",
+    "status": "PUBLISHED",
+    "hash": {}
+  },
+  "Actions": [
+    {
+      "Parameters": {
+        "Messages": [
+          {
+            "SSML": "<speak>You are on hold.<break time=\"10s\"/></speak>"
+          }
+        ]
+      },
+      "Identifier": "a69657fa-7403-4a0c-a628-45abddbd641b",
+      "Type": "MessageParticipantIteratively",
+      "Transitions": {}
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "servers": {
+    "calculatorMcp": {
+      "type": "stdio",
+      "command": "${workspaceFolder:MyProjects}/FirstAgent/.venv/Scripts/python.exe",
+      "args": [
+        "-u",
+        "${workspaceFolder:MyProjects}/FirstAgent/mcp_servers/calculator_server.py"
+      ],
+      "cwd": "${workspaceFolder:MyProjects}/FirstAgent",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder:MyProjects}/FirstAgent",
+        "PYTHONUNBUFFERED": "1"
+      },
+      "dev": {
+        "watch": [
+          "mcp_servers/**/*.py",
+          "skills/**/*.py"
+        ],
+        "debug": {
+          "type": "python"
+        }
+      }
+    },
+    "repoProcessor": {
+      "type": "stdio",
+      "command": "${workspaceFolder:MyProjects}/FirstAgent/.venv/Scripts/python.exe",
+      "args": [
+        "-u",
+        "${workspaceFolder:MyProjects}/FirstAgent/mcp_servers/ivr_repo_svc_mcp_server.py"
+      ],
+      "cwd": "${workspaceFolder:MyProjects}/FirstAgent",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder:MyProjects}/FirstAgent",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}
