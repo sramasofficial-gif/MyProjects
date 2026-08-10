@@ -10,14 +10,8 @@ from __future__ import annotations
 import logging
 import sys
 from pathlib import Path
-#from mcp.server.fastmcp import FastMCP
-from mcp.server import MCPServer
 
-#mcp = FastMCP("ivr_repo_svc")
-mcp = MCPServer("ivr_repo_svc")
 # Allow execution as a script while still resolving the workspace package.
-# PROJECT_ROOT = Path(__file__).resolve().parents[1]
-
 PROJECT_ROOT = (
     Path(__file__).parent.parent
     / "ivr_repo"
@@ -26,14 +20,33 @@ PROJECT_ROOT = (
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-logger = logging.getLogger("repoProcessor")
+#from mcp.server.fastmcp import FastMCP
+from mcp.server import MCPServer
 
-logging.basicConfig(
-    level=logging.INFO, stream=sys.stderr
+#mcp = FastMCP("ivr_repo_svc")
+mcp = MCPServer("ivr_repo_svc")
+
+logger = logging.getLogger("repoProcessor")
+logger.setLevel(logging.INFO)
+
+LOG_FILE = Path(__file__).parent / "repo_processor.log"
+
+file_handler = logging.FileHandler(LOG_FILE)
+
+file_handler.setLevel(logging.INFO)
+
+formatter = logging.Formatter(
+    "%(asctime)s %(levelname)s %(message)s"
 )
 
+file_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+
+logger.info("SERVER STARTED")
+
 @mcp.tool()
-def find_files(extension: str = ".json") -> list[str]:
+def find_files(extension: str = ".json") -> dict[str, object]:
     """
     Find files within repository.
     """
@@ -74,6 +87,10 @@ def read_file(relative_path: str) -> str:
     try:
         path.relative_to(PROJECT_ROOT)
     except ValueError:
+        logger.error(
+            "Outside repository: %s",
+            relative_path
+        )
         raise ValueError("Outside repository")
 
     return path.read_text(
