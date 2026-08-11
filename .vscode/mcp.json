@@ -22,12 +22,12 @@
         }
       }
     },
-    "repoProcessor": {
+    "ivr_repository_agent": {
       "type": "stdio",
       "command": "${workspaceFolder:MyProjects}/FirstAgent/.venv/Scripts/python.exe",
       "args": [
         "-u",
-        "${workspaceFolder:MyProjects}/FirstAgent/mcp_servers/ivr_repo_svc_mcp_server.py"
+        "${workspaceFolder:MyProjects}/FirstAgent/mcp_servers/ivr_repository_agent.py"
       ],
       "cwd": "${workspaceFolder:MyProjects}/FirstAgent",
       "env": {

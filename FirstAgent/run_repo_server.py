@@ -1,3 +1,3 @@
-from mcp_servers.ivr_repo_svc_mcp_server import mcp
+from FirstAgent.mcp_servers.ivr_repository_agent import mcp
 
 mcp.run()
