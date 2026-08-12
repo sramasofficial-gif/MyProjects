@@ -1,0 +1,13 @@
+# Python virtual environment
+.venv/
+
+# Python generated files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local logs
+*.log
+
+# Local MCP secrets, if added later
+.env

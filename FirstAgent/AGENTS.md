@@ -2,11 +2,11 @@
 
 ## Purpose
 
-This workspace contains a s*mple Python agent used for learnin* agent architecture, skill routing* and GitHub Copilot assisted devel*pment.
+This workspace contains a simple Python agent used for learning agent architecture, skill routing and GitHub Copilot assisted development.
 
 ## Main Agent
 
-Name: MyCop*lot  
+Name: MyCopilot  
 Class: `SimpleCopilotAgent`* 
 Entry file: `agent.py`
 
@@ -16,16 +16,16 @@ Entry file: `agent.py`
 
 Source file: `skills/calculator.py`
 
-Supp*rted actions:
+Supported actions:
 
 - `add(a, b)`
 - `multiply(a, b)`
 
-## Expected Developm*nt Workflow
+## Expected Development Workflow
 
-When modifying this p*oject:
+When modifying this project:
 
-1.*Understand the current agent and s*ill structure.
+1. Understand the current agent and skill structure.
 2. Make the smallest useful change.
 3. Add or update tests.
 4. Update `agent.md` and `README.md` when public behavior changed.
@@ -33,8 +33,8 @@ When modifying this p*oject:
 
 ## Guardrails
 
-- Do not introduce*large frameworks unless explicitly*requested.
-- Do not hide skill log*c inside the agent class.
-- Do not remove the simple command-line dem* in `agent.py`.
-- Do not make the *roject dependent on cloud services*by default.
-- Keep all examples ru*nable locally.
+- Do not introduce large frameworks unless explicitly requested.
+- Do not hide skill logic inside the agent class.
+- Do not remove the simple command-line demo in `agent.py`.
+- Do not make the project dependent on cloud services by default.
+- Keep all examples runnable locally.

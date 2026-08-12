@@ -1,0 +1,2570 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "prompt defaults-copy-1",
+  "Metadata": {
+    "entryPointPosition": {
+      "x": -4080,
+      "y": -260
+    },
+    "ActionMetadata": {
+      "DisconnectMessage-copy-1": {
+        "position": {
+          "x": 3648,
+          "y": 1568
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "aadc127f-2720-44ad-b64a-a4d58d8810dd": {
+        "position": {
+          "x": 4488,
+          "y": 1568
+        }
+      },
+      "e5d2ac62-b61b-4715-a5ac-57b4c16743fc": {
+        "position": {
+          "x": 2248,
+          "y": 1828
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "4467b16b-bc61-4f72-9018-735560cd0a9b": {
+        "position": {
+          "x": 3368,
+          "y": 1308
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "cfErrorHandling"
+          }
+        },
+        "ContactFlow": {
+          "text": "cfErrorHandling"
+        }
+      },
+      "2a508a7a-a7f3-4a1c-850e-ff77c8521974": {
+        "position": {
+          "x": 2808,
+          "y": 1828
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "94c7fa0b-5354-49f7-9cbf-f9aa40efd537": {
+        "position": {
+          "x": 2808,
+          "y": 2348
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "prompt defaults-copy-1": {
+        "position": {
+          "x": -3761.6,
+          "y": -240.8
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetSsmParams-function"
+          }
+        },
+        "dynamicMetadata": {
+          "path": false,
+          "withDefaults": false
+        }
+      },
+      "InvokeAccotlookup": {
+        "position": {
+          "x": -2512,
+          "y": 8
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "FlowModuleId": {
+            "displayName": "moRBAccountLookup"
+          }
+        },
+        "contactFlowModuleName": "moRBAccountLookup"
+      },
+      "prompt defaults": {
+        "position": {
+          "x": -3352,
+          "y": -252
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetSsmParams-function"
+          }
+        },
+        "dynamicMetadata": {
+          "path": false,
+          "withDefaults": false
+        }
+      },
+      "7a490f39-3110-457b-96c7-bfec4a31a64f": {
+        "position": {
+          "x": -3072,
+          "y": -252
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "83873b37-66ca-4b54-b4b7-4e06afeec813",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "200"
+          }
+        ]
+      },
+      "Set AccountLookupType": {
+        "position": {
+          "x": -2232,
+          "y": -252
+        },
+        "isFriendlyName": true,
+        "dynamicParams": []
+      },
+      "set Mode for accountlookup-copy-1": {
+        "position": {
+          "x": -2489.6,
+          "y": -264
+        },
+        "isFriendlyName": true,
+        "dynamicParams": []
+      },
+      "6fa0cbc0-043e-4b2a-9e81-6800ca296f85": {
+        "position": {
+          "x": -308,
+          "y": 296
+        },
+        "dynamicParams": []
+      },
+      "GetAccountStatus": {
+        "position": {
+          "x": -867.2,
+          "y": 106.4
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetAccountStatus-function"
+          },
+          "LambdaInvocationAttributes": {
+            "accountId": {
+              "useDynamic": true
+            },
+            "customerId": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "accountId": true,
+          "customerId": true
+        }
+      },
+      "a1776722-0b50-45a2-95ff-54c03ea0ebda": {
+        "position": {
+          "x": -552,
+          "y": 8
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "d117da1b-d6a4-4bc0-a6a2-a0b456eef438",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "200"
+          }
+        ]
+      },
+      "Check acctLookupModule data": {
+        "position": {
+          "x": -2232,
+          "y": 8
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "5cb09b9e-2305-423c-b448-45772891a6bb",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "CSR"
+          }
+        ]
+      },
+      "afa8fc37-9796-4153-a646-fe60ee5ddf50": {
+        "position": {
+          "x": -2777.6,
+          "y": -296
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "929d5282-fbf4-4ed4-aaff-2001d08b313f",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "efcbc582-2231-4226-8c9c-5a786e8748e5": {
+        "position": {
+          "x": -1179.2,
+          "y": -84.8
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetAccountStatus-function"
+          },
+          "LambdaInvocationAttributes": {
+            "accountId": {
+              "useDynamic": true
+            },
+            "customerId": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "accountId": true,
+          "customerId": true
+        }
+      },
+      "b2ddbcad-e896-4ea1-a0e3-7d245c152881": {
+        "position": {
+          "x": -1916.8,
+          "y": 352
+        },
+        "parameters": {
+          "Attributes": {
+            "accountId": {
+              "useDynamic": true
+            },
+            "customerId": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicParams": [
+          "accountId",
+          "customerId"
+        ]
+      },
+      "96158c60-51d0-4428-872c-260aad0c9759": {
+        "position": {
+          "x": 274.4,
+          "y": 795.2
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetAccountSummaryInfo-function"
+          },
+          "LambdaInvocationAttributes": {
+            "accountId": {
+              "useDynamic": true
+            },
+            "customerId": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "accountId": true,
+          "customerId": true
+        }
+      },
+      "fa1a796b-5eac-4ca7-8543-ffae7916193f": {
+        "position": {
+          "x": -292.8,
+          "y": -52
+        },
+        "parameters": {
+          "Attributes": {
+            "accountStatus": {
+              "useDynamic": true
+            },
+            "agencyCode": {
+              "useDynamic": true
+            },
+            "openedDate": {
+              "useDynamic": true
+            },
+            "CPC": {
+              "useDynamic": true
+            },
+            "creditAllowed": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicParams": [
+          "accountStatus",
+          "agencyCode",
+          "openedDate",
+          "CPC",
+          "creditAllowed"
+        ]
+      },
+      "25018-playprompt": {
+        "position": {
+          "x": 2248,
+          "y": 1308
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true,
+        "conditionMetadata": [
+          {
+            "id": "564cf1c4-79d2-4369-a7aa-c092126f6203",
+            "value": "1"
+          },
+          {
+            "id": "c6177b3a-5d18-4acf-b003-364d1bf59683",
+            "value": "2"
+          },
+          {
+            "id": "eb129a73-d6eb-4a49-a602-a1aa41184829",
+            "value": "#"
+          }
+        ]
+      },
+      "bdfa4882-10c7-44fc-9414-ea08b90948c7": {
+        "position": {
+          "x": 2528,
+          "y": 1048
+        },
+        "parameters": {
+          "LoopCount": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "bd98c16d-de8b-42ff-8d0c-74e7c08ff06d": {
+        "position": {
+          "x": 3088,
+          "y": 2088
+        },
+        "parameters": {
+          "LoopCount": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "8639e747-93f7-4e6a-a023-b3373800e1ce": {
+        "position": {
+          "x": 3368,
+          "y": 2088
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "815c2d59-d1ea-4deb-b27d-26e788ce5be0": {
+        "position": {
+          "x": 3880,
+          "y": 2188.8
+        },
+        "dynamicParams": []
+      },
+      "01b36635-ebe5-40a1-9e72-8e6e80c2d516": {
+        "position": {
+          "x": 4208,
+          "y": 2088
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "cfQueueConfig"
+          }
+        },
+        "ContactFlow": {
+          "text": "cfQueueConfig"
+        }
+      },
+      "1b223a0d-b580-420f-9a3f-c0d9503a8b79": {
+        "position": {
+          "x": 3648.8,
+          "y": 1986.4
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "beabb45d-84a1-4c38-bcb1-5e12332f4d64",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "WLC"
+          }
+        ]
+      },
+      "e54cb656-a2d0-4e08-a196-7854375de06a": {
+        "position": {
+          "x": 3900,
+          "y": 1904
+        },
+        "dynamicParams": []
+      },
+      "c63611a3-662f-4d8d-9478-2de17876d415": {
+        "position": {
+          "x": -18.4,
+          "y": 585.6
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetAccountSummaryInfo-function"
+          },
+          "LambdaInvocationAttributes": {
+            "accountId": {
+              "useDynamic": true
+            },
+            "customerId": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "accountId": true,
+          "customerId": true
+        }
+      },
+      "Set Card type SMB": {
+        "position": {
+          "x": 313.6,
+          "y": -104
+        },
+        "isFriendlyName": true,
+        "dynamicParams": []
+      },
+      "Set Card type Corporate": {
+        "position": {
+          "x": 313.6,
+          "y": 93.6
+        },
+        "isFriendlyName": true,
+        "dynamicParams": []
+      },
+      "Set Card type Consumer": {
+        "position": {
+          "x": 316,
+          "y": 299.2
+        },
+        "isFriendlyName": true,
+        "dynamicParams": []
+      },
+      "Check for CPC": {
+        "position": {
+          "x": 16,
+          "y": -42.4
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "98d25dab-dbbc-4dfc-9350-fd6e9c9435b8",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "SMB"
+          },
+          {
+            "id": "2e6c0129-172a-46f2-92e8-ac0b45517fb3",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "TEC"
+          },
+          {
+            "id": "2c51bec3-dffb-4359-958f-22138bf516fe",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "PIC"
+          },
+          {
+            "id": "d78436ad-05fe-4a62-af9d-c950d0f7570f",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "CON"
+          },
+          {
+            "id": "a630eabd-ca66-4dca-bc5a-775f0c9b0b3c",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "WEN"
+          },
+          {
+            "id": "4d288f7f-f291-4829-82a1-e2cc1d60f961",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "FCB"
+          },
+          {
+            "id": "33670218-9d62-4492-a6f9-f28553484f90",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "RCB"
+          },
+          {
+            "id": "3cff43b7-59c9-4f17-b615-a94c90ed6991",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "WLC"
+          }
+        ]
+      },
+      "DisconnectMessage": {
+        "position": {
+          "x": 2999.2,
+          "y": -4.8
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "3d33ef82-8f34-44ec-b07a-52c3ed544caf": {
+        "position": {
+          "x": 3618.4,
+          "y": 276.8
+        }
+      },
+      "Transfer to Queue Config": {
+        "position": {
+          "x": 3376,
+          "y": 467.2
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "cfQueueConfig"
+          }
+        },
+        "ContactFlow": {
+          "text": "cfQueueConfig"
+        }
+      },
+      "97b2f7c2-bdbd-45f3-8caa-2ef73722b89b": {
+        "position": {
+          "x": 2755.2,
+          "y": 415.2
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "463d4415-7830-48f9-b026-6df0209dc1d7",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "200"
+          }
+        ]
+      },
+      "feac0d15-3abb-4780-8a89-928bce139344": {
+        "position": {
+          "x": 3148.8,
+          "y": 444
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "setQueue-copy-1": {
+        "position": {
+          "x": 2779.2,
+          "y": 655.2
+        },
+        "isFriendlyName": true,
+        "dynamicParams": []
+      },
+      "Gatestone Agency": {
+        "position": {
+          "x": 2780.8,
+          "y": 849.6
+        },
+        "isFriendlyName": true,
+        "dynamicParams": []
+      },
+      "c4220607-027c-4707-9bea-9a972d5f336f": {
+        "position": {
+          "x": 757.6,
+          "y": 790.4
+        },
+        "dynamicParams": []
+      },
+      "211ccefc-c7df-4d81-a17b-9a4b3d044bbc": {
+        "position": {
+          "x": 2489.6,
+          "y": 695.2
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "609713cc-e948-4883-83ef-deb244275683",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "WLC"
+          }
+        ]
+      },
+      "92c6e0d6-f1cf-4bfa-8455-d036f55685fd": {
+        "position": {
+          "x": 8,
+          "y": -252
+        },
+        "dynamicParams": []
+      },
+      "Transfer to Fraud": {
+        "position": {
+          "x": 1396.8,
+          "y": -438.4
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "cfQueueConfig"
+          }
+        },
+        "ContactFlow": {
+          "text": "cfQueueConfig"
+        }
+      },
+      "d42820d8-3c0d-4014-9880-b06627ffb441": {
+        "position": {
+          "x": 1660,
+          "y": -500.8
+        }
+      },
+      "Check Account Status": {
+        "position": {
+          "x": 623.2,
+          "y": -28
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "af6678b3-99a4-4b4d-8333-6ed7eaf4af4f",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "SF"
+          }
+        ]
+      },
+      "31a26121-1fc0-48ff-a8ec-07342c3e45c8": {
+        "position": {
+          "x": 1168.8,
+          "y": -280
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "queue Fraud": {
+        "position": {
+          "x": 876.8,
+          "y": -29.6
+        },
+        "isFriendlyName": true,
+        "dynamicParams": []
+      },
+      "0002a3a5-c2ba-4323-820b-0fc7dbaeab69": {
+        "position": {
+          "x": 265.6,
+          "y": 536.8
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "bb76e5fa-4613-412b-8a2c-3bfaee82cef2",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "200"
+          }
+        ]
+      },
+      "Not the primary card holder": {
+        "position": {
+          "x": 2696.8,
+          "y": -6.4
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "253a0204-fb09-426f-b72f-589aac24d6e0": {
+        "position": {
+          "x": 2481.6,
+          "y": 410.4
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-AccountMemos-function"
+          },
+          "LambdaInvocationAttributes": {
+            "accountId": {
+              "useDynamic": true
+            },
+            "customerId": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "service": false,
+          "accountId": true,
+          "customerId": true,
+          "operatorId": false,
+          "memoType": false,
+          "message": false,
+          "memoSubject": false
+        }
+      },
+      "external no 1 as queue": {
+        "position": {
+          "x": 1912.8,
+          "y": 150.4
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Attributes": {
+            "queueName": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicParams": [
+          "queueName"
+        ]
+      },
+      "da099c0a-833c-47f3-a35a-4ef74a4ce693": {
+        "position": {
+          "x": 1968,
+          "y": 1048
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "7b750768-1819-42f3-9ea2-4ea52e40a3b8",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "PRIMARY"
+          },
+          {
+            "id": "017a216c-6909-46fb-be2c-cda87a02383b",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "Primary"
+          }
+        ]
+      },
+      "3636687b-0cab-4f10-a019-7c127199b999": {
+        "position": {
+          "x": 2808,
+          "y": 1568
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "cfActivateCard"
+          }
+        },
+        "ContactFlow": {
+          "text": "cfActivateCard"
+        }
+      },
+      "check isActive": {
+        "position": {
+          "x": 1336.8,
+          "y": 198.4
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "3462dff4-511f-4397-926f-2d26d3254bbf",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "Validate Primary user": {
+        "position": {
+          "x": 2230.4,
+          "y": 162.4
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "d204aa5e-7525-44da-a876-6fc137089093",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "PRIMARY"
+          },
+          {
+            "id": "20720b12-df08-4523-bead-5e8adce3a6f1",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "Primary"
+          }
+        ]
+      },
+      "0115f13c-d1e5-489b-849e-9a2b4a8893f9": {
+        "position": {
+          "x": 2179.2,
+          "y": 790.4
+        },
+        "dynamicParams": []
+      },
+      "Check provine code": {
+        "position": {
+          "x": 1614.4,
+          "y": 194.4
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "c28f3937-b7bb-4054-b9d5-d7f062c54eee",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "QC"
+          }
+        ]
+      },
+      "external no 2 as queue": {
+        "position": {
+          "x": 1912.8,
+          "y": 355.2
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Attributes": {
+            "queueName": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicParams": [
+          "queueName"
+        ]
+      },
+      "063d7573-a34b-4aa5-9fea-c609117e23bd": {
+        "position": {
+          "x": 570.4,
+          "y": 484
+        },
+        "parameters": {
+          "Attributes": {
+            "accountType": {
+              "useDynamic": true
+            },
+            "accountBalance": {
+              "useDynamic": true
+            },
+            "availableCredit": {
+              "useDynamic": true
+            },
+            "creditLimit": {
+              "useDynamic": true
+            },
+            "creditBalance": {
+              "useDynamic": true
+            },
+            "payDueFlag": {
+              "useDynamic": true
+            },
+            "paymentDueAmt": {
+              "useDynamic": true
+            },
+            "paymentDueDate": {
+              "useDynamic": true
+            },
+            "lastPaymentAmt": {
+              "useDynamic": true
+            },
+            "lastPaymentDate": {
+              "useDynamic": true
+            },
+            "statementFlag": {
+              "useDynamic": true
+            },
+            "statementEndBalFlag": {
+              "useDynamic": true
+            },
+            "statementEndBalance": {
+              "useDynamic": true
+            },
+            "available": {
+              "useDynamic": true
+            },
+            "lastPaymentFlag": {
+              "useDynamic": true
+            },
+            "earnedRewards": {
+              "useDynamic": true
+            },
+            "pastDue": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicParams": [
+          "accountType",
+          "accountBalance",
+          "availableCredit",
+          "creditLimit",
+          "creditBalance",
+          "payDueFlag",
+          "paymentDueAmt",
+          "paymentDueDate",
+          "lastPaymentAmt",
+          "lastPaymentDate",
+          "statementFlag",
+          "statementEndBalFlag",
+          "statementEndBalance",
+          "available",
+          "lastPaymentFlag",
+          "earnedRewards",
+          "pastDue"
+        ]
+      },
+      "f0ebdacf-8b48-41c2-9103-2e16a6a24fa6": {
+        "position": {
+          "x": 1581.6,
+          "y": 1430.4
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "55f4786a-e941-4be2-a54c-bd5859ad956d",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "YES"
+          }
+        ]
+      },
+      "fd09af29-b749-4c39-8d77-98bb4023f885": {
+        "position": {
+          "x": 1102.4,
+          "y": 288
+        },
+        "dynamicParams": []
+      },
+      "Fetch Agency Code Config": {
+        "position": {
+          "x": 850.4,
+          "y": 372.8
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "DataTableId": {
+            "displayName": "dtAgencyCodeConfig"
+          }
+        }
+      }
+    },
+    "Annotations": [],
+    "name": "cfAccountStatus",
+    "description": "",
+    "type": "contactFlow",
+    "status": "PUBLISHED",
+    "hash": {}
+  },
+  "Actions": [
+    {
+      "Parameters": {
+        "Text": "$.Attributes.disconnectPrompt"
+      },
+      "Identifier": "DisconnectMessage-copy-1",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "aadc127f-2720-44ad-b64a-a4d58d8810dd",
+        "Errors": [
+          {
+            "NextAction": "aadc127f-2720-44ad-b64a-a4d58d8810dd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "aadc127f-2720-44ad-b64a-a4d58d8810dd",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.prompt2"
+      },
+      "Identifier": "e5d2ac62-b61b-4715-a5ac-57b4c16743fc",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "DisconnectMessage-copy-1",
+        "Errors": [
+          {
+            "NextAction": "DisconnectMessage-copy-1",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/contact-flow/1ea5ea22-97c1-4560-b19d-c036126e9324"
+      },
+      "Identifier": "4467b16b-bc61-4f72-9018-735560cd0a9b",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "aadc127f-2720-44ad-b64a-a4d58d8810dd",
+        "Errors": [
+          {
+            "NextAction": "aadc127f-2720-44ad-b64a-a4d58d8810dd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.noEntryPrompt"
+      },
+      "Identifier": "2a508a7a-a7f3-4a1c-850e-ff77c8521974",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "bd98c16d-de8b-42ff-8d0c-74e7c08ff06d",
+        "Errors": [
+          {
+            "NextAction": "bd98c16d-de8b-42ff-8d0c-74e7c08ff06d",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.invalidEntryPrompt"
+      },
+      "Identifier": "94c7fa0b-5354-49f7-9cbf-f9aa40efd537",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "bd98c16d-de8b-42ff-8d0c-74e7c08ff06d",
+        "Errors": [
+          {
+            "NextAction": "bd98c16d-de8b-42ff-8d0c-74e7c08ff06d",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetSsmParams-function",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "path": "/prompts/$.Attributes.attributesPath/accountStatus",
+          "withDefaults": "false"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "prompt defaults-copy-1",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "7a490f39-3110-457b-96c7-bfec4a31a64f",
+        "Errors": [
+          {
+            "NextAction": "prompt defaults",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "FlowModuleId": "126bb23b-1c60-43df-84f8-56e519c4741a"
+      },
+      "Identifier": "InvokeAccotlookup",
+      "Type": "InvokeFlowModule",
+      "Transitions": {
+        "NextAction": "Check acctLookupModule data",
+        "Errors": [
+          {
+            "NextAction": "Check acctLookupModule data",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "Check acctLookupModule data",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetSsmParams-function",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "path": "/prompts/$.Attributes.attributesPath/accountStatus",
+          "withDefaults": "false"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "prompt defaults",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "7a490f39-3110-457b-96c7-bfec4a31a64f",
+        "Errors": [
+          {
+            "NextAction": "6fa0cbc0-043e-4b2a-9e81-6800ca296f85",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.code"
+      },
+      "Identifier": "7a490f39-3110-457b-96c7-bfec4a31a64f",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "6fa0cbc0-043e-4b2a-9e81-6800ca296f85",
+        "Conditions": [
+          {
+            "NextAction": "afa8fc37-9796-4153-a646-fe60ee5ddf50",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "200"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "6fa0cbc0-043e-4b2a-9e81-6800ca296f85",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lookupType": "ANI"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "Set AccountLookupType",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "InvokeAccotlookup",
+        "Errors": [
+          {
+            "NextAction": "92c6e0d6-f1cf-4bfa-8455-d036f55685fd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "prompt1": "$.External.prompt1",
+          "prompt2": "$.External.prompt2",
+          "findCustomer": "auto"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "set Mode for accountlookup-copy-1",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "Set AccountLookupType",
+        "Errors": [
+          {
+            "NextAction": "Set AccountLookupType",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "failureReason": "lambdaFailure"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "6fa0cbc0-043e-4b2a-9e81-6800ca296f85",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "92c6e0d6-f1cf-4bfa-8455-d036f55685fd",
+        "Errors": [
+          {
+            "NextAction": "92c6e0d6-f1cf-4bfa-8455-d036f55685fd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetAccountStatus-function",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "accountId": "$.Attributes.accountId",
+          "customerId": "$.Attributes.customerId"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "GetAccountStatus",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "a1776722-0b50-45a2-95ff-54c03ea0ebda",
+        "Errors": [
+          {
+            "NextAction": "6fa0cbc0-043e-4b2a-9e81-6800ca296f85",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.statusCode"
+      },
+      "Identifier": "a1776722-0b50-45a2-95ff-54c03ea0ebda",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "6fa0cbc0-043e-4b2a-9e81-6800ca296f85",
+        "Conditions": [
+          {
+            "NextAction": "fa1a796b-5eac-4ca7-8543-ffae7916193f",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "200"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "6fa0cbc0-043e-4b2a-9e81-6800ca296f85",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.callType"
+      },
+      "Identifier": "Check acctLookupModule data",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "b2ddbcad-e896-4ea1-a0e3-7d245c152881",
+        "Conditions": [
+          {
+            "NextAction": "92c6e0d6-f1cf-4bfa-8455-d036f55685fd",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "CSR"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "b2ddbcad-e896-4ea1-a0e3-7d245c152881",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.isAccountFound"
+      },
+      "Identifier": "afa8fc37-9796-4153-a646-fe60ee5ddf50",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "set Mode for accountlookup-copy-1",
+        "Conditions": [
+          {
+            "NextAction": "b2ddbcad-e896-4ea1-a0e3-7d245c152881",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "set Mode for accountlookup-copy-1",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetAccountStatus-function",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "accountId": "$.Attributes.accountId",
+          "customerId": "$.Attributes.customerId"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "efcbc582-2231-4226-8c9c-5a786e8748e5",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "a1776722-0b50-45a2-95ff-54c03ea0ebda",
+        "Errors": [
+          {
+            "NextAction": "GetAccountStatus",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "accountId": "$.Attributes.accountId",
+          "customerId": "$.Attributes.customerId",
+          " CallerExperience": "$.Attributes.CallerExperience | cfAccountStatus",
+          "userId": "151419",
+          "pinValidated": "false"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "b2ddbcad-e896-4ea1-a0e3-7d245c152881",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "efcbc582-2231-4226-8c9c-5a786e8748e5",
+        "Errors": [
+          {
+            "NextAction": "92c6e0d6-f1cf-4bfa-8455-d036f55685fd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetAccountSummaryInfo-function",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "accountId": "$.Attributes.accountId",
+          "customerId": "$.Attributes.customerId"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "96158c60-51d0-4428-872c-260aad0c9759",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "0002a3a5-c2ba-4323-820b-0fc7dbaeab69",
+        "Errors": [
+          {
+            "NextAction": "c4220607-027c-4707-9bea-9a972d5f336f",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "accountStatus": "$.External.accountStatus",
+          "agencyCode": "$.External.agencyCode",
+          "openedDate": "$.External.openedDate",
+          "CPC": "$.External.clientProductCode",
+          "creditAllowed": "$.External.creditAllowed"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "fa1a796b-5eac-4ca7-8543-ffae7916193f",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "Check for CPC",
+        "Errors": [
+          {
+            "NextAction": "92c6e0d6-f1cf-4bfa-8455-d036f55685fd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "StoreInput": "False",
+        "InputTimeLimitSeconds": "5",
+        "Text": "$.Attributes.prompt1"
+      },
+      "Identifier": "25018-playprompt",
+      "Type": "GetParticipantInput",
+      "Transitions": {
+        "NextAction": "94c7fa0b-5354-49f7-9cbf-f9aa40efd537",
+        "Conditions": [
+          {
+            "NextAction": "Gatestone Agency",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          },
+          {
+            "NextAction": "3636687b-0cab-4f10-a019-7c127199b999",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          },
+          {
+            "NextAction": "bdfa4882-10c7-44fc-9414-ea08b90948c7",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "#"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "2a508a7a-a7f3-4a1c-850e-ff77c8521974",
+            "ErrorType": "InputTimeLimitExceeded"
+          },
+          {
+            "NextAction": "94c7fa0b-5354-49f7-9cbf-f9aa40efd537",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "4467b16b-bc61-4f72-9018-735560cd0a9b",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LoopCount": "$.Attributes.retrycounter"
+      },
+      "Identifier": "bdfa4882-10c7-44fc-9414-ea08b90948c7",
+      "Type": "Loop",
+      "Transitions": {
+        "NextAction": "8639e747-93f7-4e6a-a023-b3373800e1ce",
+        "Conditions": [
+          {
+            "NextAction": "25018-playprompt",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "ContinueLooping"
+              ]
+            }
+          },
+          {
+            "NextAction": "8639e747-93f7-4e6a-a023-b3373800e1ce",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "DoneLooping"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LoopCount": "$.Attributes.retrycounter"
+      },
+      "Identifier": "bd98c16d-de8b-42ff-8d0c-74e7c08ff06d",
+      "Type": "Loop",
+      "Transitions": {
+        "NextAction": "8639e747-93f7-4e6a-a023-b3373800e1ce",
+        "Conditions": [
+          {
+            "NextAction": "25018-playprompt",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "ContinueLooping"
+              ]
+            }
+          },
+          {
+            "NextAction": "8639e747-93f7-4e6a-a023-b3373800e1ce",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "DoneLooping"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.maxRetryPrompt"
+      },
+      "Identifier": "8639e747-93f7-4e6a-a023-b3373800e1ce",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "1b223a0d-b580-420f-9a3f-c0d9503a8b79",
+        "Errors": [
+          {
+            "NextAction": "1b223a0d-b580-420f-9a3f-c0d9503a8b79",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "queueName": "CSR"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "815c2d59-d1ea-4deb-b27d-26e788ce5be0",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "01b36635-ebe5-40a1-9e72-8e6e80c2d516",
+        "Errors": [
+          {
+            "NextAction": "01b36635-ebe5-40a1-9e72-8e6e80c2d516",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/contact-flow/f71996f3-e6af-4321-8f39-9ad221a52eb6"
+      },
+      "Identifier": "01b36635-ebe5-40a1-9e72-8e6e80c2d516",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "aadc127f-2720-44ad-b64a-a4d58d8810dd",
+        "Errors": [
+          {
+            "NextAction": "aadc127f-2720-44ad-b64a-a4d58d8810dd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.CPC"
+      },
+      "Identifier": "1b223a0d-b580-420f-9a3f-c0d9503a8b79",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "815c2d59-d1ea-4deb-b27d-26e788ce5be0",
+        "Conditions": [
+          {
+            "NextAction": "e54cb656-a2d0-4e08-a196-7854375de06a",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "WLC"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "815c2d59-d1ea-4deb-b27d-26e788ce5be0",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "queueName": "LEG"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "e54cb656-a2d0-4e08-a196-7854375de06a",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "01b36635-ebe5-40a1-9e72-8e6e80c2d516",
+        "Errors": [
+          {
+            "NextAction": "01b36635-ebe5-40a1-9e72-8e6e80c2d516",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetAccountSummaryInfo-function",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "accountId": "$.Attributes.accountId",
+          "customerId": "$.Attributes.customerId"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "c63611a3-662f-4d8d-9478-2de17876d415",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "0002a3a5-c2ba-4323-820b-0fc7dbaeab69",
+        "Errors": [
+          {
+            "NextAction": "96158c60-51d0-4428-872c-260aad0c9759",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "CardType": "SMB"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "Set Card type SMB",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "Check Account Status",
+        "Errors": [
+          {
+            "NextAction": "Check Account Status",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "CardType": "Corporate"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "Set Card type Corporate",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "Check Account Status",
+        "Errors": [
+          {
+            "NextAction": "Check Account Status",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "CardType": "CON"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "Set Card type Consumer",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "Check Account Status",
+        "Errors": [
+          {
+            "NextAction": "Check Account Status",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.CPC"
+      },
+      "Identifier": "Check for CPC",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "Check Account Status",
+        "Conditions": [
+          {
+            "NextAction": "Set Card type SMB",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "SMB"
+              ]
+            }
+          },
+          {
+            "NextAction": "Set Card type Corporate",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "TEC"
+              ]
+            }
+          },
+          {
+            "NextAction": "Set Card type Corporate",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "PIC"
+              ]
+            }
+          },
+          {
+            "NextAction": "Set Card type Consumer",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "CON"
+              ]
+            }
+          },
+          {
+            "NextAction": "Set Card type Consumer",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "WEN"
+              ]
+            }
+          },
+          {
+            "NextAction": "Set Card type Consumer",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "FCB"
+              ]
+            }
+          },
+          {
+            "NextAction": "Set Card type Consumer",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "RCB"
+              ]
+            }
+          },
+          {
+            "NextAction": "Set Card type Consumer",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "WLC"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "Check Account Status",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.disconnectPrompt"
+      },
+      "Identifier": "DisconnectMessage",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "3d33ef82-8f34-44ec-b07a-52c3ed544caf",
+        "Errors": [
+          {
+            "NextAction": "3d33ef82-8f34-44ec-b07a-52c3ed544caf",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "3d33ef82-8f34-44ec-b07a-52c3ed544caf",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/contact-flow/f71996f3-e6af-4321-8f39-9ad221a52eb6"
+      },
+      "Identifier": "Transfer to Queue Config",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "3d33ef82-8f34-44ec-b07a-52c3ed544caf",
+        "Errors": [
+          {
+            "NextAction": "3d33ef82-8f34-44ec-b07a-52c3ed544caf",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.statusCode"
+      },
+      "Identifier": "97b2f7c2-bdbd-45f3-8caa-2ef73722b89b",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "c4220607-027c-4707-9bea-9a972d5f336f",
+        "Conditions": [
+          {
+            "NextAction": "feac0d15-3abb-4780-8a89-928bce139344",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "200"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "c4220607-027c-4707-9bea-9a972d5f336f",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.maxRetryPrompt"
+      },
+      "Identifier": "feac0d15-3abb-4780-8a89-928bce139344",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "Transfer to Queue Config",
+        "Errors": [
+          {
+            "NextAction": "Transfer to Queue Config",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "queueName": "LEG"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setQueue-copy-1",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "feac0d15-3abb-4780-8a89-928bce139344",
+        "Errors": [
+          {
+            "NextAction": "feac0d15-3abb-4780-8a89-928bce139344",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "queueName": "+1888-241-7875"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "Gatestone Agency",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "feac0d15-3abb-4780-8a89-928bce139344",
+        "Errors": [
+          {
+            "NextAction": "0115f13c-d1e5-489b-849e-9a2b4a8893f9",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "failureReason": "lambdaFailure"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "c4220607-027c-4707-9bea-9a972d5f336f",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "0115f13c-d1e5-489b-849e-9a2b4a8893f9",
+        "Errors": [
+          {
+            "NextAction": "0115f13c-d1e5-489b-849e-9a2b4a8893f9",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.CPC"
+      },
+      "Identifier": "211ccefc-c7df-4d81-a17b-9a4b3d044bbc",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "feac0d15-3abb-4780-8a89-928bce139344",
+        "Conditions": [
+          {
+            "NextAction": "setQueue-copy-1",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "WLC"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "feac0d15-3abb-4780-8a89-928bce139344",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "queueName": "CSR"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "92c6e0d6-f1cf-4bfa-8455-d036f55685fd",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "31a26121-1fc0-48ff-a8ec-07342c3e45c8",
+        "Errors": [
+          {
+            "NextAction": "31a26121-1fc0-48ff-a8ec-07342c3e45c8",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/contact-flow/f71996f3-e6af-4321-8f39-9ad221a52eb6"
+      },
+      "Identifier": "Transfer to Fraud",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "d42820d8-3c0d-4014-9880-b06627ffb441",
+        "Errors": [
+          {
+            "NextAction": "d42820d8-3c0d-4014-9880-b06627ffb441",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "d42820d8-3c0d-4014-9880-b06627ffb441",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.accountStatus"
+      },
+      "Identifier": "Check Account Status",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "c63611a3-662f-4d8d-9478-2de17876d415",
+        "Conditions": [
+          {
+            "NextAction": "queue Fraud",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "SF"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "c63611a3-662f-4d8d-9478-2de17876d415",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.maxRetryPrompt"
+      },
+      "Identifier": "31a26121-1fc0-48ff-a8ec-07342c3e45c8",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "Transfer to Fraud",
+        "Errors": [
+          {
+            "NextAction": "Transfer to Fraud",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "queueName": "FRD"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "queue Fraud",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "31a26121-1fc0-48ff-a8ec-07342c3e45c8",
+        "Errors": [
+          {
+            "NextAction": "31a26121-1fc0-48ff-a8ec-07342c3e45c8",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.statusCode"
+      },
+      "Identifier": "0002a3a5-c2ba-4323-820b-0fc7dbaeab69",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "c4220607-027c-4707-9bea-9a972d5f336f",
+        "Conditions": [
+          {
+            "NextAction": "063d7573-a34b-4aa5-9fea-c609117e23bd",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "200"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "c4220607-027c-4707-9bea-9a972d5f336f",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.prompt2"
+      },
+      "Identifier": "Not the primary card holder",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "DisconnectMessage",
+        "Errors": [
+          {
+            "NextAction": "DisconnectMessage",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-AccountMemos-function",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "service": "addMemo",
+          "accountId": "$.Attributes.accountId",
+          "customerId": "$.Attributes.customerId",
+          "operatorId": "AWSIVR",
+          "memoType": "COLLECTIONS_2",
+          "message": "Call Transferred to $.Attributes.agencyCode",
+          "memoSubject": "AGENCY"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "253a0204-fb09-426f-b72f-589aac24d6e0",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "97b2f7c2-bdbd-45f3-8caa-2ef73722b89b",
+        "Errors": [
+          {
+            "NextAction": "c4220607-027c-4707-9bea-9a972d5f336f",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "queueName": "$.Attributes.externalNumber1"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "external no 1 as queue",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "Validate Primary user",
+        "Errors": [
+          {
+            "NextAction": "0115f13c-d1e5-489b-849e-9a2b4a8893f9",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.accountType"
+      },
+      "Identifier": "da099c0a-833c-47f3-a35a-4ef74a4ce693",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "e5d2ac62-b61b-4715-a5ac-57b4c16743fc",
+        "Conditions": [
+          {
+            "NextAction": "25018-playprompt",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "PRIMARY"
+              ]
+            }
+          },
+          {
+            "NextAction": "25018-playprompt",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "Primary"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "e5d2ac62-b61b-4715-a5ac-57b4c16743fc",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/contact-flow/cac9e4db-b161-4d6b-bad8-d77e0c5d2cde"
+      },
+      "Identifier": "3636687b-0cab-4f10-a019-7c127199b999",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "aadc127f-2720-44ad-b64a-a4d58d8810dd",
+        "Errors": [
+          {
+            "NextAction": "aadc127f-2720-44ad-b64a-a4d58d8810dd",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.isActive"
+      },
+      "Identifier": "check isActive",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "f0ebdacf-8b48-41c2-9103-2e16a6a24fa6",
+        "Conditions": [
+          {
+            "NextAction": "Check provine code",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "f0ebdacf-8b48-41c2-9103-2e16a6a24fa6",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.accountType"
+      },
+      "Identifier": "Validate Primary user",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "Not the primary card holder",
+        "Conditions": [
+          {
+            "NextAction": "253a0204-fb09-426f-b72f-589aac24d6e0",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "PRIMARY"
+              ]
+            }
+          },
+          {
+            "NextAction": "253a0204-fb09-426f-b72f-589aac24d6e0",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "Primary"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "Not the primary card holder",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "queueName": "CSR"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "0115f13c-d1e5-489b-849e-9a2b4a8893f9",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "211ccefc-c7df-4d81-a17b-9a4b3d044bbc",
+        "Errors": [
+          {
+            "NextAction": "211ccefc-c7df-4d81-a17b-9a4b3d044bbc",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.provinceCode"
+      },
+      "Identifier": "Check provine code",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "external no 2 as queue",
+        "Conditions": [
+          {
+            "NextAction": "external no 1 as queue",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "QC"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "external no 2 as queue",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "queueName": "$.Attributes.externalNumber2"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "external no 2 as queue",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "Validate Primary user",
+        "Errors": [
+          {
+            "NextAction": "0115f13c-d1e5-489b-849e-9a2b4a8893f9",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "accountType": "$.External.accountType",
+          "accountBalance": "$.External.accountBalance",
+          "availableCredit": "$.External.availableCredit",
+          "creditLimit": "$.External.creditLimit",
+          "creditBalance": "$.External.creditBalance",
+          "payDueFlag": "$.External.payDueFlag",
+          "paymentDueAmt": "$.External.paymentDueAmt",
+          "paymentDueDate": "$.External.paymentDueDate",
+          "lastPaymentAmt": "$.External.lastPaymentAmt",
+          "lastPaymentDate": "$.External.lastPaymentDate",
+          "statementFlag": "$.External.statementFlag",
+          "statementEndBalFlag": "$.External.statementEndBalFlag",
+          "statementEndBalance": "$.External.statementEndBalance",
+          "available": "$.External.available",
+          "lastPaymentFlag": "$.External.lastPaymentFlag",
+          "earnedRewards": "$.External.earnedRewards",
+          "accountNumber": "5468",
+          "pastDue": "$.External.pastDue"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "063d7573-a34b-4aa5-9fea-c609117e23bd",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "Fetch Agency Code Config",
+        "Errors": [
+          {
+            "NextAction": "0115f13c-d1e5-489b-849e-9a2b4a8893f9",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.pastDue"
+      },
+      "Identifier": "f0ebdacf-8b48-41c2-9103-2e16a6a24fa6",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "3636687b-0cab-4f10-a019-7c127199b999",
+        "Conditions": [
+          {
+            "NextAction": "da099c0a-833c-47f3-a35a-4ef74a4ce693",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "YES"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "3636687b-0cab-4f10-a019-7c127199b999",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "externalNumber1": "$.DataTables.fetchAgencyCodeConfig.externalNumber1",
+          "externalNumber2": "$.DataTables.fetchAgencyCodeConfig.externalNumber2",
+          "isActive": "$.DataTables.fetchAgencyCodeConfig.isActive"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "fd09af29-b749-4c39-8d77-98bb4023f885",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "check isActive",
+        "Errors": [
+          {
+            "NextAction": "f0ebdacf-8b48-41c2-9103-2e16a6a24fa6",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "DataTableId": "9b1204d1-814b-4f48-9965-a264a7ca9f78",
+        "Queries": [
+          {
+            "QueryName": "fetchAgencyCodeConfig",
+            "Attributes": [
+              "externalNumber1",
+              "externalNumber2",
+              "isActive"
+            ],
+            "PrimaryValues": [
+              {
+                "AttributeName": "agencyCode",
+                "Value": "$.Attributes.agencyCode"
+              }
+            ]
+          }
+        ]
+      },
+      "Identifier": "Fetch Agency Code Config",
+      "Type": "EvaluateDataTableValues",
+      "Transitions": {
+        "NextAction": "fd09af29-b749-4c39-8d77-98bb4023f885",
+        "Errors": [
+          {
+            "NextAction": "f0ebdacf-8b48-41c2-9103-2e16a6a24fa6",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,117 +1,380 @@
 # GitHub Copilot Instructions for FirstAgent
 
-## Project Overview
+# Project Overview
 
-This repository contains a simple Python-based agent named `SimpleCopilotAgent`.
+This repository contains an MCP-enabled AI Agent platform.
 
-The agent demonstrates a lightweight skill-based architecture:
+The solution demonstrates:
 
-- `agent.py` defines the main agent class.
-- `skills/calculator.py` defines `CalculatorSkill`.
-- `agent.md` documents the agent manifest, skills, usage, and metadata.
-- `tests/` contains automated tests.
-- `requirements.txt` lists Python dependencies.
+- Skill-based architecture
+- MCP (Model Context Protocol) servers
+- Repository analysis tools
+- Amazon Connect flow analysis
+- Lambda function analysis
+- Terraform analysis
+- AI-assisted test generation
+- Extensible agent workflows
 
-The goal of this project is to help users learn how AI agents, skills, tool-like methods, and testable Python modules can be structured.
+Primary technologies:
 
-## Core Design Principles
+- Python
+- MCP / FastMCP
+- GitHub Copilot Agent Mode
+- Pytest
 
-When generating or modifying code in this repository, follow these principles:
+---
 
-1. Keep the code beginner-friendly and easy to explain.
-2. Prefer simple Python classes and functions over complex frameworks.
-3. Keep agent logic separate from skill implementation.
-4. Do not hardcode unnecessary behavior into `respond`.
-5. Skills should be registered through the agent's `self.skills` dictionary.
-6. Each skill should expose small, focused methods.
-7. Public methods should use type hints.
-8. Add docstrings for classes and public methods.
-9. Preserve compatibility with standard Python execution using `python agent.py`.
-10. Avoid adding external dependencies unless they are truly required.
-
-## Current Architecture
-
-The current agent architecture is:
+# Current Architecture
 
 ```text
-SimpleCopilotAgent
-├── name
-├── skills
-│   └── calculator
-│       ├── add(a, b)
-│       └── multiply(a, b)
-├── respond(user_input)
-└── use_skill(skill_name, action, *args)
+MyProjects/
+|   
+├────── .vscode/
+|       └── mcp.json
+|  
+├────── FirstAgent/
+|      │
+|      ├── agent.py
+|      ├── skills/
+|      │
+|      ├── ivr_repo/  (Amazon Connect Contact Center Platform Project Repository)
+|      |   |
+|      │   └── flows   (containing Amazon Connect IVR/contact flow JSON files)
+|      |   |
+|      │   └── lambda  (containing AWS Lambda TypeScript files)
+|      |   |
+|      │   └── terraform (containing Terraform script files)
+|      |   |
+|      │   └── prompts  (containing IVR voice prompt text files)
+|      │
+|      ├── mcp_servers/
+|      │   └── ivr_repo_svc_mcp_server.py
+|      │
+|      ├── tests/
+|      │
+|      ├── .github/
+|      │   └── copilot-instructions.md
+|      │
+|      └── .vscode/
+|          └── settings.json  (containing custom agent enablement configurations for vs code)
+```
 
-## Coding Standards
+---
 
-When writing Python code:
+# Core Design Principles
 
-1. Use clear class and method names.
-2. Use snake_case for functions, variables, and file names.
-3. Use PascalCase for class names.
-4. Use f-strings for readable string formatting.
-5. Use explicit error messages.
-6. Validate skill names and action names before invoking methods.
-7. Avoid broad exception handling unless required.
-8. Keep functions small and easy to test.
-9. Do not introduce global mutable state.
+When generating or modifying code:
 
-## Testing Standards
+1. Keep solutions easy to understand.
+2. Prefer modular design.
+3. Separate business logic from MCP plumbing.
+4. Keep tools focused on a single responsibility.
+5. Use type hints.
+6. Use clear docstrings.
+7. Prefer pure Python implementations.
+8. Keep components independently testable.
+9. Design for future extension.
+10. Avoid unnecessary dependencies.
 
-When adding or changing behavior:
+---
 
-1. Add or update tests under tests/.
-2. Prefer pytest.
-3. Test both successful and failure scenarios.
-4. Test unknown skill handling.
-5. Test unknown action handling.
-6. Test each calculator method independently.
-7. Maintain simple tests suitable for beginners.
+# MCP Server Standards
 
-## Documentation Standards
+All MCP tools must:
 
-When updating functionality:
+1. Have clear names.
+2. Have descriptive docstrings.
+3. Return structured output.
+4. Validate inputs.
+5. Handle errors gracefully.
+6. Produce useful diagnostic information.
+7. Be testable outside Copilot.
 
-1. Update agent.md if skills, usage, or metadata changes.
-2. Update README.md if setup or usage changes.
-3. Include example commands where useful.
-4. Keep documentation concise and practical.
+Tool descriptions must explain:
 
-## Copilot Behavior Rules
+- What the tool does
+- When it should be used
+- Expected input
+- Expected output
 
-When assisting with this repository, GitHub Copilot should:
+Example:
 
-1. Explain changes before applying large refactors.
-2. Prefer incremental improvements.
-3. Maintain the simple learning-oriented style of the project.
-4. Suggest tests whenever adding new skills.
-5. Avoid converting the project into a full framework unless explicitly asked.
-6. Avoid adding web APIs, databases, LangChain, CrewAI, AutoGen, or MCP unless explicitly requested.
-7. If asked to add a new skill, follow the existing CalculatorSkill pattern.
+```python
+@mcp.tool()
+def analyze_lambda(file_path: str) -> str:
+    """
+    Analyze AWS Lambda source code and extract:
 
-### Example Usage
+    - Business logic
+    - Dependencies
+    - API integrations
+    - Error handling
+    - Test recommendations
+    """
+```
 
-Expected behavior:
+---
 
-agent = SimpleCopilotAgent()
-agent.respond("Hello Copilot!")
-agent.use_skill("calculator", "add", 5, 7)
-agent.use_skill("calculator", "multiply", 3, 4)
+# Repository Analysis Workflow
 
-Expected output style:
+Whenever repository analysis is requested:
 
-MyCopilot says: You said 'Hello Copilot!'
-Result: 12
-Resu*t: 12
+STEP 1
 
-## Safe Change Guidance
+Use:
 
-Before making changes that affect behavior:
+find_files()
 
-1. Inspect agent.py.
-2. Inspect the affected file under skills/.
-3. Check or create tests under tests/.
-4. Update documentation if public behavior changes.
-5. Run tests where possible.
+to discover target files.
 
+STEP 2
+
+Use:
+
+read_file()
+
+to retrieve content.
+
+STEP 3
+
+Identify file type.
+
+STEP 4
+
+Invoke the appropriate MCP tool.
+
+---
+
+# MCP Tool Selection Rules
+
+When the user asks:
+
+"Find a file"
+
+Use:
+
+find_files() : with cf*.json when contact flows are requested.
+find_files() : with *.ts when lambda files are requested.
+find_files() : with *.tf when Terraform files are requested.
+
+---
+
+"Read a file"
+
+Use:
+
+read_file()
+
+---
+
+"Analyze Lambda"
+
+Use:
+
+analyze_lambda()
+
+---
+
+"Analyze Terraform"
+
+Use:
+
+analyze_terraform()
+
+---
+
+"Analyze Amazon Connect Flow"
+
+Use:
+
+analyze_connect_flow()
+
+---
+
+"Generate Test Cases"
+
+Use:
+
+generate_testcases()
+
+---
+
+"Compare HLD and Flow"
+
+Use:
+
+compare_hld_to_json()
+
+---
+
+"Generate Gap Analysis"
+
+Use:
+
+generate_gap_report()
+
+---
+
+# Mandatory MCP Usage Rules
+
+Do not assume file contents.
+
+Always:
+
+1. Locate files first
+2. Read files second
+3. Analyze files third
+
+Never skip these steps.
+
+If repository data is required:
+
+Use MCP tools whenever available.
+
+Do not invent repository information.
+
+---
+
+# Coding Standards
+
+1. Use snake_case.
+2. Use PascalCase for classes.
+3. Use f-strings.
+4. Use descriptive identifiers.
+5. Keep functions small.
+6. Avoid deep nesting.
+7. Avoid global mutable state.
+8. Prefer composition over inheritance.
+9. Keep business logic independent from MCP wrappers.
+
+---
+
+# Testing Standards
+
+Whenever a new tool is added:
+
+1. Add pytest coverage.
+2. Test success cases.
+3. Test failure cases.
+4. Test invalid input.
+5. Test edge cases.
+6. Verify MCP tool registration.
+
+Required files:
+
+tests/
+    test_<tool>.py
+
+---
+
+# Documentation Standards
+
+Whenever a tool changes:
+
+Update:
+
+- README.md
+- agent.md
+- MCP usage examples
+
+Provide example prompts.
+
+Provide example outputs.
+
+---
+
+# Copilot Behavior Rules
+
+GitHub Copilot should:
+
+1. Prefer MCP tools over assumptions.
+2. Use MCP tools to gather repository context.
+3. Explain significant changes before applying them.
+4. Suggest tests for all new tools.
+5. Prefer incremental improvements.
+6. Preserve existing architecture unless asked to refactor.
+7. Reuse existing MCP patterns before creating new ones.
+8. Follow the repository analysis workflow.
+
+---
+
+# Example Tool Workflows
+
+Example 1
+
+User:
+
+Analyze all Lambda functions.
+
+Workflow:
+
+1. find_files()
+2. read_file()
+3. analyze_lambda()
+
+---
+
+Example 2
+
+User:
+
+Review Terraform deployment.
+
+Workflow:
+
+1. find_files()
+2. read_file()
+3. analyze_terraform()
+
+---
+
+Example 3
+
+User:
+
+Generate Amazon Connect test cases.
+
+Workflow:
+
+1. find_files()
+2. read_file()
+3. analyze_connect_flow()
+4. generate_testcases()
+
+---
+
+# Safe Change Guidance
+
+Before making repository changes:
+
+1. Inspect affected files.
+2. Inspect related MCP tools.
+3. Inspect tests.
+4. Update documentation.
+5. Add missing tests.
+6. Preserve backward compatibility where possible.
+
+## Amazon Connect Contact Flow Audit
+
+When the user asks to audit an Amazon Connect contact flow, calculate
+complexity, count blocks or edges, identify Lambda dependencies, check
+error handling, or assess flow maintainability:
+
+1. Use `find_files` to locate matching JSON contact flow files.
+2. Select the file matching the user's request.
+3. Call `audit_contact_flow` with the repository-relative path.
+4. Present the returned:
+   - total blocks
+   - total edges
+   - McCabe complexity
+   - decision complexity
+   - Lambda integration count
+   - unhandled error block count
+   - audit status
+   - recommendations
+
+Do not manually calculate these metrics when `audit_contact_flow` is
+available.
+
+Use `read_file` only when detailed inspection of individual flow
+actions is additionally required.

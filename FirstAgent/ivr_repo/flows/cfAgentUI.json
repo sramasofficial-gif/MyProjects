@@ -1,0 +1,598 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "ff0e3b82-9afc-41e1-b1b9-1c3cc8a08dbd",
+  "Metadata": {
+    "entryPointPosition": {
+      "x": -1862.4,
+      "y": 65.6
+    },
+    "ActionMetadata": {
+      "ce98fa3a-118e-4fdd-85f7-c3032aa94888": {
+        "position": {
+          "x": 1680,
+          "y": 0
+        }
+      },
+      "GetCallLogs": {
+        "position": {
+          "x": 1039.2,
+          "y": 102.4
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetCallLogs-function"
+          },
+          "LambdaInvocationAttributes": {
+            "accountId": {
+              "useDynamic": true
+            },
+            "declinedTransactinRes": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "accountId": true,
+          "declinedTransactinRes": true
+        }
+      },
+      "Agentdesktop": {
+        "position": {
+          "x": 1398.4,
+          "y": 0
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "ViewResource": {
+            "Id": {
+              "displayName": "RBView"
+            }
+          },
+          "InvocationTimeLimitSeconds": {
+            "unit": 1
+          },
+          "ViewData": {
+            "AttributeBar_1": {
+              "useJson": true
+            }
+          }
+        }
+      },
+      "Retry GetDeclTransactions": {
+        "position": {
+          "x": -325.6,
+          "y": 212.8
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-Transaction-function"
+          },
+          "LambdaInvocationAttributes": {
+            "accountId": {
+              "useDynamic": true
+            },
+            "customerId": {
+              "useDynamic": true
+            },
+            "selfService": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "accountId": true,
+          "customerId": true,
+          "activityStatus": false,
+          "selfService": true
+        }
+      },
+      "4ca6bfd6-49e7-431b-af99-b7bf4bf88356": {
+        "position": {
+          "x": 268.8,
+          "y": 224.8
+        },
+        "dynamicParams": []
+      },
+      "aws dec tx parsed-with-defaultfunction": {
+        "position": {
+          "x": 695.2,
+          "y": 180.8
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetDeclinedTransactionsJSONparsed-function"
+          },
+          "LambdaInvocationAttributes": {
+            "declinedTransactionsData": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "declinedTransactionsData": true
+        }
+      },
+      "89890a45-d5d8-4ad4-8e6a-e55adc593632": {
+        "position": {
+          "x": -85.6,
+          "y": 0
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "394bdd42-de94-42b2-86f3-5d09f8005f3f",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "404"
+          }
+        ]
+      },
+      "1dc38cc7-6c63-4013-b4d3-4c8d6a5dcf06": {
+        "position": {
+          "x": 271.2,
+          "y": 0.8
+        },
+        "dynamicParams": []
+      },
+      "GetDeclTransactions": {
+        "position": {
+          "x": -578.4,
+          "y": 55.2
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-Transaction-function"
+          },
+          "LambdaInvocationAttributes": {
+            "accountId": {
+              "useDynamic": true
+            },
+            "customerId": {
+              "useDynamic": true
+            },
+            "selfService": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "accountId": true,
+          "customerId": true,
+          "activityStatus": false,
+          "selfService": true
+        }
+      },
+      "ff0e3b82-9afc-41e1-b1b9-1c3cc8a08dbd": {
+        "position": {
+          "x": -1704.8,
+          "y": 42.4
+        }
+      },
+      "set true name": {
+        "position": {
+          "x": -831.2,
+          "y": -75.2
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Attributes": {
+            "trueName": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicParams": [
+          "trueName"
+        ]
+      },
+      "83187dfa-0366-4a8e-bf86-5ad45ac8fe87": {
+        "position": {
+          "x": -1395.2,
+          "y": 35.2
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "485d9d67-9067-4d11-9c40-3ac1d3e19650",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "PRIMARY"
+          }
+        ]
+      },
+      "GetTrueName": {
+        "position": {
+          "x": -1103.2,
+          "y": -24
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "LambdaInvocationAttributes": {
+            "accountId": {
+              "useDynamic": true
+            },
+            "customerId": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "accountId": true,
+          "customerId": true,
+          "selfService": false,
+          "customerType": false
+        }
+      }
+    },
+    "Annotations": [],
+    "name": "cfAgentUI",
+    "description": "",
+    "type": "contactFlow",
+    "status": "PUBLISHED",
+    "hash": {}
+  },
+  "Actions": [
+    {
+      "Parameters": {},
+      "Identifier": "ce98fa3a-118e-4fdd-85f7-c3032aa94888",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetCallLogs-function",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "accountId": "$.Attributes.accountId",
+          "declinedTransactinRes": "$.External.res"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "GetCallLogs",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "Agentdesktop",
+        "Errors": [
+          {
+            "NextAction": "Agentdesktop",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ViewResource": {
+          "Id": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/view/f132def2-f0ff-4065-bfed-d371b7f94033:$LATEST"
+        },
+        "InvocationTimeLimitSeconds": "9000",
+        "ViewData": {
+          "AttributeBar_1": {
+            "Attributes": [
+              {
+                "AutoOpen": true,
+                "Label": "Customer Name",
+                "Value": "$.Attributes.customerName",
+                "Copyable": true
+              },
+              {
+                "AutoOpen": true,
+                "Label": "Preferred Name",
+                "Value": "$.Attributes.trueName",
+                "Copyable": true
+              },
+              {
+                "AutoOpen": false,
+                "Label": "Card Last 4/Account ID",
+                "Value": "$.Attributes.cardLastFour",
+                "Copyable": true
+              },
+              {
+                "AutoOpen": false,
+                "Label": "Fraud ANI",
+                "Value": "$.Attributes.isFraudANI",
+                "Copyable": true
+              },
+              {
+                "AutoOpen": false,
+                "Label": "Queue Name",
+                "Value": "$.Attributes.queueName",
+                "Copyable": true
+              },
+              {
+                "AutoOpen": false,
+                "Label": "Pin Validated",
+                "Value": "$.Attributes.pinValidated",
+                "Copyable": true
+              },
+              {
+                "AutoOpen": false,
+                "Label": "DOB Validated",
+                "Value": "$.Attributes.isDOBVerified",
+                "Copyable": true
+              },
+              {
+                "AutoOpen": false,
+                "Label": "OTC Validated",
+                "Value": "$.Attributes.isOTCverified",
+                "Copyable": true
+              },
+              {
+                "AutoOpen": false,
+                "Label": "Phone Number",
+                "Value": "$.Attributes.CustomerPhoneNumber",
+                "Copyable": true
+              },
+              {
+                "AutoOpen": false,
+                "Label": "Product Type",
+                "Value": "$.Attributes.CPC",
+                "Copyable": true
+              }
+            ]
+          },
+          "CallLogs": "$.External.callLogs",
+          "DeclinedTransactions": "$.External.declinedTransactinRes"
+        }
+      },
+      "Identifier": "Agentdesktop",
+      "Type": "ShowView",
+      "Transitions": {
+        "NextAction": "ce98fa3a-118e-4fdd-85f7-c3032aa94888",
+        "Errors": [
+          {
+            "NextAction": "ce98fa3a-118e-4fdd-85f7-c3032aa94888",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "ce98fa3a-118e-4fdd-85f7-c3032aa94888",
+            "ErrorType": "NoMatchingError"
+          },
+          {
+            "NextAction": "ce98fa3a-118e-4fdd-85f7-c3032aa94888",
+            "ErrorType": "TimeLimitExceeded"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-Transaction-function",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "accountId": "$.Attributes.accountId",
+          "customerId": "$.Attributes.customerId",
+          "activityStatus": "DECLINED",
+          "selfService": "$.Attributes.selfService"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "Retry GetDeclTransactions",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "89890a45-d5d8-4ad4-8e6a-e55adc593632",
+        "Errors": [
+          {
+            "NextAction": "4ca6bfd6-49e7-431b-af99-b7bf4bf88356",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "DeclinedHeader": "No Declined Transactions"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "4ca6bfd6-49e7-431b-af99-b7bf4bf88356",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "aws dec tx parsed-with-defaultfunction",
+        "Errors": [
+          {
+            "NextAction": "aws dec tx parsed-with-defaultfunction",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetDeclinedTransactionsJSONparsed-function",
+        "InvocationTimeLimitSeconds": "3",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "declinedTransactionsData": "$.External.activities"
+        },
+        "ResponseValidation": {
+          "ResponseType": "JSON"
+        }
+      },
+      "Identifier": "aws dec tx parsed-with-defaultfunction",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "GetCallLogs",
+        "Errors": [
+          {
+            "NextAction": "GetCallLogs",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.statusCode"
+      },
+      "Identifier": "89890a45-d5d8-4ad4-8e6a-e55adc593632",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "1dc38cc7-6c63-4013-b4d3-4c8d6a5dcf06",
+        "Conditions": [
+          {
+            "NextAction": "4ca6bfd6-49e7-431b-af99-b7bf4bf88356",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "404"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "1dc38cc7-6c63-4013-b4d3-4c8d6a5dcf06",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "DeclinedHeader": "Declined Transactions"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "1dc38cc7-6c63-4013-b4d3-4c8d6a5dcf06",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "aws dec tx parsed-with-defaultfunction",
+        "Errors": [
+          {
+            "NextAction": "aws dec tx parsed-with-defaultfunction",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-Transaction-function",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "accountId": "$.Attributes.accountId",
+          "customerId": "$.Attributes.customerId",
+          "activityStatus": "DECLINED",
+          "selfService": "$.Attributes.selfService"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "GetDeclTransactions",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "89890a45-d5d8-4ad4-8e6a-e55adc593632",
+        "Errors": [
+          {
+            "NextAction": "Retry GetDeclTransactions",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "FlowLoggingBehavior": "Enabled"
+      },
+      "Identifier": "ff0e3b82-9afc-41e1-b1b9-1c3cc8a08dbd",
+      "Type": "UpdateFlowLoggingBehavior",
+      "Transitions": {
+        "NextAction": "83187dfa-0366-4a8e-bf86-5ad45ac8fe87"
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "trueName": "$.External.trueName"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "set true name",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "GetDeclTransactions",
+        "Errors": [
+          {
+            "NextAction": "GetDeclTransactions",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.customerType"
+      },
+      "Identifier": "83187dfa-0366-4a8e-bf86-5ad45ac8fe87",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "GetDeclTransactions",
+        "Conditions": [
+          {
+            "NextAction": "GetTrueName",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "PRIMARY"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "GetDeclTransactions",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-validatePhoneNumber-function",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "accountId": "$.Attributes.accountId",
+          "customerId": "$.Attributes.customerId",
+          "selfService": "trueName",
+          "customerType": "PRIMARY"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "GetTrueName",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "set true name",
+        "Errors": [
+          {
+            "NextAction": "set true name",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    }
+  ]
+}
