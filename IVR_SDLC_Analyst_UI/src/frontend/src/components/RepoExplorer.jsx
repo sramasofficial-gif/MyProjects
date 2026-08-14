@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { loadRepoTree } from "../services/api";
 
 export default function RepoExplorer({
+    selectedFile,
     onFileSelect
 }) {
 
@@ -59,7 +60,12 @@ export default function RepoExplorer({
 
                         <div
                             key={file}
-                            className="file"
+                            className={
+                                selectedFile ===
+                                `${section.folder}/${file}`
+                                    ? "file selected"
+                                    : "file"
+                            }
                             onClick={() => {
                                 const selected =`${section.folder}/${file}`;
                                 console.log(

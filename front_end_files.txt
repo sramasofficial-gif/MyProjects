@@ -1,0 +1,380 @@
+main.jsx
+---------
+
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+
+import App from './App';
+import './styles/app.css';
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
+
+
+
+App.jsx
+--------
+
+import MainLayout from "./layout/MainLayout";
+
+function App() {
+  return <MainLayout />;
+}
+
+export default App;
+
+
+MainLayout.jsx
+---------------
+
+import { useState } from "react";
+import RepoExplorer from "../components/RepoExplorer";
+import TabContainer from "../components/TabContainer";
+import PromptBar from "../components/PromptBar";
+
+export default function MainLayout() {
+
+    const [selectedFile, setSelectedFile] = useState(null);
+
+    return (
+        <div className="app-layout">
+
+            <header className="header">
+                Amazon Connect SDLC Agent
+            </header>
+
+            <div className="content">
+
+                <RepoExplorer
+                    selectedFile={selectedFile}
+                    onFileSelect={setSelectedFile}
+                />
+
+                <TabContainer
+                    selectedFile={selectedFile}
+                />
+
+            </div>
+
+            <PromptBar />
+
+        </div>
+    );
+}
+
+
+RepoExplorer.jsx
+----------------
+
+import { useEffect, useState } from "react";
+import { loadRepoTree } from "../services/api";
+
+export default function RepoExplorer({
+    selectedFile,
+    onFileSelect
+}) {
+
+    const [repo, setRepo] = useState([]);
+    const [expandedFolders, setExpandedFolders] = useState({});
+
+    const toggleFolder = (folder) => {
+
+        setExpandedFolders(prev => ({
+            ...prev,
+            [folder]: !prev[folder]
+        }));
+    };
+
+    useEffect(() => {
+
+        loadRepoTree()
+            .then(setRepo);
+
+    }, []);
+
+    return (
+
+        <div className="repo-panel" style={{background: "#f8f9fa"}}>
+
+            <div className="repo-title">
+                Repo Explorer
+            </div>
+
+            {repo.map(section => (
+
+                <div key={section.folder}>
+
+                    <div
+                        className="folder"
+                        onClick={() =>
+                            toggleFolder(section.folder)
+                        }
+                        style={{
+                            cursor: "pointer",
+                            fontWeight: "bold"
+                        }}
+                    >
+
+                        {expandedFolders[section.folder]
+                            ? "▼ "
+                            : "▶ "}
+
+                        {section.folder}
+
+                    </div>
+
+                    {expandedFolders[section.folder] && 
+                        section.files.map(file => (
+
+                        <div
+                            key={file}
+                            className={
+                                selectedFile ===
+                                `${section.folder}/${file}`
+                                    ? "file selected"
+                                    : "file"
+                            }
+                            onClick={() => {
+                                const selected =`${section.folder}/${file}`;
+                                console.log(
+                                    "Selected:",
+                                    selected
+                                    );
+                                onFileSelect(selected);
+                            }}
+                        >
+                            📄 {file}
+                        </div>
+
+                    ))}
+                </div>
+
+            ))}
+        </div>
+    );
+}
+
+
+TabContainer.jsx
+----------------
+
+import { useEffect, useState } from "react";
+import { loadFile } from "../services/api";
+
+export default function TabContainer({
+    selectedFile
+}) {
+
+    const [content, setContent] =
+        useState("");
+
+    useEffect(() => {
+
+        if (!selectedFile)
+            return;
+
+        console.log(
+            "selectedFile:",
+            selectedFile
+            );
+
+        loadFile(selectedFile)
+            .then(data =>
+                setContent(data.content)
+            );
+
+    }, [selectedFile]);
+
+    return (
+
+        <div className="main-panel">
+
+            <div
+            style={{
+                padding: "10px",
+                borderBottom:
+                "1px solid lightgray"
+            }}
+            >
+
+            <button>
+                Dashboard
+            </button>
+
+            <button>
+                Flow
+            </button>
+
+            <button>
+                Lambda
+            </button>
+
+            <button>
+                Terraform
+            </button>
+
+            <button>
+                Chat
+            </button>
+
+            </div>
+
+            <div className="tab-content">
+
+                <div className="current-file">
+                    {selectedFile}
+                </div>
+
+                <pre>{content}</pre>
+
+            </div>
+
+        </div>
+
+    );
+}
+
+
+
+api.js
+--------
+
+const API_URL = "http://localhost:8000/api";
+
+export async function loadRepoTree() {
+
+    const response =
+        await fetch(`${API_URL}/repo/tree`);
+
+    return await response.json();
+}
+
+export async function loadFile(path) {
+
+    console.log(
+        "Loading file:",
+        path
+    );
+
+    const response =
+        await fetch(
+            `${API_URL}/file?path=${encodeURIComponent(path)}`
+        );
+
+    console.log(response);
+
+    return await response.json();
+}
+
+
+app.css
+---------
+
+body {
+    margin: 0;
+    font-family: Segoe UI, sans-serif;
+}
+
+#root {
+    height: 100vh;
+}
+
+.app-layout {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    height: 60px;
+    background: #1d3557;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    font-size: 22px;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.repo-panel {
+    width: 300px;
+    min-width: 300px;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.main-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.tab-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.prompt-bar {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    display: flex;
+}
+
+.prompt-bar input {
+    flex: 1;
+}
+
+.prompt-bar button {
+    width: 100px;
+}
+
+.file {
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 18px;
+    transition: all 0.15s ease;
+}
+
+.file:hover {
+    background-color: #e8f0fe;
+}
+
+.file.selected {
+    background-color: #cfe2ff;
+    color: #0a58ca;
+    font-weight: 600;
+    border-left: 4px solid #0d6efd;
+}
+
+.current-file {
+    padding: 8px;
+    background: #f4f4f4;
+    border-bottom: 1px solid #ddd;
+    font-weight: 600;
+}
+
+pre {
+    font-family:
+        Consolas,
+        monospace;
+}
+
+

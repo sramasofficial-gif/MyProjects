@@ -4,8 +4,8 @@ import TabContainer from "../components/TabContainer";
 import PromptBar from "../components/PromptBar";
 
 export default function MainLayout() {
-
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFile, setSelectedFile] =
+        useState(null);
 
     return (
         <div className="app-layout">
@@ -17,6 +17,7 @@ export default function MainLayout() {
             <div className="content">
 
                 <RepoExplorer
+                    selectedFile={selectedFile}
                     onFileSelect={setSelectedFile}
                 />
 

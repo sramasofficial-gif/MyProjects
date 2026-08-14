@@ -1,26 +1,46 @@
 const API_URL = "http://localhost:8000/api";
 
+async function parseResponse(response) {
+    const data = await response.json();
+
+    if (!response.ok) {
+        const message =
+            data?.detail ||
+            data?.message ||
+            `Request failed with status ${response.status}`;
+
+        throw new Error(message);
+    }
+
+    return data;
+}
+
 export async function loadRepoTree() {
+    const response = await fetch(
+        `${API_URL}/repo/tree`
+    );
 
-    const response =
-        await fetch(`${API_URL}/repo/tree`);
-
-    return await response.json();
+    return parseResponse(response);
 }
 
 export async function loadFile(path) {
-
-    console.log(
-        "Loading file:",
-        path
+    const response = await fetch(
+        `${API_URL}/file?path=${encodeURIComponent(path)}`
     );
 
-    const response =
-        await fetch(
-            `${API_URL}/file?path=${encodeURIComponent(path)}`
-        );
+    return parseResponse(response);
+}
 
-    console.log(response);
+export async function auditFlow(path) {
+    const response = await fetch(
+        `${API_URL}/audit-flow?path=${encodeURIComponent(path)}`,
+        {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+            },
+        }
+    );
 
-    return await response.json();
+    return parseResponse(response);
 }
