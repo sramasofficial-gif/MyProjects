@@ -1,0 +1,3640 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "setCallerExperience",
+  "Metadata": {
+    "entryPointPosition": {
+      "x": -138.4,
+      "y": 435.2
+    },
+    "ActionMetadata": {
+      "ae1b28b1-94be-4770-a090-7ce01e9874d3": {
+        "position": {
+          "x": 296,
+          "y": 800
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "7b84832d-3db5-424c-aa6e-6451099425fb",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "200"
+          }
+        ]
+      },
+      "fetchPrompts": {
+        "position": {
+          "x": 296,
+          "y": 540
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetSsmParams-function"
+          }
+        },
+        "dynamicMetadata": {
+          "path": false,
+          "withDefaults": false
+        }
+      },
+      "2a44ddac-21df-4744-81e0-1cc8704a8906": {
+        "position": {
+          "x": 1696,
+          "y": 1060
+        }
+      },
+      "827f501c-1789-4f0c-a2a8-fec80df6d789": {
+        "position": {
+          "x": 2256,
+          "y": 1060
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "cfMainMenu"
+          }
+        },
+        "ContactFlow": {
+          "text": "cfMainMenu"
+        }
+      },
+      "36833246-666f-4a2c-8471-ac12a2b78435": {
+        "position": {
+          "x": 2536,
+          "y": 1840
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "setCallerExperience": {
+        "position": {
+          "x": 16,
+          "y": 540
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Attributes": {
+            "FlowName": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicParams": [
+          "FlowName"
+        ]
+      },
+      "StepUpAuthentication": {
+        "position": {
+          "x": 4216,
+          "y": 540
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "FlowModuleId": {
+            "displayName": "moRBsendOTC"
+          }
+        },
+        "contactFlowModuleName": "moRBsendOTC"
+      },
+      "043e6b42-2b86-47cb-b110-a73b6f7b9a1a": {
+        "position": {
+          "x": 6455.2,
+          "y": 1580
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "cfQueueConfig"
+          }
+        },
+        "ContactFlow": {
+          "text": "cfQueueConfig"
+        }
+      },
+      "25030_activateNewCard": {
+        "position": {
+          "x": 6174.4,
+          "y": 278.4
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "25031_activateReisuueCard": {
+        "position": {
+          "x": 6176,
+          "y": 20
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "disconnectPrompt": {
+        "position": {
+          "x": 6736,
+          "y": 20
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "6fba3cbe-f5a7-412f-ac7a-628d1bcf94c9": {
+        "position": {
+          "x": 7016,
+          "y": 280
+        }
+      },
+      "fbef7796-d863-4f80-bc4b-3e71245b888e": {
+        "position": {
+          "x": 2816,
+          "y": 1580
+        }
+      },
+      "8f4f3c02-81f8-41db-8784-b1843a0a047f": {
+        "position": {
+          "x": 2256,
+          "y": 1580
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "b75b84c0-7d55-4a99-9b6b-220a7370cec0": {
+        "position": {
+          "x": 2307.2,
+          "y": 1345.6
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "cfChangePinNew"
+          }
+        },
+        "ContactFlow": {
+          "text": "cfChangePinNew"
+        }
+      },
+      "35bcacd4-807d-48ac-b52f-1eb8ab6d3697": {
+        "position": {
+          "x": 2536,
+          "y": 1580
+        },
+        "parameters": {
+          "LoopCount": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "a63a1cfe-68c2-452f-b598-1f234387b984": {
+        "position": {
+          "x": 2068.8,
+          "y": 1836
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "effa758f-bc49-4f62-b084-cdaf156fb120": {
+        "position": {
+          "x": 6456,
+          "y": 20
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "45114cda-9658-4b8f-9da5-2d6e1b613349",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfPreMenu"
+          },
+          {
+            "id": "8ab63b07-8118-4ef6-a993-d02f0668169a",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "rogersCardActivation"
+          }
+        ]
+      },
+      "setQueueName-SMB": {
+        "position": {
+          "x": 5902.4,
+          "y": 1988.8
+        },
+        "isFriendlyName": true,
+        "dynamicParams": []
+      },
+      "4aaf61b6-d789-4157-8a87-040525ee6090": {
+        "position": {
+          "x": 5056,
+          "y": 2100
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "cfCreditLimitChange"
+          }
+        },
+        "ContactFlow": {
+          "text": "cfCreditLimitChange"
+        }
+      },
+      "1469a586-db83-4010-a5ae-7fc2f058a57e": {
+        "position": {
+          "x": 6456,
+          "y": 2360
+        }
+      },
+      "CardType": {
+        "position": {
+          "x": 4779.2,
+          "y": 1747.2
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "b4742509-6d70-4ff6-a710-9c988fdcc8d8",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "Corporate"
+          },
+          {
+            "id": "54c9e6cb-8dba-4d34-a02e-b9ae74889565",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "SMB"
+          }
+        ]
+      },
+      "f89f3869-ec33-40d9-a575-4a58ec58d930": {
+        "position": {
+          "x": 5045.6,
+          "y": 1768.8
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "cfAccountSummaryInfo"
+          }
+        },
+        "ContactFlow": {
+          "text": "cfAccountSummaryInfo"
+        }
+      },
+      "25032_AuthorizedUserActivationPrimaryNotActivated.": {
+        "position": {
+          "x": 3096,
+          "y": 1320
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "485dcd47-d728-4d45-84d8-740ea0a16caf": {
+        "position": {
+          "x": 2780.8,
+          "y": 1220.8
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "59a8b968-8aa0-45c7-8288-68dcfce4f0e4",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfMainMenu"
+          },
+          {
+            "id": "ef746ec2-e2ea-44fc-8a8a-56ddea758cc9",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfPreMenu"
+          },
+          {
+            "id": "4743f95b-2dc0-45a6-a645-b794e75e92f9",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "rogersCardActivation"
+          },
+          {
+            "id": "f485430b-81b9-4f20-8571-dbd18a6d778d",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfMainMenuCorporate"
+          },
+          {
+            "id": "93999fc0-0a8f-4e4f-8a6a-81f5708c0f9b",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfMainMenuSMB"
+          }
+        ]
+      },
+      "Check reissueReason-copy-1": {
+        "position": {
+          "x": 5896,
+          "y": 20
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "2f0828f9-a566-43e0-b445-467b3971c098",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "REISSUE"
+          },
+          {
+            "id": "73a0e741-7152-4d2a-bda8-e3c3063f8090",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "SPECIAL"
+          }
+        ]
+      },
+      "f3f00f86-2505-4b31-99cf-88858f1fbf18": {
+        "position": {
+          "x": 6175.2,
+          "y": 539.2
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "cfMainMenu"
+          }
+        },
+        "ContactFlow": {
+          "text": "cfMainMenu"
+        }
+      },
+      "78d039e5-bcd7-4970-bd63-1aa8c5bc4eeb": {
+        "position": {
+          "x": 5616,
+          "y": 268
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "b92179b8-6e89-43b2-9832-d0a7c43cd945",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfMainMenu"
+          },
+          {
+            "id": "c44cae07-b98d-4d7b-949f-8bc0ef79f833",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfPreMenu"
+          },
+          {
+            "id": "8269a920-2cf3-42e8-937a-4bf0f4ff1858",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "rogersCardActivation"
+          },
+          {
+            "id": "b2538a37-d452-4cff-8d4c-7b51c0e626cc",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfMainMenuCorporate"
+          },
+          {
+            "id": "391b2977-929b-415d-a40c-25bbfeaafba0",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfMainMenuSMB"
+          }
+        ]
+      },
+      "5-copy": {
+        "position": {
+          "x": 5938.4,
+          "y": 536.8
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "cardAlreadyActive": {
+        "position": {
+          "x": 1976,
+          "y": 1060
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "f87345e0-79ce-4400-9834-e07164a2d084": {
+        "position": {
+          "x": 2032.8,
+          "y": 1330.4
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true,
+        "conditionMetadata": [
+          {
+            "id": "05d5d9c6-ecd6-44be-a362-099513fcd443",
+            "value": "1"
+          }
+        ]
+      },
+      "5ec42521-94b1-4c97-9392-b6e660998139": {
+        "position": {
+          "x": 1695.2,
+          "y": 1319.2
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "3722816a-3aa4-4ef9-b141-a6597e6f8990",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfMainMenu"
+          },
+          {
+            "id": "8e64ab5b-2884-42ab-ae4c-83f4e2205979",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfPreMenu"
+          },
+          {
+            "id": "8339d081-b68e-4c02-af2b-02c75874f156",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "rogersCardActivation"
+          },
+          {
+            "id": "72af879a-6198-4455-8393-a26abb9535c5",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfMainMenuCorporate"
+          },
+          {
+            "id": "93940aa5-d5e2-4910-8aae-9af07fed76c8",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfMainMenuSMB"
+          }
+        ]
+      },
+      "1d06c647-4ab9-4e63-940b-45c9c392a0eb": {
+        "position": {
+          "x": 1976,
+          "y": 540
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "ec1548b0-44c6-4bdb-980a-f53e55d078c8",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "200"
+          }
+        ]
+      },
+      "is User Authorized?": {
+        "position": {
+          "x": 1976,
+          "y": 280
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "8ef3f70b-7f43-45f5-a36d-78ca9be4c94a",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "AUTHORIZED_USER"
+          },
+          {
+            "id": "5a91ca90-53ca-4958-a0d7-6b26e7765a81",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "Authorized User"
+          }
+        ]
+      },
+      "primaryCardDetailsLambda": {
+        "position": {
+          "x": 1696,
+          "y": 800
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "LambdaInvocationAttributes": {
+            "accountId": {
+              "useDynamic": true
+            },
+            "customerId": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "accountId": true,
+          "customerId": true
+        }
+      },
+      "783f1429-67bf-4598-824f-c82d648c240c": {
+        "position": {
+          "x": 4496,
+          "y": 20
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "263090e5-c005-43a3-bfd7-963a86939e00",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfPreMenu"
+          },
+          {
+            "id": "df62b262-244c-4275-8401-05942644fb7d",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "rogersCardActivation"
+          }
+        ]
+      },
+      "771de278-725b-448a-98b9-6e0060f4b44f": {
+        "position": {
+          "x": 576,
+          "y": 540
+        }
+      },
+      "3a3ed872-ff6c-4fe1-8168-33efd3fb9fe7": {
+        "position": {
+          "x": 856,
+          "y": 800
+        }
+      },
+      "63bb4c49-2731-448c-926d-013be27741fe": {
+        "position": {
+          "x": 856,
+          "y": 539.2
+        }
+      },
+      "fa0c362f-fe63-4d7c-8571-0613b77029ff": {
+        "position": {
+          "x": 4800,
+          "y": 512
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "b49a68ad-d1cf-4ebb-b39c-7865800aa389": {
+        "position": {
+          "x": 5336,
+          "y": 799.2
+        },
+        "dynamicParams": []
+      },
+      "1e3d0192-1d25-446b-85f3-91d728c838f9": {
+        "position": {
+          "x": 5070.4,
+          "y": 518.4
+        },
+        "parameters": {
+          "TimeLimitSeconds": {
+            "unit": 1
+          }
+        },
+        "timeoutUnit": {
+          "display": "Seconds",
+          "value": "second"
+        }
+      },
+      "a07028b1-854b-4169-8afc-fa9b94c6d7f5": {
+        "position": {
+          "x": 5343.2,
+          "y": 524.8
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "7e433491-d47a-4e7d-894e-6d8cdeb088d8": {
+        "position": {
+          "x": 4216,
+          "y": 20
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "632159c7-b685-4add-8f17-3de6ec091dc5",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "eb88cf12-50da-4bb8-be4f-75726902d0de": {
+        "position": {
+          "x": 6456,
+          "y": 1060
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "cfErrorHandling"
+          }
+        },
+        "ContactFlow": {
+          "text": "cfErrorHandling"
+        }
+      },
+      "07564993-047e-4f3d-afae-494f97311a22": {
+        "position": {
+          "x": 1416,
+          "y": 1060
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "cfQueueConfig"
+          }
+        },
+        "ContactFlow": {
+          "text": "cfQueueConfig"
+        }
+      },
+      "8894edad-51c6-4ad4-b8fe-6bca8010130b": {
+        "position": {
+          "x": 809.6,
+          "y": 1081.6
+        },
+        "parameters": {
+          "PromptId": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "setQueueName": {
+        "position": {
+          "x": 1136,
+          "y": 800
+        },
+        "isFriendlyName": true,
+        "dynamicParams": []
+      },
+      "e060b34f-3733-4dbc-bca7-0a7817e81ce9": {
+        "position": {
+          "x": 1089.6,
+          "y": 1179.2
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "3c944f3d-bf27-47c5-9d61-86b816a4fdd2": {
+        "position": {
+          "x": 3096,
+          "y": 1840
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "a97d2cb4-1680-4463-970f-678a839fdc68",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "598b1f4a-3651-44d1-be07-d72a0fcdf0d7": {
+        "position": {
+          "x": 3096,
+          "y": 2100
+        },
+        "parameters": {
+          "FlowModuleId": {
+            "displayName": "moRbPinValidation"
+          }
+        },
+        "contactFlowModuleName": "moRbPinValidation"
+      },
+      "tempAttribute": {
+        "position": {
+          "x": 5332,
+          "y": -97.6
+        },
+        "isFriendlyName": true,
+        "dynamicParams": []
+      },
+      "6edee01d-c4fc-449d-93c8-337743c5683f": {
+        "position": {
+          "x": 5083.2,
+          "y": 210.4
+        }
+      },
+      "5cc08a56-ed6d-41bf-a5e8-06ed41ae5e71": {
+        "position": {
+          "x": 5640.8,
+          "y": 822.4
+        },
+        "parameters": {
+          "PromptId": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "4c94b317-435f-4fa7-9a1a-84dce90a3b5a": {
+        "position": {
+          "x": 4940.8,
+          "y": -49.6
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "16f4e905-297e-4c09-a568-8387061d859d",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "200"
+          }
+        ]
+      },
+      "ea791a49-9e85-4595-8393-15a7dd99d07e": {
+        "position": {
+          "x": 5335.2,
+          "y": 1060
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "bc708520-46e7-401a-9a08-276186a121ff",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "optionSelectedinPremenu": {
+        "position": {
+          "x": 4496,
+          "y": 1840
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "4485401e-c52c-4cb3-aeda-79d5f637515f",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "CSR"
+          },
+          {
+            "id": "65893636-6cf5-4eec-8b30-34a5ae542243",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "info"
+          },
+          {
+            "id": "35aae8cc-92e4-4a3d-82f4-eb5c7674fb62",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "SMB"
+          }
+        ]
+      },
+      "faeffa17-d89c-49f6-ac80-15b1cf7e9ec5": {
+        "position": {
+          "x": 6176,
+          "y": 1580
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "a7700b3f-3321-41af-a630-f401d74ee2ec": {
+        "position": {
+          "x": 3936,
+          "y": 540
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "149241e0-4ea0-4b3e-a58b-52f6eec4d62d",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "9158aeb1-bb17-4676-a211-5aaac1908a8f": {
+        "position": {
+          "x": 3656,
+          "y": 20
+        },
+        "parameters": {
+          "FlowModuleId": {
+            "displayName": "moRbPinValidation"
+          }
+        },
+        "contactFlowModuleName": "moRbPinValidation"
+      },
+      "5a2df075-c2d2-4940-bfed-a90e098dc535": {
+        "position": {
+          "x": 5336,
+          "y": 1320
+        },
+        "dynamicParams": []
+      },
+      "74833ef7-5fa9-415e-b26f-b97cc446b273": {
+        "position": {
+          "x": 3936,
+          "y": 20
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "707839b8-0ec9-4fee-a04d-e3d868a7cfae",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "LambdaError": {
+        "position": {
+          "x": 576,
+          "y": 800
+        },
+        "isFriendlyName": true,
+        "dynamicParams": []
+      },
+      "3f6826cf-6519-4de1-bb4a-1ad1df150b37": {
+        "position": {
+          "x": 856,
+          "y": 280
+        }
+      },
+      "cardDetailsLambda": {
+        "position": {
+          "x": 1135.2,
+          "y": 271.2
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "LambdaInvocationAttributes": {
+            "accountId": {
+              "useDynamic": true
+            },
+            "customerId": {
+              "useDynamic": true
+            },
+            "openedDate": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "accountId": true,
+          "customerId": true,
+          "openedDate": true
+        }
+      },
+      "Is Card active?": {
+        "position": {
+          "x": 1696,
+          "y": 540
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "9f72ba24-8b57-4a40-a5ca-1ef9610d438f",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "false"
+          }
+        ]
+      },
+      "587f371e-7c21-4669-a66d-d612fde5d506": {
+        "position": {
+          "x": 1402.4,
+          "y": 265.6
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "00f9842d-4aaf-454b-bedd-4b3a369e391a",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "200"
+          }
+        ]
+      },
+      "8844b573-1155-4cee-94ab-f76bfe6d6510": {
+        "position": {
+          "x": 1680,
+          "y": 266.4
+        },
+        "parameters": {
+          "Attributes": {
+            "lastIssueDate": {
+              "useDynamic": true
+            },
+            "openDate": {
+              "useDynamic": true
+            },
+            "cardActive": {
+              "useDynamic": true
+            },
+            "reissuedReason": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicParams": [
+          "lastIssueDate",
+          "openDate",
+          "cardActive",
+          "reissuedReason"
+        ]
+      },
+      "PinValidated": {
+        "position": {
+          "x": 2816,
+          "y": 1840
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "079376f1-7c63-4a68-9256-61eab0565718",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "8da6e834-1004-4f1c-847a-510f018d7f3d": {
+        "position": {
+          "x": 5056,
+          "y": 1060
+        },
+        "parameters": {
+          "FlowModuleId": {
+            "displayName": "moRBSetPIN"
+          }
+        },
+        "contactFlowModuleName": "moRBSetPIN"
+      },
+      "a404cdb5-f4a2-48f0-8ab5-1277c88257da": {
+        "position": {
+          "x": 4376,
+          "y": 1092
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "c187b025-4f3f-48e5-ae55-382352ccc240",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "setQueueName-CSR": {
+        "position": {
+          "x": 5898.4,
+          "y": 1764
+        },
+        "isFriendlyName": true,
+        "dynamicParams": []
+      },
+      "2a06e601-c5d6-46d4-9259-c98f7374d8ca": {
+        "position": {
+          "x": 3223.2,
+          "y": 562.4
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "af4c2c29-3e18-4f1f-bac7-602a91414def": {
+        "position": {
+          "x": 3225.6,
+          "y": 789.6
+        },
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "a3cd1cea-37fd-4b62-935d-89c411f28689": {
+        "position": {
+          "x": 3756,
+          "y": 832
+        },
+        "parameters": {
+          "LoopCount": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true
+      },
+      "Check reissueReason": {
+        "position": {
+          "x": 2870.4,
+          "y": 277.6
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "0f14a218-e93c-4cd6-9048-e66252972e6e",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "REISSUE"
+          },
+          {
+            "id": "fcab22ec-64b4-4618-b49a-8d54d4ec6871",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "SPECIAL"
+          }
+        ]
+      },
+      "IsPrimaryCardActive?": {
+        "position": {
+          "x": 2256,
+          "y": 540
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "b53894e8-5c11-44ab-8232-2c8475d4fcbe",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          },
+          {
+            "id": "c1b39821-57d3-40b3-91f3-ae4e5b458553",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "false"
+          }
+        ]
+      },
+      "Open Date": {
+        "position": {
+          "x": 2536,
+          "y": 800
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "71a97572-d208-489b-9ad4-fffba48ecbbc",
+            "operator": {
+              "name": "Is less than",
+              "value": "LessThan",
+              "shortDisplay": "<"
+            },
+            "value": "90"
+          }
+        ]
+      },
+      "Last Issued Date": {
+        "position": {
+          "x": 2256,
+          "y": 800
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "44fd1706-7e04-42ca-a570-aeb3c5abbaae",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "0"
+          },
+          {
+            "id": "4d81a0c8-cc49-42ef-858b-d1540802954a",
+            "operator": {
+              "name": "Is less than",
+              "value": "LessThan",
+              "shortDisplay": "<"
+            },
+            "value": "90"
+          }
+        ]
+      },
+      "Card Activation Lambda": {
+        "position": {
+          "x": 4790.4,
+          "y": 250.4
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-ActivateCard-function"
+          },
+          "LambdaInvocationAttributes": {
+            "accountId": {
+              "useDynamic": true
+            },
+            "customerId": {
+              "useDynamic": true
+            },
+            "openedDate": {
+              "useDynamic": true
+            }
+          }
+        },
+        "dynamicMetadata": {
+          "accountId": true,
+          "customerId": true,
+          "action": false,
+          "openedDate": true
+        }
+      },
+      "25028_ActivationMenu": {
+        "position": {
+          "x": 2874.4,
+          "y": 616
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "Text": {
+            "useDynamic": true
+          }
+        },
+        "useDynamic": true,
+        "conditionMetadata": [
+          {
+            "id": "7da0454e-a0f2-4662-83a7-7782512c791e",
+            "value": "1"
+          },
+          {
+            "id": "23f2b716-7179-4762-a8a0-3b8af2352a54",
+            "value": "2"
+          }
+        ]
+      },
+      "779b8de6-8e7d-479e-bd7d-cebbbf126eed": {
+        "position": {
+          "x": 3376,
+          "y": 2360
+        },
+        "parameters": {
+          "ContactFlowId": {
+            "displayName": "cfErrorHandling"
+          }
+        },
+        "ContactFlow": {
+          "text": "cfErrorHandling"
+        }
+      },
+      "checkFlowPath": {
+        "position": {
+          "x": 2514.4,
+          "y": 277.6
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "a73438d8-6f5a-43d1-ab0b-eb55e5b555c8",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfMainMenu"
+          },
+          {
+            "id": "fb16d948-c36b-4d75-bf5e-15639b1eac70",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfPreMenu"
+          },
+          {
+            "id": "8c9284b6-dac5-406d-90be-c061a6699e0b",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "rogersCardActivation"
+          },
+          {
+            "id": "7c76f05d-dcca-4f56-b131-358135584fce",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfMainMenuCorporate"
+          },
+          {
+            "id": "0f205d83-caa8-474f-9b1d-9ba9b677460e",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "cfMainMenuSMB"
+          }
+        ]
+      },
+      "PinValidated?": {
+        "position": {
+          "x": 3376,
+          "y": 20
+        },
+        "isFriendlyName": true,
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "b25c2609-cd61-4cab-9b8d-2ffd51ea3885",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      },
+      "DOB Authentication": {
+        "position": {
+          "x": 4094.4,
+          "y": 1092
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "FlowModuleId": {
+            "displayName": "moRbDOBValidation"
+          }
+        },
+        "contactFlowModuleName": "moRbDOBValidation"
+      },
+      "setQueueName-CardActivationFail": {
+        "position": {
+          "x": 5895.2,
+          "y": 1540
+        },
+        "isFriendlyName": true,
+        "dynamicParams": []
+      },
+      "phoneAuthentication": {
+        "position": {
+          "x": 3552.8,
+          "y": 1105.6
+        },
+        "isFriendlyName": true,
+        "parameters": {
+          "FlowModuleId": {
+            "displayName": "moRBvalidatePhoneNumber"
+          }
+        },
+        "contactFlowModuleName": "moRBvalidatePhoneNumber"
+      },
+      "9fa5f907-9642-47ea-acf9-71d5c1dc97b8": {
+        "position": {
+          "x": 3809.6,
+          "y": 1096
+        },
+        "conditions": [],
+        "conditionMetadata": [
+          {
+            "id": "5b157016-4db8-448e-b26a-b9afc082ae25",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "true"
+          }
+        ]
+      }
+    },
+    "Annotations": [],
+    "name": "cfActivateCard",
+    "description": "",
+    "type": "contactFlow",
+    "status": "PUBLISHED",
+    "hash": {}
+  },
+  "Actions": [
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.code"
+      },
+      "Identifier": "ae1b28b1-94be-4770-a090-7ce01e9874d3",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "LambdaError",
+        "Conditions": [
+          {
+            "NextAction": "771de278-725b-448a-98b9-6e0060f4b44f",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "200"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "LambdaError",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetSsmParams-function",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "path": "/prompts/$.Attributes.attributesPath/activateCard",
+          "withDefaults": "false"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "fetchPrompts",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "ae1b28b1-94be-4770-a090-7ce01e9874d3",
+        "Errors": [
+          {
+            "NextAction": "LambdaError",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "2a44ddac-21df-4744-81e0-1cc8704a8906",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/contact-flow/9b2b97db-36b2-4257-a0f4-a4d6cd90f191"
+      },
+      "Identifier": "827f501c-1789-4f0c-a2a8-fec80df6d789",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "1469a586-db83-4010-a5ae-7fc2f058a57e",
+        "Errors": [
+          {
+            "NextAction": "1469a586-db83-4010-a5ae-7fc2f058a57e",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.FlowAttributes.cardActivationDisconnect"
+      },
+      "Identifier": "36833246-666f-4a2c-8471-ac12a2b78435",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "fbef7796-d863-4f80-bc4b-3e71245b888e",
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "FlowName": "$.Attributes.FlowName",
+          " CallerExperience": "$.Attributes.CallerExperience | cfActivateCard"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setCallerExperience",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "fetchPrompts",
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "FlowModuleId": "209a3ccd-6529-4cd5-96d6-ca87a0776ad6"
+      },
+      "Identifier": "StepUpAuthentication",
+      "Type": "InvokeFlowModule",
+      "Transitions": {
+        "NextAction": "7e433491-d47a-4e7d-894e-6d8cdeb088d8",
+        "Errors": [
+          {
+            "NextAction": "7e433491-d47a-4e7d-894e-6d8cdeb088d8",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/contact-flow/f71996f3-e6af-4321-8f39-9ad221a52eb6"
+      },
+      "Identifier": "043e6b42-2b86-47cb-b110-a73b6f7b9a1a",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "1469a586-db83-4010-a5ae-7fc2f058a57e",
+        "Errors": [
+          {
+            "NextAction": "1469a586-db83-4010-a5ae-7fc2f058a57e",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.FlowAttributes.prompt4"
+      },
+      "Identifier": "25030_activateNewCard",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "effa758f-bc49-4f62-b084-cdaf156fb120",
+        "Errors": [
+          {
+            "NextAction": "eb88cf12-50da-4bb8-be4f-75726902d0de",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.FlowAttributes.prompt5"
+      },
+      "Identifier": "25031_activateReisuueCard",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "effa758f-bc49-4f62-b084-cdaf156fb120",
+        "Errors": [
+          {
+            "NextAction": "eb88cf12-50da-4bb8-be4f-75726902d0de",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.FlowAttributes.cardActivationDisconnect"
+      },
+      "Identifier": "disconnectPrompt",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "6fba3cbe-f5a7-412f-ac7a-628d1bcf94c9",
+        "Errors": [
+          {
+            "NextAction": "eb88cf12-50da-4bb8-be4f-75726902d0de",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "6fba3cbe-f5a7-412f-ac7a-628d1bcf94c9",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {},
+      "Identifier": "fbef7796-d863-4f80-bc4b-3e71245b888e",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.noEntryPrompt"
+      },
+      "Identifier": "8f4f3c02-81f8-41db-8784-b1843a0a047f",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "35bcacd4-807d-48ac-b52f-1eb8ab6d3697",
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/contact-flow/eaa16786-e17d-4134-8d92-eeb170bab95a"
+      },
+      "Identifier": "b75b84c0-7d55-4a99-9b6b-220a7370cec0",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "fbef7796-d863-4f80-bc4b-3e71245b888e",
+        "Errors": [
+          {
+            "NextAction": "fbef7796-d863-4f80-bc4b-3e71245b888e",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LoopCount": "$.Attributes.retrycounter"
+      },
+      "Identifier": "35bcacd4-807d-48ac-b52f-1eb8ab6d3697",
+      "Type": "Loop",
+      "Transitions": {
+        "NextAction": "36833246-666f-4a2c-8471-ac12a2b78435",
+        "Conditions": [
+          {
+            "NextAction": "f87345e0-79ce-4400-9834-e07164a2d084",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "ContinueLooping"
+              ]
+            }
+          },
+          {
+            "NextAction": "36833246-666f-4a2c-8471-ac12a2b78435",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "DoneLooping"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.invalidEntryPrompt"
+      },
+      "Identifier": "a63a1cfe-68c2-452f-b598-1f234387b984",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "35bcacd4-807d-48ac-b52f-1eb8ab6d3697",
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.FlowName"
+      },
+      "Identifier": "effa758f-bc49-4f62-b084-cdaf156fb120",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "eb88cf12-50da-4bb8-be4f-75726902d0de",
+        "Conditions": [
+          {
+            "NextAction": "optionSelectedinPremenu",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfPreMenu"
+              ]
+            }
+          },
+          {
+            "NextAction": "disconnectPrompt",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "rogersCardActivation"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "eb88cf12-50da-4bb8-be4f-75726902d0de",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "queueName": "SMB"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setQueueName-SMB",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "faeffa17-d89c-49f6-ac80-15b1cf7e9ec5",
+        "Errors": [
+          {
+            "NextAction": "faeffa17-d89c-49f6-ac80-15b1cf7e9ec5",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/contact-flow/9888033f-0a45-4efd-82e8-a3c8cad85953"
+      },
+      "Identifier": "4aaf61b6-d789-4157-8a87-040525ee6090",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "1469a586-db83-4010-a5ae-7fc2f058a57e",
+        "Errors": [
+          {
+            "NextAction": "1469a586-db83-4010-a5ae-7fc2f058a57e",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "1469a586-db83-4010-a5ae-7fc2f058a57e",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.CardType"
+      },
+      "Identifier": "CardType",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "4aaf61b6-d789-4157-8a87-040525ee6090",
+        "Conditions": [
+          {
+            "NextAction": "f89f3869-ec33-40d9-a575-4a58ec58d930",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "Corporate"
+              ]
+            }
+          },
+          {
+            "NextAction": "4aaf61b6-d789-4157-8a87-040525ee6090",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "SMB"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "4aaf61b6-d789-4157-8a87-040525ee6090",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/contact-flow/67ec2950-8350-41c8-a82c-33a449b6e21a"
+      },
+      "Identifier": "f89f3869-ec33-40d9-a575-4a58ec58d930",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "1469a586-db83-4010-a5ae-7fc2f058a57e",
+        "Errors": [
+          {
+            "NextAction": "1469a586-db83-4010-a5ae-7fc2f058a57e",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.FlowAttributes.prompt2"
+      },
+      "Identifier": "25032_AuthorizedUserActivationPrimaryNotActivated.",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "1469a586-db83-4010-a5ae-7fc2f058a57e",
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.FlowName"
+      },
+      "Identifier": "485dcd47-d728-4d45-84d8-740ea0a16caf",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+        "Conditions": [
+          {
+            "NextAction": "25032_AuthorizedUserActivationPrimaryNotActivated.",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfMainMenu"
+              ]
+            }
+          },
+          {
+            "NextAction": "PinValidated",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfPreMenu"
+              ]
+            }
+          },
+          {
+            "NextAction": "25032_AuthorizedUserActivationPrimaryNotActivated.",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "rogersCardActivation"
+              ]
+            }
+          },
+          {
+            "NextAction": "25032_AuthorizedUserActivationPrimaryNotActivated.",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfMainMenuCorporate"
+              ]
+            }
+          },
+          {
+            "NextAction": "25032_AuthorizedUserActivationPrimaryNotActivated.",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfMainMenuSMB"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.reissuedReason"
+      },
+      "Identifier": "Check reissueReason-copy-1",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "25030_activateNewCard",
+        "Conditions": [
+          {
+            "NextAction": "25031_activateReisuueCard",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "REISSUE"
+              ]
+            }
+          },
+          {
+            "NextAction": "25031_activateReisuueCard",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "SPECIAL"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "25030_activateNewCard",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/contact-flow/9b2b97db-36b2-4257-a0f4-a4d6cd90f191"
+      },
+      "Identifier": "f3f00f86-2505-4b31-99cf-88858f1fbf18",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "6fba3cbe-f5a7-412f-ac7a-628d1bcf94c9",
+        "Errors": [
+          {
+            "NextAction": "6fba3cbe-f5a7-412f-ac7a-628d1bcf94c9",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.FlowName"
+      },
+      "Identifier": "78d039e5-bcd7-4970-bd63-1aa8c5bc4eeb",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "eb88cf12-50da-4bb8-be4f-75726902d0de",
+        "Conditions": [
+          {
+            "NextAction": "5-copy",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfMainMenu"
+              ]
+            }
+          },
+          {
+            "NextAction": "Check reissueReason-copy-1",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfPreMenu"
+              ]
+            }
+          },
+          {
+            "NextAction": "Check reissueReason-copy-1",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "rogersCardActivation"
+              ]
+            }
+          },
+          {
+            "NextAction": "5-copy",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfMainMenuCorporate"
+              ]
+            }
+          },
+          {
+            "NextAction": "5-copy",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfMainMenuSMB"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "eb88cf12-50da-4bb8-be4f-75726902d0de",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.FlowAttributes.prompt5"
+      },
+      "Identifier": "5-copy",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "f3f00f86-2505-4b31-99cf-88858f1fbf18",
+        "Errors": [
+          {
+            "NextAction": "eb88cf12-50da-4bb8-be4f-75726902d0de",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.FlowAttributes.prompt1"
+      },
+      "Identifier": "cardAlreadyActive",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "827f501c-1789-4f0c-a2a8-fec80df6d789",
+        "Errors": [
+          {
+            "NextAction": "827f501c-1789-4f0c-a2a8-fec80df6d789",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.FlowAttributes.prompt3",
+        "StoreInput": "False",
+        "InputTimeLimitSeconds": "5"
+      },
+      "Identifier": "f87345e0-79ce-4400-9834-e07164a2d084",
+      "Type": "GetParticipantInput",
+      "Transitions": {
+        "NextAction": "a63a1cfe-68c2-452f-b598-1f234387b984",
+        "Conditions": [
+          {
+            "NextAction": "b75b84c0-7d55-4a99-9b6b-220a7370cec0",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "8f4f3c02-81f8-41db-8784-b1843a0a047f",
+            "ErrorType": "InputTimeLimitExceeded"
+          },
+          {
+            "NextAction": "a63a1cfe-68c2-452f-b598-1f234387b984",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "fbef7796-d863-4f80-bc4b-3e71245b888e",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.FlowName"
+      },
+      "Identifier": "5ec42521-94b1-4c97-9392-b6e660998139",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+        "Conditions": [
+          {
+            "NextAction": "cardAlreadyActive",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfMainMenu"
+              ]
+            }
+          },
+          {
+            "NextAction": "PinValidated",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfPreMenu"
+              ]
+            }
+          },
+          {
+            "NextAction": "f87345e0-79ce-4400-9834-e07164a2d084",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "rogersCardActivation"
+              ]
+            }
+          },
+          {
+            "NextAction": "cardAlreadyActive",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfMainMenuCorporate"
+              ]
+            }
+          },
+          {
+            "NextAction": "cardAlreadyActive",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfMainMenuSMB"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.statusCode"
+      },
+      "Identifier": "1d06c647-4ab9-4e63-940b-45c9c392a0eb",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "LambdaError",
+        "Conditions": [
+          {
+            "NextAction": "IsPrimaryCardActive?",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "200"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "LambdaError",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.customerType"
+      },
+      "Identifier": "is User Authorized?",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "Last Issued Date",
+        "Conditions": [
+          {
+            "NextAction": "primaryCardDetailsLambda",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "AUTHORIZED_USER"
+              ]
+            }
+          },
+          {
+            "NextAction": "primaryCardDetailsLambda",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "Authorized User"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "Last Issued Date",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetPrimaryCardDetails-function",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "accountId": "$.Attributes.accountId",
+          "customerId": "$.Attributes.customerId"
+        },
+        "ResponseValidation": {
+          "ResponseType": "JSON"
+        }
+      },
+      "Identifier": "primaryCardDetailsLambda",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "1d06c647-4ab9-4e63-940b-45c9c392a0eb",
+        "Errors": [
+          {
+            "NextAction": "LambdaError",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.FlowName"
+      },
+      "Identifier": "783f1429-67bf-4598-824f-c82d648c240c",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+        "Conditions": [
+          {
+            "NextAction": "Card Activation Lambda",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfPreMenu"
+              ]
+            }
+          },
+          {
+            "NextAction": "Card Activation Lambda",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "rogersCardActivation"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "FlowLoggingBehavior": "Disabled"
+      },
+      "Identifier": "771de278-725b-448a-98b9-6e0060f4b44f",
+      "Type": "UpdateFlowLoggingBehavior",
+      "Transitions": {
+        "NextAction": "63bb4c49-2731-448c-926d-013be27741fe"
+      }
+    },
+    {
+      "Parameters": {
+        "FlowLoggingBehavior": "Enabled"
+      },
+      "Identifier": "3a3ed872-ff6c-4fe1-8168-33efd3fb9fe7",
+      "Type": "UpdateFlowLoggingBehavior",
+      "Transitions": {
+        "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed"
+      }
+    },
+    {
+      "Parameters": {
+        "FlowAttributes": {
+          "prompt1": {
+            "Value": "$.External.prompt1"
+          },
+          "prompt2": {
+            "Value": "$.External.prompt2"
+          },
+          "prompt4": {
+            "Value": "$.External.prompt4"
+          },
+          "prompt5": {
+            "Value": "$.External.prompt5"
+          },
+          "prompt6": {
+            "Value": "$.External.prompt6"
+          },
+          "prompt3": {
+            "Value": "$.External.prompt3"
+          },
+          "cardActivationDisconnect": {
+            "Value": "$.External.prompt7"
+          },
+          "actvCardLambdaWaitPrompt1": {
+            "Value": "$.External.actvCardLambdaWaitPrompt1"
+          },
+          "actvCardLambdaWaitPrompt2": {
+            "Value": "$.External.actvCardLambdaWaitPrompt2"
+          }
+        }
+      },
+      "Identifier": "63bb4c49-2731-448c-926d-013be27741fe",
+      "Type": "UpdateFlowAttributes",
+      "Transitions": {
+        "NextAction": "3f6826cf-6519-4de1-bb4a-1ad1df150b37",
+        "Errors": [
+          {
+            "NextAction": "3a3ed872-ff6c-4fe1-8168-33efd3fb9fe7",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.FlowAttributes.actvCardLambdaWaitPrompt1"
+      },
+      "Identifier": "fa0c362f-fe63-4d7c-8571-0613b77029ff",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "1e3d0192-1d25-446b-85f3-91d728c838f9",
+        "Errors": [
+          {
+            "NextAction": "b49a68ad-d1cf-4ebb-b39c-7865800aa389",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "failureReason": "lambdaFailure"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "b49a68ad-d1cf-4ebb-b39c-7865800aa389",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "5cc08a56-ed6d-41bf-a5e8-06ed41ae5e71",
+        "Errors": [
+          {
+            "NextAction": "eb88cf12-50da-4bb8-be4f-75726902d0de",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "TimeLimitSeconds": "3",
+        "InterruptibleEvents": {
+          "LambdaReturned": {
+            "AsyncLambdaCompletionEvent": {
+              "Identifier": "$.LambdaInvocation.InvocationId"
+            }
+          }
+        }
+      },
+      "Identifier": "1e3d0192-1d25-446b-85f3-91d728c838f9",
+      "Type": "Wait",
+      "Transitions": {
+        "NextAction": "b49a68ad-d1cf-4ebb-b39c-7865800aa389",
+        "Conditions": [
+          {
+            "NextAction": "6edee01d-c4fc-449d-93c8-337743c5683f",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "LambdaReturned"
+              ]
+            }
+          },
+          {
+            "NextAction": "a07028b1-854b-4169-8afc-fa9b94c6d7f5",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "WaitCompleted"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "b49a68ad-d1cf-4ebb-b39c-7865800aa389",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.FlowAttributes.actvCardLambdaWaitPrompt2"
+      },
+      "Identifier": "a07028b1-854b-4169-8afc-fa9b94c6d7f5",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "1e3d0192-1d25-446b-85f3-91d728c838f9",
+        "Errors": [
+          {
+            "NextAction": "b49a68ad-d1cf-4ebb-b39c-7865800aa389",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.isOTCverified"
+      },
+      "Identifier": "7e433491-d47a-4e7d-894e-6d8cdeb088d8",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "5a2df075-c2d2-4940-bfed-a90e098dc535",
+        "Conditions": [
+          {
+            "NextAction": "783f1429-67bf-4598-824f-c82d648c240c",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "5a2df075-c2d2-4940-bfed-a90e098dc535",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/contact-flow/1ea5ea22-97c1-4560-b19d-c036126e9324"
+      },
+      "Identifier": "eb88cf12-50da-4bb8-be4f-75726902d0de",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "6fba3cbe-f5a7-412f-ac7a-628d1bcf94c9",
+        "Errors": [
+          {
+            "NextAction": "6fba3cbe-f5a7-412f-ac7a-628d1bcf94c9",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/contact-flow/f71996f3-e6af-4321-8f39-9ad221a52eb6"
+      },
+      "Identifier": "07564993-047e-4f3d-afae-494f97311a22",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "2a44ddac-21df-4744-81e0-1cc8704a8906",
+        "Errors": [
+          {
+            "NextAction": "2a44ddac-21df-4744-81e0-1cc8704a8906",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "PromptId": "$.Attributes.lambdaFailure"
+      },
+      "Identifier": "8894edad-51c6-4ad4-b8fe-6bca8010130b",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "e060b34f-3733-4dbc-bca7-0a7817e81ce9",
+        "Errors": [
+          {
+            "NextAction": "e060b34f-3733-4dbc-bca7-0a7817e81ce9",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "queueName": "cardactivatefail"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setQueueName",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "07564993-047e-4f3d-afae-494f97311a22",
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.maxRetryPrompt"
+      },
+      "Identifier": "e060b34f-3733-4dbc-bca7-0a7817e81ce9",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "setQueueName",
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.pinValidated"
+      },
+      "Identifier": "3c944f3d-bf27-47c5-9d61-86b816a4fdd2",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "5a2df075-c2d2-4940-bfed-a90e098dc535",
+        "Conditions": [
+          {
+            "NextAction": "optionSelectedinPremenu",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "5a2df075-c2d2-4940-bfed-a90e098dc535",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "FlowModuleId": "e5ae4d32-626a-462a-be58-10c83bacdea2"
+      },
+      "Identifier": "598b1f4a-3651-44d1-be07-d72a0fcdf0d7",
+      "Type": "InvokeFlowModule",
+      "Transitions": {
+        "NextAction": "3c944f3d-bf27-47c5-9d61-86b816a4fdd2",
+        "Errors": [
+          {
+            "NextAction": "3c944f3d-bf27-47c5-9d61-86b816a4fdd2",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "cardActive": "true"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "tempAttribute",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "78d039e5-bcd7-4970-bd63-1aa8c5bc4eeb",
+        "Errors": [
+          {
+            "NextAction": "eb88cf12-50da-4bb8-be4f-75726902d0de",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaInvocationId": "$.LambdaInvocation.InvocationId"
+      },
+      "Identifier": "6edee01d-c4fc-449d-93c8-337743c5683f",
+      "Type": "LoadLambdaFunctionResult",
+      "Transitions": {
+        "NextAction": "4c94b317-435f-4fa7-9a1a-84dce90a3b5a",
+        "Errors": [
+          {
+            "NextAction": "b49a68ad-d1cf-4ebb-b39c-7865800aa389",
+            "ErrorType": "NoMatchingError"
+          },
+          {
+            "NextAction": "fa0c362f-fe63-4d7c-8571-0613b77029ff",
+            "ErrorType": "InProgress"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "PromptId": "$.Attributes.lambdaFailure"
+      },
+      "Identifier": "5cc08a56-ed6d-41bf-a5e8-06ed41ae5e71",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "setQueueName-CardActivationFail",
+        "Errors": [
+          {
+            "NextAction": "eb88cf12-50da-4bb8-be4f-75726902d0de",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.statusCode"
+      },
+      "Identifier": "4c94b317-435f-4fa7-9a1a-84dce90a3b5a",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "setQueueName-CardActivationFail",
+        "Conditions": [
+          {
+            "NextAction": "tempAttribute",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "200"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "setQueueName-CardActivationFail",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.pinSet"
+      },
+      "Identifier": "ea791a49-9e85-4595-8393-15a7dd99d07e",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "setQueueName-CardActivationFail",
+        "Conditions": [
+          {
+            "NextAction": "Card Activation Lambda",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "setQueueName-CardActivationFail",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.optionChosen"
+      },
+      "Identifier": "optionSelectedinPremenu",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+        "Conditions": [
+          {
+            "NextAction": "setQueueName-CSR",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "CSR"
+              ]
+            }
+          },
+          {
+            "NextAction": "CardType",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "info"
+              ]
+            }
+          },
+          {
+            "NextAction": "setQueueName-SMB",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "SMB"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.maxRetryPrompt"
+      },
+      "Identifier": "faeffa17-d89c-49f6-ac80-15b1cf7e9ec5",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "043e6b42-2b86-47cb-b110-a73b6f7b9a1a",
+        "Errors": [
+          {
+            "NextAction": "043e6b42-2b86-47cb-b110-a73b6f7b9a1a",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.isOTCverified"
+      },
+      "Identifier": "a7700b3f-3321-41af-a630-f401d74ee2ec",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "StepUpAuthentication",
+        "Conditions": [
+          {
+            "NextAction": "783f1429-67bf-4598-824f-c82d648c240c",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "StepUpAuthentication",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "FlowModuleId": "e5ae4d32-626a-462a-be58-10c83bacdea2"
+      },
+      "Identifier": "9158aeb1-bb17-4676-a211-5aaac1908a8f",
+      "Type": "InvokeFlowModule",
+      "Transitions": {
+        "NextAction": "74833ef7-5fa9-415e-b26f-b97cc446b273",
+        "Errors": [
+          {
+            "NextAction": "74833ef7-5fa9-415e-b26f-b97cc446b273",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "queueName": "CSR"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "5a2df075-c2d2-4940-bfed-a90e098dc535",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "faeffa17-d89c-49f6-ac80-15b1cf7e9ec5",
+        "Errors": [
+          {
+            "NextAction": "eb88cf12-50da-4bb8-be4f-75726902d0de",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.pinValidated"
+      },
+      "Identifier": "74833ef7-5fa9-415e-b26f-b97cc446b273",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "5a2df075-c2d2-4940-bfed-a90e098dc535",
+        "Conditions": [
+          {
+            "NextAction": "a7700b3f-3321-41af-a630-f401d74ee2ec",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "5a2df075-c2d2-4940-bfed-a90e098dc535",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "failureReason": "lambdaFailure"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "LambdaError",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "8894edad-51c6-4ad4-b8fe-6bca8010130b",
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "FlowLoggingBehavior": "Enabled"
+      },
+      "Identifier": "3f6826cf-6519-4de1-bb4a-1ad1df150b37",
+      "Type": "UpdateFlowLoggingBehavior",
+      "Transitions": {
+        "NextAction": "cardDetailsLambda"
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-GetCardDetails-function",
+        "InvocationTimeLimitSeconds": "8",
+        "InvocationType": "SYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "accountId": "$.Attributes.accountId",
+          "customerId": "$.Attributes.customerId",
+          "openedDate": "$.Attributes.openedDate"
+        },
+        "ResponseValidation": {
+          "ResponseType": "JSON"
+        }
+      },
+      "Identifier": "cardDetailsLambda",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "587f371e-7c21-4669-a66d-d612fde5d506",
+        "Errors": [
+          {
+            "NextAction": "LambdaError",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.cardActive"
+      },
+      "Identifier": "Is Card active?",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "5ec42521-94b1-4c97-9392-b6e660998139",
+        "Conditions": [
+          {
+            "NextAction": "is User Authorized?",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "false"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "5ec42521-94b1-4c97-9392-b6e660998139",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.statusCode"
+      },
+      "Identifier": "587f371e-7c21-4669-a66d-d612fde5d506",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "LambdaError",
+        "Conditions": [
+          {
+            "NextAction": "8844b573-1155-4cee-94ab-f76bfe6d6510",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "200"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "LambdaError",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "lastIssueDate": "$.External.lastIssueDate",
+          "openDate": "$.External.openDate",
+          "cardActive": "$.External.cardActive",
+          "reissuedReason": "$.External.reissuedReason"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "8844b573-1155-4cee-94ab-f76bfe6d6510",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "Is Card active?",
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.pinValidated"
+      },
+      "Identifier": "PinValidated",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "598b1f4a-3651-44d1-be07-d72a0fcdf0d7",
+        "Conditions": [
+          {
+            "NextAction": "optionSelectedinPremenu",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "598b1f4a-3651-44d1-be07-d72a0fcdf0d7",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "FlowModuleId": "5579526f-eb4a-47f6-9fc7-150d5174bab9"
+      },
+      "Identifier": "8da6e834-1004-4f1c-847a-510f018d7f3d",
+      "Type": "InvokeFlowModule",
+      "Transitions": {
+        "NextAction": "ea791a49-9e85-4595-8393-15a7dd99d07e",
+        "Errors": [
+          {
+            "NextAction": "ea791a49-9e85-4595-8393-15a7dd99d07e",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "eb88cf12-50da-4bb8-be4f-75726902d0de",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.isDOBVerified"
+      },
+      "Identifier": "a404cdb5-f4a2-48f0-8ab5-1277c88257da",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "setQueueName-CardActivationFail",
+        "Conditions": [
+          {
+            "NextAction": "8da6e834-1004-4f1c-847a-510f018d7f3d",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "setQueueName-CardActivationFail",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "queueName": "CSR"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setQueueName-CSR",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "faeffa17-d89c-49f6-ac80-15b1cf7e9ec5",
+        "Errors": [
+          {
+            "NextAction": "faeffa17-d89c-49f6-ac80-15b1cf7e9ec5",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.noEntryPrompt"
+      },
+      "Identifier": "2a06e601-c5d6-46d4-9259-c98f7374d8ca",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "a3cd1cea-37fd-4b62-935d-89c411f28689",
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.Attributes.invalidEntryPrompt"
+      },
+      "Identifier": "af4c2c29-3e18-4f1f-bac7-602a91414def",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "a3cd1cea-37fd-4b62-935d-89c411f28689",
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LoopCount": "$.Attributes.retrycounter"
+      },
+      "Identifier": "a3cd1cea-37fd-4b62-935d-89c411f28689",
+      "Type": "Loop",
+      "Transitions": {
+        "NextAction": "setQueueName-CSR",
+        "Conditions": [
+          {
+            "NextAction": "25028_ActivationMenu",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "ContinueLooping"
+              ]
+            }
+          },
+          {
+            "NextAction": "setQueueName-CSR",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "DoneLooping"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.reissuedReason"
+      },
+      "Identifier": "Check reissueReason",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "phoneAuthentication",
+        "Conditions": [
+          {
+            "NextAction": "PinValidated?",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "REISSUE"
+              ]
+            }
+          },
+          {
+            "NextAction": "PinValidated?",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "SPECIAL"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "phoneAuthentication",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.External.isPrimaryActive"
+      },
+      "Identifier": "IsPrimaryCardActive?",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+        "Conditions": [
+          {
+            "NextAction": "checkFlowPath",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          },
+          {
+            "NextAction": "485dcd47-d728-4d45-84d8-740ea0a16caf",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "false"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.openDate"
+      },
+      "Identifier": "Open Date",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "e060b34f-3733-4dbc-bca7-0a7817e81ce9",
+        "Conditions": [
+          {
+            "NextAction": "checkFlowPath",
+            "Condition": {
+              "Operator": "NumberLessThan",
+              "Operands": [
+                "90"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "e060b34f-3733-4dbc-bca7-0a7817e81ce9",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.lastIssueDate"
+      },
+      "Identifier": "Last Issued Date",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "e060b34f-3733-4dbc-bca7-0a7817e81ce9",
+        "Conditions": [
+          {
+            "NextAction": "Open Date",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "0"
+              ]
+            }
+          },
+          {
+            "NextAction": "checkFlowPath",
+            "Condition": {
+              "Operator": "NumberLessThan",
+              "Operands": [
+                "90"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "e060b34f-3733-4dbc-bca7-0a7817e81ce9",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ca-central-1:489551464761:function:rogers-rbconnect-dev-ActivateCard-function",
+        "InvocationTimeLimitSeconds": "30",
+        "InvocationType": "ASYNCHRONOUS",
+        "LambdaInvocationAttributes": {
+          "accountId": "$.Attributes.accountId",
+          "customerId": "$.Attributes.customerId",
+          "action": "ACTIVATE_CARD",
+          "openedDate": "$.Attributes.openDate"
+        },
+        "ResponseValidation": {
+          "ResponseType": "STRING_MAP"
+        }
+      },
+      "Identifier": "Card Activation Lambda",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "fa0c362f-fe63-4d7c-8571-0613b77029ff",
+        "Errors": [
+          {
+            "NextAction": "b49a68ad-d1cf-4ebb-b39c-7865800aa389",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Text": "$.FlowAttributes.prompt6",
+        "StoreInput": "False",
+        "InputTimeLimitSeconds": "5"
+      },
+      "Identifier": "25028_ActivationMenu",
+      "Type": "GetParticipantInput",
+      "Transitions": {
+        "NextAction": "af4c2c29-3e18-4f1f-bac7-602a91414def",
+        "Conditions": [
+          {
+            "NextAction": "Check reissueReason",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "1"
+              ]
+            }
+          },
+          {
+            "NextAction": "PinValidated",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "2"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "2a06e601-c5d6-46d4-9259-c98f7374d8ca",
+            "ErrorType": "InputTimeLimitExceeded"
+          },
+          {
+            "NextAction": "af4c2c29-3e18-4f1f-bac7-602a91414def",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ContactFlowId": "arn:aws:connect:ca-central-1:207567788052:instance/efe17a4a-8711-4834-8bb7-3036473cdcd2/contact-flow/1ea5ea22-97c1-4560-b19d-c036126e9324"
+      },
+      "Identifier": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+      "Type": "TransferToFlow",
+      "Transitions": {
+        "NextAction": "1469a586-db83-4010-a5ae-7fc2f058a57e",
+        "Errors": [
+          {
+            "NextAction": "1469a586-db83-4010-a5ae-7fc2f058a57e",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.FlowName"
+      },
+      "Identifier": "checkFlowPath",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+        "Conditions": [
+          {
+            "NextAction": "Card Activation Lambda",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfMainMenu"
+              ]
+            }
+          },
+          {
+            "NextAction": "25028_ActivationMenu",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfPreMenu"
+              ]
+            }
+          },
+          {
+            "NextAction": "Check reissueReason",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "rogersCardActivation"
+              ]
+            }
+          },
+          {
+            "NextAction": "Card Activation Lambda",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfMainMenuCorporate"
+              ]
+            }
+          },
+          {
+            "NextAction": "Card Activation Lambda",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "cfMainMenuSMB"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.pinValidated"
+      },
+      "Identifier": "PinValidated?",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "9158aeb1-bb17-4676-a211-5aaac1908a8f",
+        "Conditions": [
+          {
+            "NextAction": "a7700b3f-3321-41af-a630-f401d74ee2ec",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "9158aeb1-bb17-4676-a211-5aaac1908a8f",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "FlowModuleId": "68ac4ba1-0094-42e4-8df0-1be49caddb55"
+      },
+      "Identifier": "DOB Authentication",
+      "Type": "InvokeFlowModule",
+      "Transitions": {
+        "NextAction": "a404cdb5-f4a2-48f0-8ab5-1277c88257da",
+        "Errors": [
+          {
+            "NextAction": "a404cdb5-f4a2-48f0-8ab5-1277c88257da",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "queueName": "cardactivatefail"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "setQueueName-CardActivationFail",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "faeffa17-d89c-49f6-ac80-15b1cf7e9ec5",
+        "Errors": [
+          {
+            "NextAction": "faeffa17-d89c-49f6-ac80-15b1cf7e9ec5",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "FlowModuleId": "c895c53a-3756-44e7-b4da-060fa531fdf6"
+      },
+      "Identifier": "phoneAuthentication",
+      "Type": "InvokeFlowModule",
+      "Transitions": {
+        "NextAction": "9fa5f907-9642-47ea-acf9-71d5c1dc97b8",
+        "Errors": [
+          {
+            "NextAction": "9fa5f907-9642-47ea-acf9-71d5c1dc97b8",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "779b8de6-8e7d-479e-bd7d-cebbbf126eed",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ComparisonValue": "$.Attributes.validPhone"
+      },
+      "Identifier": "9fa5f907-9642-47ea-acf9-71d5c1dc97b8",
+      "Type": "Compare",
+      "Transitions": {
+        "NextAction": "setQueueName-CardActivationFail",
+        "Conditions": [
+          {
+            "NextAction": "DOB Authentication",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "true"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "setQueueName-CardActivationFail",
+            "ErrorType": "NoMatchingCondition"
+          }
+        ]
+      }
+    }
+  ]
+}

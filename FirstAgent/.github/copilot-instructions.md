@@ -354,27 +354,153 @@ Before making repository changes:
 5. Add missing tests.
 6. Preserve backward compatibility where possible.
 
-## Amazon Connect Contact Flow Audit
+# Amazon Connect Contact Flow Audit Workflow
 
-When the user asks to audit an Amazon Connect contact flow, calculate
-complexity, count blocks or edges, identify Lambda dependencies, check
-error handling, or assess flow maintainability:
+When the user requests:
 
-1. Use `find_files` to locate matching JSON contact flow files.
-2. Select the file matching the user's request.
-3. Call `audit_contact_flow` with the repository-relative path.
-4. Present the returned:
-   - total blocks
-   - total edges
-   - McCabe complexity
-   - decision complexity
-   - Lambda integration count
-   - unhandled error block count
-   - audit status
-   - recommendations
+- Audit contact flows
+- Analyze flow complexity
+- Analyze maintainability
+- Calculate cyclomatic complexity
+- Calculate decision complexity
+- Detect large flows
+- Detect Lambda dependencies
+- Detect missing error handlers
+- Identify refactoring candidates
+- Generate repository audit reports
+- Compare complexity across flows
 
-Do not manually calculate these metrics when `audit_contact_flow` is
-available.
+Use the MCP tool:
 
-Use `read_file` only when detailed inspection of individual flow
-actions is additionally required.
+audit_contact_flows()
+
+instead of manually calculating metrics.
+
+The tool returns structured JSON containing:
+
+- Repository summary
+- Per-flow metrics
+- Per-flow assessments
+- Risk classifications
+
+Do not calculate complexity values yourself when MCP audit data is available.
+
+## Contact Flow Discovery
+
+When a user asks to audit all Amazon Connect contact flows:
+
+STEP 1
+
+Call:
+
+find_files(".json")
+
+STEP 2
+
+Filter the returned files to Amazon Connect flow JSON files.
+
+STEP 3
+
+Call:
+
+audit_contact_flows()
+
+passing the repository-relative file paths.
+
+STEP 4
+
+Use the returned structured audit data to generate the final response.
+
+
+## Complexity Classification
+
+Use the assessment returned by the MCP tool.
+
+Complexity Status Levels:
+
+pass
+warning
+critical
+
+Block Status Levels:
+
+pass
+warning
+
+Do not invent new risk categories.
+
+Do not recalculate classifications when the MCP tool already provides them.
+
+## Repository Summary
+
+When auditing multiple flows:
+
+Summarize:
+
+- Total files scanned
+- Total successful audits
+- Total failed audits
+- Total blocks
+- Total edges
+- Total Lambda integrations
+- Total unhandled error blocks
+- High risk flows
+
+Identify:
+
+- Most complex flows
+- Largest flows
+- Highest Lambda dependency flows
+
+Use only the metrics returned by the MCP tool.
+
+
+## MCP Tool Selection
+
+Amazon Connect Flow Tasks
+
+User asks:
+- Audit contact flows
+- Complexity analysis
+- Cyclomatic complexity
+- Maintainability assessment
+
+Use:
+
+audit_contact_flows()
+
+User asks:
+- Explain specific flow logic
+- Review routing behavior
+- Understand business flow
+
+Use:
+
+read_file()
+
+User asks:
+- Locate flow JSON files
+
+Use:
+
+find_files()
+
+
+## Repository Audit Priority
+
+When the user requests an Amazon Connect repository audit:
+
+Prefer:
+
+audit_contact_flows()
+
+over repeatedly calling:
+
+audit_contact_flow()
+
+for individual files.
+
+Use the bulk audit tool whenever multiple flow files are involved.
+
+Use the single-flow tool only when the user explicitly requests analysis of a specific flow.
+

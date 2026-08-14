@@ -696,5 +696,185 @@ def audit_contact_flow(
             "relative_path": relative_path,
         }
 
+@mcp.tool()
+def audit_contact_flows(relative_paths: list):
+    """
+    Audit multiple Amazon Connect contact flows.
+
+    Args:
+        relative_paths:
+            List of repository-relative JSON files.
+
+    Returns:
+        Structured JSON audit report.
+    """
+
+    summary = {
+        "total_files": len(relative_paths),
+        "successful_audits": 0,
+        "failed_audits": 0,
+        "total_blocks": 0,
+        "total_edges": 0,
+        "total_lambda_integrations": 0,
+        "total_unhandled_error_blocks": 0,
+        "high_risk_flows": []
+    }
+
+    flow_reports = []
+
+    for relative_path in relative_paths:
+
+        try:
+            flow_path = resolve_repository_file(
+                relative_path
+            )
+
+            auditor = ContactFlowAuditor(
+                flow_path
+            )
+
+            report = auditor.generate_report()
+
+            metrics = report["metrics"]
+
+            blocks = metrics["total_blocks"]
+
+            complexity = metrics[
+                "cyclomatic_complexity_mccabe"
+            ]
+
+            #
+            # Block assessment
+            #
+            if blocks <= 50:
+                block_status = {
+                    "level": "pass",
+                    "message": "Acceptable Size"
+                }
+            else:
+                block_status = {
+                    "level": "warning",
+                    "message": "Bloated UI Graph"
+                }
+
+            #
+            # Complexity assessment
+            #
+            if complexity <= 10:
+                complexity_status = {
+                    "level": "pass",
+                    "message": "Low Risk"
+                }
+
+            elif complexity <= 20:
+                complexity_status = {
+                    "level": "warning",
+                    "message": "Moderate Risk"
+                }
+
+            else:
+                complexity_status = {
+                    "level": "critical",
+                    "message": "Refactor Immediately"
+                }
+
+                summary["high_risk_flows"].append(
+                    {
+                        "file_name": Path(
+                            relative_path
+                        ).name,
+                        "complexity": complexity
+                    }
+                )
+
+            flow_reports.append(
+                {
+                    "file_name": Path(
+                        relative_path
+                    ).name,
+
+                    "relative_path": relative_path,
+
+                    "metrics": {
+                        "total_blocks":
+                            blocks,
+
+                        "total_edges":
+                            metrics[
+                                "total_edges"
+                            ],
+
+                        "mccabe_complexity":
+                            complexity,
+
+                        "decision_complexity":
+                            metrics[
+                                "cyclomatic_complexity_decision"
+                            ],
+
+                        "lambda_integrations":
+                            metrics[
+                                "lambda_integrations"
+                            ],
+
+                        "unhandled_error_blocks":
+                            metrics[
+                                "unhandled_error_blocks"
+                            ]
+                    },
+
+                    "assessment": {
+                        "block_status":
+                            block_status,
+
+                        "complexity_status":
+                            complexity_status
+                    }
+                }
+            )
+
+            summary["successful_audits"] += 1
+
+            summary["total_blocks"] += (
+                metrics["total_blocks"]
+            )
+
+            summary["total_edges"] += (
+                metrics["total_edges"]
+            )
+
+            summary["total_lambda_integrations"] += (
+                metrics["lambda_integrations"]
+            )
+
+            summary["total_unhandled_error_blocks"] += (
+                metrics["unhandled_error_blocks"]
+            )
+
+        except Exception as exc:
+
+            summary["failed_audits"] += 1
+
+            flow_reports.append(
+                {
+                    "file_name": Path(
+                        relative_path
+                    ).name,
+
+                    "relative_path": relative_path,
+
+                    "error": str(exc),
+
+                    "assessment": {
+                        "status": "failed"
+                    }
+                }
+            )
+
+    return {
+        "summary": summary,
+        "flows": flow_reports
+    }
+
 if __name__ == "__main__":
     mcp.run()

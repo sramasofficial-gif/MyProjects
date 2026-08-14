@@ -1,0 +1,14 @@
+name: Amazon Connect Repo Tools
+version: 0.0.1
+schema: v1
+
+mcpServers:
+  - name: repoProcessor
+
+    command: C:\Users\ramasubramanians\OneDrive - HCL TECHNOLOGIES LIMITED\Documents\HS\Training\MyProjects\FirstAgent\.venv\Scripts\python.exe
+
+    args:
+      - -u
+      - C:\Users\ramasubramanians\OneDrive - HCL TECHNOLOGIES LIMITED\Documents\HS\Training\MyProjects\FirstAgent\mcp_servers\ivr_repository_agent.py
+
+    env: {}
