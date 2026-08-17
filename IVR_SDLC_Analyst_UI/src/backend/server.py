@@ -2,9 +2,12 @@
 import os
 import subprocess
 import json
+import traceback
 from fastapi import HTTPException
 from services.repo_tools import read_file  # Import your existing file reader
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 
 from services.repo_tools import (
     find_files,
@@ -22,6 +25,8 @@ from services.lambda_analysis import (
 
 from fastapi.middleware.cors import CORSMiddleware
 
+load_dotenv()
+    
 app = FastAPI()
 
 app.add_middleware(
@@ -99,38 +104,63 @@ def review_lambda_file(path: str):
     }
 
     # 3. Configure corporate proxy environment credentials
+    print("=" * 80)
+    print("ENVIRONMENT CHECK")
+    print("GITHUB_TOKEN exists:", bool(os.getenv("GITHUB_TOKEN")))
+    print("COPILOT_GITHUB_TOKEN exists:", bool(os.getenv("COPILOT_GITHUB_TOKEN")))
+    print("=" * 80)
+
     custom_env = os.environ.copy()
-    token_credential = os.getenv("GITHUB_TOKEN")
+    token_credential = (
+        os.getenv("COPILOT_GITHUB_TOKEN")
+        or os.getenv("GITHUB_TOKEN")
+    )
 
-    if not token_credential:
-        raise ValueError("Critical Error: GITHUB_TOKEN environment variable is missing!")
+    #if not token_credential:
+    #    raise ValueError("Critical Error: GITHUB_TOKEN environment variable is missing!")
 
-    custom_env["GITHUB_TOKEN"] = token_credential
-    custom_env["COPILOT_GITHUB_TOKEN"] = token_credential
+    if token_credential:
+        custom_env["GITHUB_TOKEN"] = token_credential
+        custom_env["COPILOT_GITHUB_TOKEN"] = token_credential
 
     try:
+        print("Reviewer script:", reviewer_script)
+        print("Exists:", os.path.exists(reviewer_script))
+        print("Current dir:", current_dir)
+        print("Node executable test...")
+
+        print("Launching node process...")
+
         # 4. Open process pipe mapping stdin/stdout streams natively
-        process = subprocess.Popen(
+        result = subprocess.run(
             ["node", reviewer_script],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            input=json.dumps(payload),
+            capture_output=True,
             text=True,
             cwd=current_dir,
             env=custom_env
         )
 
-        # 5. Push the JSON string payload directly into your script's for-await loop
-        stdout_data, stderr_data = process.communicate(input=json.dumps(payload))
-
-        if process.returncode != 0:
-            raise HTTPException(
-                status_code=500, 
-                detail=f"Copilot Node process exited with error: {stderr_data or stdout_data}"
-            )
+        print("RETURN CODE:", result.returncode)
+        print("STDOUT:")
+        print(result.stdout)
+        print("STDERR:")
+        print(result.stderr)
 
         # 6. Parse and return your structured normalized review array straight back to React
-        return json.loads(stdout_data.strip())
+        if result.returncode != 0:
+            raise HTTPException(
+                status_code=500,
+                detail=result.stderr
+            )
+
+        return json.loads(result.stdout.strip())
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(traceback.format_exc())
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+

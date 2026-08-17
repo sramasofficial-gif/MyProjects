@@ -151,106 +151,57 @@ export default function TabContainer({
 
 
     useEffect(() => {
-        if (!selectedFile) {
-            setContent("");
-            setContentError("");
-            setAuditReport(null);
-            setAuditError("");
-            setLastAuditedAt(null);
-            setReviewReport(null);
-            setReviewError("");
+
+        if (
+            activeTab !== "review" ||
+            !selectedFile ||
+            !isLambdaFile(selectedFile)
+        ) {
             return;
         }
 
-        let requestIsCurrent = true;
+        let cancelled = false;
 
-        // --- UPDATED AUTO-SWITCH & TRIGGER FOR SEPARATE FOLDERS ---
-        if (isContactFlowFile(selectedFile)) {
-            // If it's a contact flow configuration, default to the flow dashboard
-            if (activeTab !== "flow" && activeTab !== "dashboard" && activeTab !== "chat") {
-                setActiveTab("flow");
-            }
-        } else if (isLambdaFile(selectedFile)) {
-            // If it's a Lambda file branch, auto-navigate to the Review Report tab
-            if (activeTab !== "review" && activeTab !== "chat") {
-                setActiveTab("review");
-            }
-        }
+        async function runReview() {
 
-        // --- FIXED: PURE JAVASCRIPT LOGIC TO TRIGGER THE API CALL ---
-        if (activeTab === "review" && isLambdaFile(selectedFile)) {
             setReviewLoading(true);
             setReviewError("");
             setReviewReport(null);
 
-            requestLambdaReview(selectedFile)
-                .then(data => {
-                    if (!requestIsCurrent) return;
-                    setReviewReport(data); // Stores the full structured review JSON payload
-                })
-                .catch(err => {
-                    if (!requestIsCurrent) return;
-                    setReviewError(`Failed connecting to local copilot service: ${err.message}`);
-                })
-                .finally(() => {
-                    if (requestIsCurrent) setReviewLoading(false);
-                });
-        }
-        // --- END OF API TRIGGER LOGIC ---
-
-        async function loadSelectedFile() {
-            setContentLoading(true);
-            setContentError("");
-            setContent("");
-
-            setAuditReport(null);
-            setAuditError("");
-            setLastAuditedAt(null);
-
             try {
-                const contentPromise = loadFile(selectedFile);
-                
-                // Only invoke Python flow auditor if the file is in the contact-flows folder
-                const auditPromise = isContactFlowFile(selectedFile)
-                    ? auditFlow(selectedFile)
-                    : Promise.resolve(null);
 
-                const [fileResult, auditResult] = await Promise.allSettled([
-                    contentPromise,
-                    auditPromise
-                ]);
+                const result =
+                    await requestLambdaReview(selectedFile);
 
-                if (!requestIsCurrent) return;
-
-                if (fileResult.status === "fulfilled") {
-                    setContent(fileResult.value.content || "");
-                } else {
-                    setContentError(fileResult.reason?.message || "Unable to load the file.");
+                if (!cancelled) {
+                    setReviewReport(result);
                 }
 
-                if (isContactFlowFile(selectedFile) && auditResult.status === "fulfilled") {
-                    setAuditReport(auditResult.value);
-                    setLastAuditedAt(new Date());
+            } catch (err) {
+
+                if (!cancelled) {
+
+                    setReviewError(
+                        err?.message ||
+                        "Review execution failed."
+                    );
                 }
 
-                if (isContactFlowFile(selectedFile) && auditResult.status === "rejected") {
-                    setAuditError(auditResult.reason?.message || "Unable to run the flow audit.");
-                }
             } finally {
-                if (requestIsCurrent) {
-                    setContentLoading(false);
-                    setAuditLoading(false);
+
+                if (!cancelled) {
+                    setReviewLoading(false);
                 }
             }
         }
 
-        setAuditLoading(isContactFlowFile(selectedFile));
-        loadSelectedFile();
+        runReview();
 
         return () => {
-            requestIsCurrent = false;
+            cancelled = true;
         };
-    }, [ activeTab, selectedFile ]);
+
+    }, [activeTab, selectedFile]);
 
 
     function handleRefreshAudit() {

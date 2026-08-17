@@ -219,11 +219,11 @@ async function main() {
             process.env.COPILOT_GITHUB_TOKEN ??
             process.env.GITHUB_TOKEN;
 
-        if (!secureToken) {
-            throw new Error(
-                "Authentication failed: The target Copilot Token is empty or missing valid corporate credentials. Check server.py configuration environments."
-            );
-        }
+        //if (!secureToken) {
+        //    throw new Error(
+        //        "Authentication failed: The target Copilot Token is empty or missing valid corporate credentials. Check server.py configuration environments."
+        //    );
+        //}
 
         console.error(
             "Token length:",
@@ -238,38 +238,53 @@ async function main() {
         // Pass an explicit configuration parameters mapping block to initialize the authentication provider
         client = new CopilotClient({
             connection: RuntimeConnection.forStdio(),
-            env: {
-                ...process.env,
-                COPILOT_GITHUB_TOKEN: secureToken,
-                GITHUB_TOKEN: secureToken
-            },
+            //env: {
+            //    ...process.env,
+            //    COPILOT_GITHUB_TOKEN: secureToken,
+            //    GITHUB_TOKEN: secureToken
+            //},
             useLoggedInUser: true // Disables looking for IDE login flags
         });
-        console.log("Client created");
+        console.error("Client created");
         // --- END OF FIX ---
 
-        console.log("Environment check:");
-        console.log(
+        console.error("Environment check:");
+        console.error(
             "COPILOT_GITHUB_TOKEN:",
             !!process.env.COPILOT_GITHUB_TOKEN
         );
 
-        console.log(
+        console.error(
             "GITHUB_TOKEN:",
             !!process.env.GITHUB_TOKEN
         );
-        console.log("Starting client");
-        await client.start();
-        console.log("Client started");
 
-        console.log("Creating session");
+        console.error(
+            "USERPROFILE:",
+            process.env.USERPROFILE
+        );
+
+        console.error(
+            "APPDATA:",
+            process.env.APPDATA
+        );
+
+        console.error(
+            "HOME:",
+            process.env.HOME
+        );
+        console.error("Starting client");
+        await client.start();
+        console.error("Client started");
+
+        console.error("Creating session");
         session = await client.createSession({
             systemMessage: {
                 content:
                     "You are a senior TypeScript and AWS Lambda code reviewer. Return structured, evidence-based findings."
             }
         });
-        console.log("Session created");
+        console.error("Session created");
 
         const response = await session.sendAndWait({
             prompt: createReviewPrompt(request)
