@@ -77,6 +77,8 @@ export default function TabContainer({
     const [auditLoading, setAuditLoading] =
         useState(false);
 
+    const [auditCache, setAuditCache] = useState({});
+
     const [auditError, setAuditError] =
         useState("");
 
@@ -85,6 +87,8 @@ export default function TabContainer({
 
     const [reviewReport, setReviewReport] =
         useState(null);
+
+    const [reviewCache, setReviewCache] = useState({});
     
     // inside TabContainer.jsx active tab conditional effects block:
     //const [lambdaReview, setLambdaReview] = useState("");
@@ -94,6 +98,9 @@ export default function TabContainer({
 
     const [reviewError, setReviewError] =
         useState("");
+
+    const [lastReviewedAt, setLastReviewedAt] =
+        useState(null);
 
 
     const runAudit = useCallback(
@@ -105,29 +112,17 @@ export default function TabContainer({
                 return;
             }
 
-            // Add this alongside your existing isContactFlowFile function
-            function isLambdaFile(path) {
-                if (!path) {
-                    return false;
-                }
-
-                const normalizedPath =
-                    path.replaceAll("\\", "/").toLowerCase();
-
-                return (
-                    normalizedPath.startsWith("lambda/") &&
-                    (normalizedPath.endsWith(".ts") || 
-                    normalizedPath.endsWith(".js") || 
-                    normalizedPath.endsWith(".mjs"))
-                );
-            }
-
             setAuditLoading(true);
             setAuditError("");
 
             try {
                 const report =
                     await auditFlow(path);
+
+                setAuditCache(prev => ({
+                    ...prev,
+                    [path]: report
+                }));
 
                 setAuditReport(report);
                 setLastAuditedAt(new Date());
@@ -149,59 +144,138 @@ export default function TabContainer({
         []
     );
 
+    useEffect(() => {
+
+        if (!selectedFile) {
+
+            setAuditReport(null);
+            setReviewReport(null);
+
+            return;
+        }
+
+        if (!isContactFlowFile(selectedFile)) {
+
+            setAuditReport(null);
+            setAuditError("");
+
+        }
+
+        if (!isLambdaFile(selectedFile)) {
+
+            setReviewReport(null);
+            setReviewError("");
+
+        }
+
+    }, [selectedFile]);
 
     useEffect(() => {
 
-        if (
-            activeTab !== "review" ||
-            !selectedFile ||
-            !isLambdaFile(selectedFile)
-        ) {
+        if (!selectedFile) {
+
+            setContent("");
+            setContentError("");
+
             return;
         }
 
         let cancelled = false;
 
-        async function runReview() {
+        async function loadSelectedFile() {
 
-            setReviewLoading(true);
-            setReviewError("");
-            setReviewReport(null);
+            setContentLoading(true);
+            setContentError("");
 
             try {
 
                 const result =
-                    await requestLambdaReview(selectedFile);
+                    await loadFile(selectedFile);
 
                 if (!cancelled) {
-                    setReviewReport(result);
+
+                    setContent(
+                        result.content || ""
+                    );
+
                 }
 
             } catch (err) {
 
                 if (!cancelled) {
 
-                    setReviewError(
+                    setContentError(
                         err?.message ||
-                        "Review execution failed."
+                        "Unable to load file."
                     );
+
                 }
 
             } finally {
 
                 if (!cancelled) {
-                    setReviewLoading(false);
+
+                    setContentLoading(false);
+
                 }
+
             }
+
         }
 
-        runReview();
+        loadSelectedFile();
 
         return () => {
+
             cancelled = true;
+
         };
 
-    }, [activeTab, selectedFile]);
+    }, [selectedFile]);
+
+    useEffect(() => {
+
+        if (
+            !selectedFile ||
+            !isContactFlowFile(selectedFile)
+        ) {
+            return;
+        }
+
+        if (auditCache[selectedFile]) {
+
+            setAuditReport(
+                auditCache[selectedFile]
+            );
+
+            return;
+        }
+
+        handleRefreshAudit();
+
+    }, [selectedFile, auditCache]);
+
+    useEffect(() => {
+
+        if (
+            !selectedFile ||
+            !isLambdaFile(selectedFile)
+        ) {
+            return;
+        }
+
+        // already cached
+        if (reviewCache[selectedFile]) {
+            setReviewReport(
+                reviewCache[selectedFile]
+            );
+
+            return;
+        }
+
+        handleRefreshReview();
+
+    }, [selectedFile, reviewCache]);
 
 
     function handleRefreshAudit() {
@@ -212,6 +286,40 @@ export default function TabContainer({
         runAudit(selectedFile);
     }
 
+    async function handleRefreshReview() {
+
+        if (!selectedFile) return;
+
+        setReviewLoading(true);
+        setReviewError("");
+
+        try {
+
+            const result =
+                await requestLambdaReview(selectedFile);
+
+            setReviewCache(prev => ({
+                ...prev,
+                [selectedFile]: result
+            }));
+
+            setLastReviewedAt(new Date());
+
+            setReviewReport(result);
+
+        } catch (err) {
+
+            setReviewError(
+                err?.message ||
+                "Review execution failed."
+            );
+
+        } finally {
+
+            setReviewLoading(false);
+
+        }
+    }
 
     return (
         <div className="main-panel">
@@ -258,6 +366,7 @@ export default function TabContainer({
                             error={contentError}
                             auditReport={auditReport}
                             auditLoading={auditLoading}
+                            reviewReport={reviewReport}
                         />
                     )}
 
@@ -291,6 +400,23 @@ export default function TabContainer({
                                         <h2 style={{ margin: 0, fontSize: "18px", color: "#24292e", display: "flex", alignItems: "center", gap: "8px" }}>
                                             🤖 GitHub Copilot Infrastructure Review
                                         </h2>
+                                        <button
+                                            className="refresh-button"
+                                            onClick={handleRefreshReview}
+                                            disabled={reviewLoading}
+                                        >
+                                            {reviewLoading
+                                                ? "Running..."
+                                                : "🔄 Refresh Review"}
+                                        </button>
+                                        {lastReviewedAt && !reviewLoading && (
+                                            <div className="audit-timestamp">
+                                                Last reviewed:
+                                                {" "}
+                                                {lastReviewedAt.toLocaleString()}
+                                            </div>
+                                        )}
+
                                         {reviewReport?.overallRisk && (
                                             <span className={`status-badge ${
                                                 reviewReport.overallRisk === "High" ? "status-fail" : reviewReport.overallRisk === "Medium" ? "assessment-warning" : "status-pass"
@@ -426,57 +552,136 @@ function EmptySelection() {
 }
 
 
-function DashboardTab({ selectedFile, content, loading, error, auditReport, auditLoading }) {
-    // FIX: Guard against non-string content or loading delays
-    const safeContent = typeof content === "string" ? content : "";
-    
-    // FIX: Safe line split count calculation
-    const lineCount = safeContent.length > 0 ? safeContent.split(/\r?\n/).length : 0;
+function DashboardTab({
+    selectedFile,
+    content,
+    loading,
+    error,
+    auditReport,
+    auditLoading,
+    reviewReport
+}) {
+    const lineCount =
+        content.length > 0
+            ? content.split(/\r?\n/).length
+            : 0;
 
-    const extension = selectedFile.includes(".")
-        ? selectedFile.split(".").pop().toUpperCase()
-        : "Unknown";
+    const extension =
+        selectedFile.includes(".")
+            ? selectedFile
+                .split(".")
+                .pop()
+                .toUpperCase()
+            : "Unknown";
 
-    const auditStatus = auditLoading
-        ? "Audit running"
-        : auditReport?.success === false
-            ? "Audit failed"
-            : auditReport?.audit_passed === true
-                ? "Passed"
-                : auditReport?.audit_passed === false
-                    ? "Needs attention"
-                    : "Not applicable";
+    const auditStatus =
+        auditLoading
+            ? "Audit running"
+            : auditReport?.success === false
+                ? "Audit failed"
+                : auditReport?.audit_passed === true
+                    ? "Passed"
+                    : auditReport?.audit_passed === false
+                        ? "Needs attention"
+                        : "Not applicable";
 
     return (
         <section>
             <div className="content-heading">
                 <div>
                     <h2>Dashboard</h2>
-                    <div className="selected-path">{selectedFile}</div>
+
+                    <div className="selected-path">
+                        {selectedFile}
+                    </div>
                 </div>
-                <span className="file-type-badge">{extension}</span>
+
+                <span className="file-type-badge">
+                    {extension}
+                </span>
             </div>
 
             <div className="summary-grid">
-                <SummaryCard label="File type" value={extension} />
-                <SummaryCard label="Lines" value={loading ? "Loading..." : lineCount} />
-                <SummaryCard label="Characters" value={loading ? "Loading..." : safeContent.length.toLocaleString()} />
-                <SummaryCard label="Flow audit" value={auditStatus} />
+                <SummaryCard
+                    label="File type"
+                    value={extension}
+                />
+
+                <SummaryCard
+                    label="Lines"
+                    value={
+                        loading
+                            ? "Loading..."
+                            : lineCount
+                    }
+                />
+
+                <SummaryCard
+                    label="Characters"
+                    value={
+                        loading
+                            ? "Loading..."
+                            : content.length
+                                .toLocaleString()
+                    }
+                />
+
+                <SummaryCard
+                    label="Flow audit"
+                    value={auditStatus}
+                />
+                {isLambdaFile(selectedFile) && (
+                    <>
+                        <SummaryCard
+                            label="Risk Level"
+                            value={
+                                reviewReport?.overallRisk ??
+                                "Not Reviewed"
+                            }
+                        />
+
+                        <SummaryCard
+                            label="Findings"
+                            value={
+                                reviewReport?.recommendations?.length ?? 0
+                            }
+                        />
+                    </>
+                )}
             </div>
 
-            {error && <ErrorMessage message={error} />}
-            {loading && <LoadingMessage message="Loading file content..." />}
+            {isLambdaFile(selectedFile) &&
+                        reviewReport?.summary && (
+                <div className="executive-summary-card">
+                    <h3>Executive Summary</h3>
+                    <p>{reviewReport.summary}</p>
+                </div>
+            )}
+
+            {error && (
+                <ErrorMessage message={error} />
+            )}
+
+            {loading && (
+                <LoadingMessage
+                    message="Loading file content..."
+                />
+            )}
 
             {!loading && !error && (
                 <div className="file-viewer-card">
-                    <div className="viewer-header">File Content</div>
-                    <pre className="file-content">{safeContent}</pre>
+                    <div className="viewer-header">
+                        File Content
+                    </div>
+
+                    <pre className="file-content">
+                        {content}
+                    </pre>
                 </div>
             )}
         </section>
     );
 }
-
 
 
 function FlowAuditTab({
@@ -890,3 +1095,6 @@ function PlaceholderTab({
         </section>
     );
 }
+
+
+
