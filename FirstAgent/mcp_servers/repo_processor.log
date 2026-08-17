@@ -1,0 +1,79 @@
+2026-08-10 13:02:54,994 INFO SERVER STARTED
+2026-08-10 13:03:36,340 INFO find_files called with extension=.json
+2026-08-10 13:14:31,892 INFO SERVER STARTED
+2026-08-10 13:15:41,054 INFO find_files called with extension=.json
+2026-08-10 14:39:55,482 INFO SERVER STARTED
+2026-08-10 16:06:57,683 INFO SERVER STARTED
+2026-08-10 16:53:18,328 INFO SERVER STARTED
+2026-08-10 17:11:49,907 INFO SERVER STARTED
+2026-08-10 17:13:21,326 INFO SERVER STARTED
+2026-08-10 17:14:14,151 INFO find_files called with extension=.json
+2026-08-10 20:08:43,868 INFO SERVER STARTED
+2026-08-10 20:13:44,206 INFO SERVER STARTED
+2026-08-10 20:32:40,396 INFO SERVER STARTED
+2026-08-10 20:34:57,840 INFO find_files called with extension=.json
+2026-08-10 20:35:48,626 INFO audit_contact_flow requested: relative_path=flows/cfAgentUI.json
+2026-08-10 20:35:48,628 ERROR Unexpected audit_contact_flow failure: relative_path=flows/cfAgentUI.json
+Traceback (most recent call last):
+  File "C:\Users\ramasubramanians\OneDrive - HCL TECHNOLOGIES LIMITED\Documents\HS\Training\MyProjects/FirstAgent/mcp_servers/ivr_repository_agent.py", line 583, in audit_contact_flow
+    flow_path = resolve_repository_file(relative_path)
+  File "C:\Users\ramasubramanians\OneDrive - HCL TECHNOLOGIES LIMITED\Documents\HS\Training\MyProjects/FirstAgent/mcp_servers/ivr_repository_agent.py", line 433, in resolve_repository_file
+    IVR_REPOSITORY_ROOT / requested_path
+    ^^^^^^^^^^^^^^^^^^^
+NameError: name 'IVR_REPOSITORY_ROOT' is not defined
+2026-08-10 20:36:08,565 INFO audit_contact_flow requested: relative_path=flows/cfAgentOnHold.json
+2026-08-10 20:36:08,583 ERROR Unexpected audit_contact_flow failure: relative_path=flows/cfAgentOnHold.json
+Traceback (most recent call last):
+  File "C:\Users\ramasubramanians\OneDrive - HCL TECHNOLOGIES LIMITED\Documents\HS\Training\MyProjects/FirstAgent/mcp_servers/ivr_repository_agent.py", line 583, in audit_contact_flow
+    flow_path = resolve_repository_file(relative_path)
+  File "C:\Users\ramasubramanians\OneDrive - HCL TECHNOLOGIES LIMITED\Documents\HS\Training\MyProjects/FirstAgent/mcp_servers/ivr_repository_agent.py", line 433, in resolve_repository_file
+    IVR_REPOSITORY_ROOT / requested_path
+    ^^^^^^^^^^^^^^^^^^^
+NameError: name 'IVR_REPOSITORY_ROOT' is not defined
+2026-08-10 20:36:16,808 INFO audit_contact_flow requested: relative_path=flows/cfActivateCard.json
+2026-08-10 20:36:16,811 ERROR Unexpected audit_contact_flow failure: relative_path=flows/cfActivateCard.json
+Traceback (most recent call last):
+  File "C:\Users\ramasubramanians\OneDrive - HCL TECHNOLOGIES LIMITED\Documents\HS\Training\MyProjects/FirstAgent/mcp_servers/ivr_repository_agent.py", line 583, in audit_contact_flow
+    flow_path = resolve_repository_file(relative_path)
+  File "C:\Users\ramasubramanians\OneDrive - HCL TECHNOLOGIES LIMITED\Documents\HS\Training\MyProjects/FirstAgent/mcp_servers/ivr_repository_agent.py", line 433, in resolve_repository_file
+    IVR_REPOSITORY_ROOT / requested_path
+    ^^^^^^^^^^^^^^^^^^^
+NameError: name 'IVR_REPOSITORY_ROOT' is not defined
+2026-08-10 20:36:21,201 INFO audit_contact_flow requested: relative_path=flows/cfAccountSummaryInfo.json
+2026-08-10 20:36:21,204 ERROR Unexpected audit_contact_flow failure: relative_path=flows/cfAccountSummaryInfo.json
+Traceback (most recent call last):
+  File "C:\Users\ramasubramanians\OneDrive - HCL TECHNOLOGIES LIMITED\Documents\HS\Training\MyProjects/FirstAgent/mcp_servers/ivr_repository_agent.py", line 583, in audit_contact_flow
+    flow_path = resolve_repository_file(relative_path)
+  File "C:\Users\ramasubramanians\OneDrive - HCL TECHNOLOGIES LIMITED\Documents\HS\Training\MyProjects/FirstAgent/mcp_servers/ivr_repository_agent.py", line 433, in resolve_repository_file
+    IVR_REPOSITORY_ROOT / requested_path
+    ^^^^^^^^^^^^^^^^^^^
+NameError: name 'IVR_REPOSITORY_ROOT' is not defined
+2026-08-10 20:36:24,524 INFO audit_contact_flow requested: relative_path=flows/cfAccountStatus.json
+2026-08-10 20:36:24,526 ERROR Unexpected audit_contact_flow failure: relative_path=flows/cfAccountStatus.json
+Traceback (most recent call last):
+  File "C:\Users\ramasubramanians\OneDrive - HCL TECHNOLOGIES LIMITED\Documents\HS\Training\MyProjects/FirstAgent/mcp_servers/ivr_repository_agent.py", line 583, in audit_contact_flow
+    flow_path = resolve_repository_file(relative_path)
+  File "C:\Users\ramasubramanians\OneDrive - HCL TECHNOLOGIES LIMITED\Documents\HS\Training\MyProjects/FirstAgent/mcp_servers/ivr_repository_agent.py", line 433, in resolve_repository_file
+    IVR_REPOSITORY_ROOT / requested_path
+    ^^^^^^^^^^^^^^^^^^^
+NameError: name 'IVR_REPOSITORY_ROOT' is not defined
+2026-08-10 20:44:17,878 INFO SERVER STARTED
+2026-08-10 20:46:14,046 INFO find_files called with extension=.json
+2026-08-10 20:47:07,202 INFO audit_contact_flow requested: relative_path=flows/cfAccountStatus.json
+2026-08-10 20:47:07,221 INFO audit_contact_flow completed: relative_path=flows/cfAccountStatus.json, passed=False, blocks=64, edges=154, complexity=92
+2026-08-10 20:47:17,959 INFO audit_contact_flow requested: relative_path=flows/cfAccountSummaryInfo.json
+2026-08-10 20:47:17,967 INFO audit_contact_flow completed: relative_path=flows/cfAccountSummaryInfo.json, passed=False, blocks=48, edges=144, complexity=98
+2026-08-10 20:47:31,694 INFO audit_contact_flow requested: relative_path=flows/cfActivateCard.json
+2026-08-10 20:47:31,715 INFO audit_contact_flow completed: relative_path=flows/cfActivateCard.json, passed=False, blocks=88, edges=237, complexity=151
+2026-08-10 20:47:55,397 INFO audit_contact_flow requested: relative_path=flows/cfAgentOnHold.json
+2026-08-10 20:47:55,411 INFO audit_contact_flow completed: relative_path=flows/cfAgentOnHold.json, passed=True, blocks=1, edges=0, complexity=1
+2026-08-10 20:49:31,149 INFO audit_contact_flow requested: relative_path=flows/cfAgentUI.json
+2026-08-10 20:49:31,159 INFO audit_contact_flow completed: relative_path=flows/cfAgentUI.json, passed=True, blocks=13, edges=27, complexity=16
+2026-08-11 19:34:02,326 INFO SERVER STARTED
+2026-08-11 20:04:18,403 INFO SERVER STARTED
+2026-08-12 08:32:15,003 INFO SERVER STARTED
+2026-08-12 15:55:25,910 INFO SERVER STARTED
+2026-08-12 16:19:33,505 INFO SERVER STARTED
+2026-08-12 16:56:10,740 INFO audit_contact_flow requested: relative_path=flows/cfAccountStatus.json
+2026-08-12 16:56:10,825 INFO audit_contact_flow completed: relative_path=flows/cfAccountStatus.json, passed=False, blocks=64, edges=154, complexity=92
+2026-08-13 19:20:57,699 INFO SERVER STARTED

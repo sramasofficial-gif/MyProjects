@@ -1,0 +1,12 @@
+{
+  "name": "ivr-sdlc-copilot-reviewer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@github/copilot-sdk": "latest"
+  },
+  "allowScripts": {
+    "koffi@3.1.5": true
+  }
+}

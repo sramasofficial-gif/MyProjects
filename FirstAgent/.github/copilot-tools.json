@@ -1,0 +1,42 @@
+[
+  {
+    "name": "calculator",
+    "description": "Calculator skill that performs basic arithmetic operations.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["add", "multiply"]
+        },
+        "a": { "type": "number" },
+        "b": { "type": "number" }
+      },
+      "required": ["action", "a", "b"]
+    }
+  },
+  {
+    "name": "calculator.add",
+    "description": "Add two numbers using the calculator skill.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "a": { "type": "number" },
+        "b": { "type": "number" }
+      },
+      "required": ["a", "b"]
+    }
+  },
+  {
+    "name": "calculator.multiply",
+    "description": "Multiply two numbers using the calculator skill.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "a": { "type": "number" },
+        "b": { "type": "number" }
+      },
+      "required": ["a", "b"]
+    }
+  }
+]

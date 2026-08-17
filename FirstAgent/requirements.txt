@@ -1,0 +1,5 @@
+# Requirements for MyCopilot Agent
+# Dependencies needed for local testing and development
+mcp[cli]>=2.0,<3.0
+pytest>=8.0,<9.0
+pytest-asyncio>=0.24

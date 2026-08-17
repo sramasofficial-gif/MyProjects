@@ -1,0 +1,4 @@
+{
+  "relativePath": "lambda/ActivateCard/activate-card.ts",
+  "source": "export const handler = async () => { return 'hello' };"
+}

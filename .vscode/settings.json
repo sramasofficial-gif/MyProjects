@@ -1,0 +1,9 @@
+{
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  "chat.agent.enabled": true,
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": [
+    "tests"
+  ]
+}
