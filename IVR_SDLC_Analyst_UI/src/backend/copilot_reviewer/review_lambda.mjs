@@ -286,8 +286,101 @@ async function main() {
         });
         console.error("Session created");
 
-        const response = await session.sendAndWait({
-            prompt: createReviewPrompt(request)
+        //const response = await session.sendAndWait({
+        //    prompt: createReviewPrompt(request)
+        //});
+        //const response = "{}"
+        const response = JSON.stringify({
+            summary:
+                "This Lambda function contains customer account processing logic with several maintainability, reliability, and security concerns. Input validation is limited, duplicate code exists across handlers, and exception management can be improved. Overall business functionality appears correct, but code quality improvements are recommended before production rollout.",
+
+            overallRisk: "Medium",
+
+            recommendations: [
+                {
+                    id: "REC-001",
+                    severity: "High",
+                    category: "Security",
+                    line: 42,
+                    title: "Sensitive information logged",
+                    finding:
+                        "Customer account identifiers are written directly to application logs.",
+
+                    recommendation:
+                        "Mask account numbers and PII before writing to CloudWatch logs."
+                },
+
+                {
+                    id: "REC-002",
+                    severity: "Medium",
+                    category: "Error Handling",
+                    line: 88,
+                    title: "Unhandled exception scenario",
+
+                    finding:
+                        "External API invocation lacks a top-level try/catch block.",
+
+                    recommendation:
+                        "Wrap outbound service calls and convert failures into user-friendly responses."
+                },
+
+                {
+                    id: "REC-003",
+                    severity: "Medium",
+                    category: "Performance",
+
+                    line: 122,
+
+                    title:
+                        "Repeated database query",
+
+                    finding:
+                        "Customer information is queried multiple times within the same execution.",
+
+                    recommendation:
+                        "Cache customer data within the Lambda execution context."
+                },
+
+                {
+                    id: "REC-004",
+
+                    severity: "Low",
+
+                    category:
+                        "Maintainability",
+
+                    line: 201,
+
+                    title:
+                        "Duplicate code block",
+
+                    finding:
+                        "Identical transformation logic appears in multiple locations.",
+
+                    recommendation:
+                        "Extract common logic into reusable helper methods."
+                },
+
+                {
+                    id: "REC-005",
+
+                    severity: "Info",
+
+                    category:
+                        "Testing",
+
+                    line: 0,
+
+                    title:
+                        "Limited unit test coverage",
+
+                    finding:
+                        "No evidence of negative-path testing for invalid requests.",
+
+                    recommendation:
+                        "Add tests for malformed payloads and downstream service failures."
+                }
+            ]
         });
 
         const responseText = extractResponseText(response);

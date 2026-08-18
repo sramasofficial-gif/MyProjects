@@ -239,5 +239,8 @@ Get-Content test_payload.json | node review_lambda.mjs
 pip install python-dotenv
 
 $env:GITHUB_TOKEN="YOUR_PAT_TOKEN"
+$env:GITHUB_COPILOT_TOKEN="YOUR_PAT_TOKEN"
 
 export GITHUB_TOKEN="YOUR_PAT_TOKEN"
+
+npm install reactflow

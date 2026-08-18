@@ -258,32 +258,46 @@ export default function TabContainer({
     useEffect(() => {
 
         if (
+            activeTab !== "review" ||
             !selectedFile ||
             !isLambdaFile(selectedFile)
         ) {
             return;
         }
-
+        console.error(
+            `[${new Date().toISOString()}]`,
+            "REVIEW TAB OPENED",
+            selectedFile
+        );
         // already cached
         if (reviewCache[selectedFile]) {
-            setReviewReport(
-                reviewCache[selectedFile]
-            );
-
+            //setReviewReport(
+            //    reviewCache[selectedFile]
+            //);
+            console.error("[CACHE HIT]", selectedFile);
             return;
         }
-
+        console.error("[CACHE MISS]", selectedFile);
         handleRefreshReview();
 
-    }, [selectedFile, reviewCache]);
+    }, [activeTab, selectedFile]);
 
 
     function handleRefreshAudit() {
         if (!selectedFile || auditLoading) {
             return;
         }
-
+        console.error(
+            "[AUDIT START]",
+            new Date().toISOString(),
+            selectedFile
+        );
         runAudit(selectedFile);
+        console.error(
+            "[AUDIT END]",
+            new Date().toISOString(),
+            selectedFile
+        );
     }
 
     async function handleRefreshReview() {
@@ -294,9 +308,20 @@ export default function TabContainer({
         setReviewError("");
 
         try {
+            console.error(
+                "[COPILOT REVIEW START]",
+                new Date().toISOString(),
+                selectedFile
+            );
 
             const result =
                 await requestLambdaReview(selectedFile);
+
+            console.error(
+                "[COPILOT REVIEW END]",
+                new Date().toISOString(),
+                selectedFile
+            );
 
             setReviewCache(prev => ({
                 ...prev,
@@ -355,6 +380,22 @@ export default function TabContainer({
 
                 {!selectedFile && (
                     <EmptySelection />
+                )}
+
+                {selectedFile && (
+
+                    <div className="selected-file-banner">
+
+                        <span>
+                            📄 Selected File:
+                        </span>
+
+                        <code>
+                            {selectedFile}
+                        </code>
+
+                    </div>
+
                 )}
 
                 {selectedFile &&
@@ -1096,5 +1137,16 @@ function PlaceholderTab({
     );
 }
 
+function logWithTimestamp(
+    message,
+    data = ""
+) {
 
+    console.error(
+        `[${new Date().toLocaleString()}]`,
+        message,
+        data
+    );
+
+}
 

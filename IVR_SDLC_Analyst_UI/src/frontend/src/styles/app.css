@@ -541,3 +541,18 @@ table code {
 tr:hover {
     background-color: #fcfcfc;
 }
+
+.selected-file-banner {
+
+    background: white;
+
+    border-left: 4px solid #0f6cbd;
+
+    padding: 12px;
+
+    margin-bottom: 12px;
+
+    border-radius: 6px;
+
+    font-size: 14px;
+}

@@ -48,7 +48,7 @@ export async function auditFlow(path) {
 // Append this function to src/frontend/src/services/api.js
 
 export async function requestLambdaReview(path) {
-    console.log("Requesting Copilot review for asset:", path);
+    console.error("Requesting Copilot review for asset:", path);
 
     const response = await fetch(
         `${API_URL}/review-lambda?path=${encodeURIComponent(path)}`,
