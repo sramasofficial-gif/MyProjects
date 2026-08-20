@@ -408,6 +408,7 @@ export default function TabContainer({
                             auditReport={auditReport}
                             auditLoading={auditLoading}
                             reviewReport={reviewReport}
+                            lastReviewedAt={lastReviewedAt}
                         />
                     )}
 
@@ -600,7 +601,8 @@ function DashboardTab({
     error,
     auditReport,
     auditLoading,
-    reviewReport
+    reviewReport,
+    lastReviewedAt
 }) {
     const lineCount =
         content.length > 0
@@ -625,6 +627,34 @@ function DashboardTab({
                     : auditReport?.audit_passed === false
                         ? "Needs attention"
                         : "Not applicable";
+    
+    const recommendations =
+        reviewReport?.recommendations || [];
+
+    const findingsCount =
+        recommendations.length;
+
+    const highCount =
+        recommendations.filter(
+            r => r.severity === "High"
+        ).length;
+
+    const mediumCount =
+        recommendations.filter(
+            r => r.severity === "Medium"
+        ).length;
+
+    const lowCount =
+        recommendations.filter(
+            r =>
+                r.severity === "Low" ||
+                r.severity === "Info"
+        ).length;
+
+    const reviewAge =
+        lastReviewedAt
+            ? lastReviewedAt.toLocaleString()
+            : "Never";
 
     return (
         <section>
@@ -643,52 +673,47 @@ function DashboardTab({
             </div>
 
             <div className="summary-grid">
+
                 <SummaryCard
-                    label="File type"
-                    value={extension}
+                    label="Risk"
+                    value={
+                        reviewReport?.overallRisk ??
+                        "Not Reviewed"
+                    }
+                    variant={
+                        reviewReport?.overallRisk === "High"
+                            ? "high"
+                            : reviewReport?.overallRisk === "Medium"
+                                ? "medium"
+                                : "low"
+                    }
+                />
+
+                <SummaryCard
+                    label="Findings"
+                    value={findingsCount}
+                />
+
+                <SummaryCard
+                    label="High Issues"
+                    value={highCount}
+                />
+
+                <SummaryCard
+                    label="Medium Issues"
+                    value={mediumCount}
+                />
+
+                <SummaryCard
+                    label="Review Age"
+                    value={reviewAge}
                 />
 
                 <SummaryCard
                     label="Lines"
-                    value={
-                        loading
-                            ? "Loading..."
-                            : lineCount
-                    }
+                    value={lineCount}
                 />
 
-                <SummaryCard
-                    label="Characters"
-                    value={
-                        loading
-                            ? "Loading..."
-                            : content.length
-                                .toLocaleString()
-                    }
-                />
-
-                <SummaryCard
-                    label="Flow audit"
-                    value={auditStatus}
-                />
-                {isLambdaFile(selectedFile) && (
-                    <>
-                        <SummaryCard
-                            label="Risk Level"
-                            value={
-                                reviewReport?.overallRisk ??
-                                "Not Reviewed"
-                            }
-                        />
-
-                        <SummaryCard
-                            label="Findings"
-                            value={
-                                reviewReport?.recommendations?.length ?? 0
-                            }
-                        />
-                    </>
-                )}
             </div>
 
             {isLambdaFile(selectedFile) &&
@@ -698,6 +723,82 @@ function DashboardTab({
                     <p>{reviewReport.summary}</p>
                 </div>
             )}
+
+            {recommendations.length > 0 && (
+
+                <div className="top-findings-panel">
+
+                    <h3>
+                        Top 3 Findings
+                    </h3>
+
+                    <ul>
+
+                        {recommendations
+                            .slice(0, 3)
+                            .map(rec => (
+
+                                <li
+                                    key={rec.id}
+                                    className="top-finding-item"
+                                >
+                                    <strong>
+                                        {rec.title}
+                                    </strong>
+
+                                    <span
+                                        className={
+                                            `severity-badge severity-${(
+                                                rec.severity || ""
+                                            ).toLowerCase()}`
+                                        }
+                                    >
+                                        {rec.severity}
+                                    </span>
+
+                                </li>
+
+                            ))}
+
+                    </ul>
+
+                </div>
+
+            )}
+
+            <div className="file-viewer-card">
+
+                <div className="viewer-header">
+
+                    File Statistics
+
+                </div>
+
+                <div className="metrics-grid">
+
+                    <MetricCard
+                        label="Type"
+                        value={extension}
+                    />
+
+                    <MetricCard
+                        label="Lines"
+                        value={lineCount}
+                    />
+
+                    <MetricCard
+                        label="Characters"
+                        value={content.length}
+                    />
+
+                    <MetricCard
+                        label="Audit"
+                        value={auditStatus}
+                    />
+
+                </div>
+
+            </div>
 
             {error && (
                 <ErrorMessage message={error} />
@@ -988,10 +1089,15 @@ function FlowAuditTab({
 
 function SummaryCard({
     label,
-    value
+    value,
+    variant = "default"
 }) {
     return (
-        <div className="summary-card">
+        <div
+            className={
+                `summary-card summary-${variant}`
+            }
+        >
             <div className="summary-label">
                 {label}
             </div>
