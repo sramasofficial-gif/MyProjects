@@ -692,3 +692,81 @@ thead th {
     margin-top: 20px;
 }
 
+.review-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.review-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.review-title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.review-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.review-meta {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.refresh-review-button {
+    background: white;
+    color: #0f6cbd;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.refresh-review-button:hover {
+    background: #f3f6f9;
+    border-color: #0f6cbd;
+}
+
+.refresh-review-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.risk-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.risk-high {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.risk-medium {
+    background: #fff7d6;
+    color: #9a6700;
+}
+
+.risk-low {
+    background: #dcfce7;
+    color: #166534;
+}
+

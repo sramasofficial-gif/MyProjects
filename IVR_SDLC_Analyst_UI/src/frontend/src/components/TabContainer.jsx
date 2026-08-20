@@ -438,36 +438,59 @@ export default function TabContainer({
                                 />
                             ) : (
                                 <div className="file-viewer-card" style={{ padding: "20px", background: "#fff", border: "1px solid #ddd", borderRadius: "6px" }}>
-                                    <div className="viewer-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", borderBottom: "2px solid #f4f4f4", paddingBottom: "10px" }}>
-                                        <h2 style={{ margin: 0, fontSize: "18px", color: "#24292e", display: "flex", alignItems: "center", gap: "8px" }}>
-                                            🤖 GitHub Copilot Infrastructure Review
-                                        </h2>
-                                        <button
-                                            className="refresh-button"
-                                            onClick={handleRefreshReview}
-                                            disabled={reviewLoading}
-                                        >
-                                            {reviewLoading
-                                                ? "Running..."
-                                                : "🔄 Refresh Review"}
-                                        </button>
-                                        {lastReviewedAt && !reviewLoading && (
-                                            <div className="audit-timestamp">
-                                                Last reviewed:
-                                                {" "}
-                                                {lastReviewedAt.toLocaleString()}
+                                    <div className="review-header">
+
+                                        <div className="review-header-content">
+
+                                            <div className="review-title-row">
+
+                                                <h2 className="review-title">
+                                                    🤖 GitHub Copilot Infrastructure Review
+                                                </h2>
+
+                                                <button
+                                                    className="refresh-review-button"
+                                                    onClick={handleRefreshReview}
+                                                    disabled={reviewLoading}
+                                                >
+                                                    {reviewLoading
+                                                        ? "⏳ Running..."
+                                                        : "↻ Refresh"}
+                                                </button>
+
                                             </div>
-                                        )}
 
-                                        {reviewReport?.overallRisk && (
-                                            <span className={`status-badge ${
-                                                reviewReport.overallRisk === "High" ? "status-fail" : reviewReport.overallRisk === "Medium" ? "assessment-warning" : "status-pass"
-                                            }`} style={{ padding: "4px 10px", borderRadius: "4px", fontSize: "12px", fontWeight: "bold" }}>
-                                                Risk Level: {reviewReport.overallRisk}
-                                            </span>
-                                        )}
+                                            <div className="review-meta-row">
+
+                                                {lastReviewedAt && !reviewLoading && (
+                                                    <span className="review-meta">
+                                                        Last Reviewed:
+                                                        {" "}
+                                                        {lastReviewedAt.toLocaleString()}
+                                                    </span>
+                                                )}
+
+                                                {reviewReport?.overallRisk && (
+                                                    <span
+                                                        className={
+                                                            `risk-pill ${
+                                                                reviewReport.overallRisk === "High"
+                                                                    ? "risk-high"
+                                                                    : reviewReport.overallRisk === "Medium"
+                                                                        ? "risk-medium"
+                                                                        : "risk-low"
+                                                            }`
+                                                        }
+                                                    >
+                                                        {reviewReport.overallRisk} Risk
+                                                    </span>
+                                                )}
+
+                                            </div>
+
+                                        </div>
+
                                     </div>
-
                                     {reviewLoading && <LoadingMessage message="Querying corporate GitHub Copilot analyzer execution streams..." />}
                                     {reviewError && <ErrorMessage message={reviewError} />}
 
