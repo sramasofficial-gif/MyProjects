@@ -29,7 +29,7 @@ const tabs = [
     },
     {
         id: "diagram",
-        label: "Flow Diagram"
+        label: "Diagrams"
     },
     {
         id: "chat",

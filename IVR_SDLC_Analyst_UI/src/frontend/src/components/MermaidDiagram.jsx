@@ -50,7 +50,10 @@ mermaid.initialize({
 
 export default function MermaidDiagram({
     chart,
-    title = "Contact Flow Sequence Diagram"
+    title = "Diagram",
+    diagramType = "Mermaid Diagram",
+    description =
+        "Diagram generated from the selected repository artifact."
 }) {
     const containerRef = useRef(null);
     const reactId = useId();
@@ -153,13 +156,12 @@ export default function MermaidDiagram({
                     </h2>
 
                     <p className="mermaid-subtitle">
-                        Runtime interaction view derived
-                        from the selected contact flow.
+                        {description}
                     </p>
                 </div>
 
                 <span className="diagram-type-pill">
-                    Sequence Diagram
+                    {diagramType}
                 </span>
 
             </div>
@@ -167,7 +169,7 @@ export default function MermaidDiagram({
             {rendering && (
                 <div className="diagram-loading">
                     <span className="loading-spinner" />
-                    Rendering sequence diagram...
+                    Rendering {diagramType.toLowerCase()}...
                 </div>
             )}
 
@@ -188,7 +190,7 @@ export default function MermaidDiagram({
 
                 <div
                     ref={containerRef}
-                    className="mermaid-diagram"
+                    className="diagram-canvas"
                     aria-label={title}
                 />
 
