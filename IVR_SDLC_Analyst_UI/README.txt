@@ -244,3 +244,7 @@ $env:GITHUB_COPILOT_TOKEN="YOUR_PAT_TOKEN"
 export GITHUB_TOKEN="YOUR_PAT_TOKEN"
 
 npm install reactflow
+
+cd IVR_SDLC_Analyst_UI\src\frontend
+npm install mermaid
+npm run dev

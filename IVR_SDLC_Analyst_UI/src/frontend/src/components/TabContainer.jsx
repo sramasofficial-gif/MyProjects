@@ -4,6 +4,9 @@ import {
     useState
 } from "react";
 
+import FlowDiagramTab
+    from "./FlowDiagramTab";
+
 import {
     loadFile,
     auditFlow,
@@ -575,11 +578,11 @@ export default function TabContainer({
 
                 {selectedFile &&
                     activeTab === "diagram" && (
-                        <PlaceholderTab
-                            title="Flow Diagram"
-                            message={
-                                "Contact-flow visualization will be added in a later phase."
-                            }
+                        <FlowDiagramTab
+                            selectedFile={selectedFile}
+                            content={content}
+                            loading={contentLoading}
+                            error={contentError}
                         />
                     )}
 
