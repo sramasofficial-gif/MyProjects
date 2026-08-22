@@ -12,7 +12,7 @@ mermaid.initialize({
     securityLevel: "strict",
     theme: "default",
     sequence: {
-        useMaxWidth: false,
+        useMaxWidth: true,
         wrap: true,
         diagramMarginX: 30,
         diagramMarginY: 20,

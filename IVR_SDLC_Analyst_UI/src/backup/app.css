@@ -53,6 +53,7 @@ body {
 .tab-content {
     width: 100%;
     min-width: 0;
+    overflow-x: hidden;
 }
 
 .prompt-bar {
@@ -863,13 +864,6 @@ thead th {
     font-weight: 700;
 }
 
-/* Target the canvas where innerHTML receives the SVG code */
-.diagram-canvas svg {
-    max-width: 100% !important;
-    height: auto !important;
-}
-
-/* Ensure the wrapper container handles scroll overflow beautifully */
 .mermaid-scroll-container {
     width: 100%;
     max-width: 100%;
@@ -890,7 +884,6 @@ thead th {
     display: block;
     width: auto;
     height: auto;
-    max-width:none
     min-width: none;
 }
 
