@@ -55,14 +55,6 @@ body {
     min-width: 0;
 }
 
-/* 1. Ensure the parent container card allows horizontal scrolling */
-.file-viewer-card, 
-.tab-content, 
-.copilot-review-workspace {
-    overflow-x: auto !important;
-    max-width: 100%;
-}
-
 .prompt-bar {
     padding: 10px;
     border-top: 1px solid #ccc;
@@ -876,15 +868,6 @@ thead th {
     max-width: 100% !important;
     height: auto !important;
 }
-
-/* 2. Remove any constraints forcing the SVG to shrink * /
-.diagram-canvas svg {
-    max-width: none !important; /* 🟢 Allow full natural width */
-    height: auto !important;
-    display: block;
-    margin: 0 auto;
-}
-*/
 
 /* Ensure the wrapper container handles scroll overflow beautifully */
 .mermaid-scroll-container {
