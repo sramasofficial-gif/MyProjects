@@ -12,39 +12,44 @@ mermaid.initialize({
     securityLevel: "strict",
     theme: "default",
     sequence: {
-        useMaxWidth: false,
+        useMaxWidth: false, // Keep false to allow natural browser scrolling
         wrap: true,
         diagramMarginX: 30,
         diagramMarginY: 20,
-        actorMargin: 70,
+        actorMargin: 90,    // 🟢 Slightly increased for better spacing
         width: 180,
         height: 65,
         boxMargin: 10,
-        messageMargin: 40,
+        messageMargin: 45,  // 🟢 More breathing room for arrow text descriptions
         noteMargin: 10
     },
     themeVariables: {
-        fontFamily:
-            "Segoe UI, Arial, sans-serif",
-        primaryColor: "#f8fafc",
-        primaryTextColor: "#172b4d",
-        primaryBorderColor: "#0f6cbd",
-        lineColor: "#64748b",
-        secondaryColor: "#eff6ff",
-        tertiaryColor: "#f8fafc",
-        actorBkg: "#f8fafc",
-        actorBorder: "#0f6cbd",
-        actorTextColor: "#172b4d",
-        actorLineColor: "#94a3b8",
-        signalColor: "#334155",
-        signalTextColor: "#172b4d",
-        labelBoxBkgColor: "#eff6ff",
-        labelBoxBorderColor: "#93c5fd",
-        labelTextColor: "#172b4d",
-        loopTextColor: "#172b4d",
-        noteBkgColor: "#fff7d6",
-        noteBorderColor: "#f59e0b",
-        noteTextColor: "#713f12"
+        fontFamily: "Segoe UI, -apple-system, Arial, sans-serif",
+        
+        // 🟢 Actor Box Colors (CodeToFlow uses crisp, muted modern boxes)
+        actorBkg: "#f4f4f5",
+        actorBorder: "#d4d4d8",
+        actorTextColor: "#18181b",
+        actorLineColor: "#a1a1aa", // Cleaner timeline stems
+        
+        // 🟢 Message Arrows & Text
+        signalColor: "#27272a",
+        signalTextColor: "#3f3f46",
+        
+        // 🟢 Active Execution Bars (The lifelines spawned by our new script)
+        activationBkg: "#e4e4e7",
+        activationBorder: "#71717a",
+        
+        // 🟢 Note blocks configuration styling parameters
+        noteBkgColor: "#27272a",   // Shaded dark notes look great against bright stems
+        noteBorderColor: "#18181b",
+        noteTextColor: "#ffffff",
+        
+        // 🟢 Loop block controls
+        loopTextColor: "#18181b",
+        labelBoxBkgColor: "#f4f4f5",
+        labelBoxBorderColor: "#d4d4d8",
+        labelTextColor: "#18181b"
     }
 });
 

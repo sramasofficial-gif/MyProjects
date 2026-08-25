@@ -886,13 +886,12 @@ thead th {
 }
 */
 
-/* Ensure the wrapper container handles scroll overflow beautifully */
+/* Keeps the canvas parent scrollable without clamping or scaling layout elements */
 .mermaid-scroll-container {
+    overflow-x: auto !important;
+    overflow-y: hidden;
     width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
-    overflow-y: auto;
-    min-width: 0;
+    padding: 10px 0;
 }
 
 .mermaid-diagram {
