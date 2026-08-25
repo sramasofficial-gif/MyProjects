@@ -1,0 +1,276 @@
+import { useEffect, useState, useId } from "react";
+import MermaidDiagram from "./MermaidDiagram";
+import { requestDiagramGeneration } from "../services/api";
+//import { contactFlowToSequenceDiagram } from "../utils/contactFlowToSequence";
+
+// 🟢 Update these helper functions at the top of FlowDiagramTab.jsx
+/*
+function isContactFlowFile(path) {
+    if (!path) return false;
+    // Normalize ALL slashes right away before running layout validation checks
+    const normalizedPath = path.replace(/\\/g, "/").toLowerCase();
+    return normalizedPath.startsWith("contact-flows/") && normalizedPath.endsWith(".json");
+}
+
+function isLambdaFile(path) {
+    if (!path) return false;
+    // Normalize ALL slashes right away before running layout validation checks
+    const normalizedPath = path.replace(/\\/g, "/").toLowerCase();
+    return normalizedPath.startsWith("lambda/") && 
+        (normalizedPath.endsWith(".ts") || normalizedPath.endsWith(".js") || normalizedPath.endsWith(".mjs"));
+}
+*/
+// 🟢 Replace these two matching handlers at the top of FlowDiagramTab.jsx
+
+function isContactFlowFile(path) {
+    if (!path) return false;
+    // Standardize all backslashes to forward slashes first
+    const normalizedPath = path.replace(/\\/g, "/");
+    // Case-insensitive test matching "contact-flows/..." files
+    return /^contact-flows\/.*\.json$/i.test(normalizedPath);
+}
+
+function isLambdaFile(path) {
+    if (!path) return false;
+    // Standardize all backslashes to forward slashes first
+    const normalizedPath = path.replace(/\\/g, "/");
+    // Case-insensitive test matching "lambda/... .ts/.js/.mjs" files
+    return /^lambda\/.*\.(ts|js|mjs)$/i.test(normalizedPath);
+}
+
+function getLambdaDiagramMetadata(lambdaDiagramType) {
+    switch (lambdaDiagramType) {
+        case "sequence":
+            return {
+                title: "Lambda Sequence Diagram",
+                diagramType: "Sequence Diagram",
+                description: "Runtime interaction view derived from structural parsing rules."
+            };
+        case "flowchart":
+            return {
+                title: "Lambda Execution Flow",
+                diagramType: "Execution Flow",
+                description: "Detailed step-by-step logic path matching structural codebase operations."
+            };
+        case "dependency":
+        default:
+            return {
+                title: "Lambda Dependency Graph",
+                diagramType: "Dependency Graph",
+                description: "Module and service dependencies processed cleanly via compilation trees."
+            };
+    }
+}
+
+export default function FlowDiagramTab({ selectedFile, content, loading, error }) {
+    const [lambdaDiagramType, setLambdaDiagramType] = useState("dependency");
+    const [backendChart, setBackendChart] = useState("");
+    const [generationLoading, setGenerationLoading] = useState(false);
+    const [generationError, setGenerationError] = useState("");
+
+    // 🟢 Keep an internal cache map indexed by path + file content length + diagram view configuration type
+    const [diagramCache, setDiagramCache] = useState({});
+
+    const isContactFlow = isContactFlowFile(selectedFile);
+    const isLambda = isLambdaFile(selectedFile);
+    const metadata = getLambdaDiagramMetadata(lambdaDiagramType);
+
+    /*
+    useEffect(() => {
+        if (!selectedFile || !content || loading || error) {
+            setBackendChart("");
+            return;
+        }
+
+        // Handle native Amazon Connect Contact Flows locally (no token overhead)
+        if (isContactFlow) {
+            try {
+                const chart = contactFlowToSequenceDiagram(content, selectedFile);
+                setBackendChart(chart);
+                setGenerationError("");
+            } catch (err) {
+                setGenerationError(err.message || "Failed to generate contact flow diagram.");
+            }
+            return;
+        }
+
+        // Process Lambda diagrams via cached backend pipelines
+        if (isLambda) {
+            let isCancelled = false;
+            
+            // Construct a distinct cache key fingerprint using the active view type and current source length
+            const cacheKey = `${selectedFile}::${content.length}::${lambdaDiagramType}`;
+
+            if (diagramCache[cacheKey]) {
+                setBackendChart(diagramCache[cacheKey]);
+                setGenerationError("");
+                return;
+            }
+
+            async function loadRemoteDiagram() {
+                setGenerationLoading(true);
+                setGenerationError("");
+                try {
+                    const result = await requestDiagramGeneration(selectedFile, content, lambdaDiagramType);
+                    if (!isCancelled) {
+                        setDiagramCache(prev => ({ ...prev, [cacheKey]: result.mermaid_string }));
+                        setBackendChart(result.mermaid_string);
+                    }
+                } catch (err) {
+                    if (!isCancelled) {
+                        setGenerationError(err.message || "Unable to download layout blueprints.");
+                    }
+                } finally {
+                    if (!isCancelled) setGenerationLoading(false);
+                }
+            }
+
+            loadRemoteDiagram();
+
+            return () => {
+                isCancelled = true;
+            };
+        }
+    }, [selectedFile, content, loading, error, lambdaDiagramType, isContactFlow, isLambda]);
+    */
+    useEffect(() => {
+        if (!selectedFile || !content || loading || error) {
+            setBackendChart("");
+            return;
+        }
+
+        // Handle native Amazon Connect Contact Flows locally
+        if (isContactFlow) {
+            try {
+                const chart = contactFlowToSequenceDiagram(content, selectedFile);
+                setBackendChart(chart);
+                setGenerationError("");
+            } catch (err) {
+                setGenerationError(err.message || "Failed to generate contact flow diagram.");
+            }
+            return;
+        }
+
+        // Process Lambda diagrams via backend pipelines
+        if (isLambda) {
+            let isCancelled = false;
+            
+            // Unique cache key signature
+            const cacheKey = `${selectedFile}::${content.length}::${lambdaDiagramType}`;
+
+            // 🟢 Read directly from the current cache object state
+            if (diagramCache[cacheKey]) {
+                setBackendChart(diagramCache[cacheKey]);
+                setGenerationError("");
+                return;
+            }
+
+            async function loadRemoteDiagram() {
+                setGenerationLoading(true);
+                setGenerationError("");
+                try {
+                    const result = await requestDiagramGeneration(selectedFile, content, lambdaDiagramType);
+                    
+                    if (!isCancelled) {
+                        const mermaidStr = result.mermaid_string || "";
+                        
+                        // 🟢 FIX: Use functional update state mutation pattern.
+                        // This allows us to safely omit 'diagramCache' from dependencies!
+                        setDiagramCache(prev => ({ 
+                            ...prev, 
+                            [cacheKey]: mermaidStr 
+                        }));
+                        
+                        setBackendChart(mermaidStr);
+                    }
+                } catch (err) {
+                    if (!isCancelled) {
+                        setGenerationError(err.message || "Unable to download layout blueprints.");
+                    }
+                } finally {
+                    if (!isCancelled) {
+                        setGenerationLoading(false);
+                    }
+                }
+            }
+
+            loadRemoteDiagram();
+
+            return () => {
+                isCancelled = true;
+            };
+        }
+    // 🟢 REMOVED 'diagramCache' from this array to completely stop infinite render loops
+    }, [selectedFile, content, loading, error, lambdaDiagramType, isContactFlow, isLambda]); 
+
+    if (!isContactFlow && !isLambda) {
+        return (
+            <section className="flow-diagram-tab">
+                <div className="content-heading">
+                    <div><h2>Diagram</h2><div className="selected-path">{selectedFile}</div></div>
+                </div>
+                <div className="info-message">
+                    <strong>Diagrams are available for:</strong>
+                    <ul>
+                        <li>Contact-flow JSON files under the contact-flows folder</li>
+                        <li>TypeScript or JavaScript files under the lambda folder</li>
+                    </ul>
+                </div>
+            </section>
+        );
+    }
+
+    if (loading || generationLoading) {
+        return (
+            <section className="flow-diagram-tab">
+                <div className="content-heading">
+                    <div><h2>Diagram</h2><div className="selected-path">{selectedFile}</div></div>
+                </div>
+                <div className="loading-message">
+                    <span className="loading-spinner" />
+                    Assembling high-fidelity codebase blueprints...
+                </div>
+            </section>
+        );
+    }
+
+    if (error || generationError) {
+        return (
+            <section className="flow-diagram-tab">
+                <div className="content-heading">
+                    <div><h2>Diagram</h2><div className="selected-path">{selectedFile}</div></div>
+                </div>
+                <div className="error-message" role="alert">
+                    <strong>Diagram processing dropped with exceptions.</strong>
+                    <span>{error || generationError}</span>
+                </div>
+            </section>
+        );
+    }
+
+    return (
+        <section className="flow-diagram-tab">
+            <div className="diagram-page-header">
+                <div><h2>Diagram</h2><div className="selected-path">{selectedFile}</div></div>
+                {isLambda && (
+                    <div className="diagram-tabs">
+                        <button className={lambdaDiagramType === "dependency" ? "diagram-tab active" : "diagram-tab"} onClick={() => setLambdaDiagramType("dependency")}>Dependency Graph</button>
+                        <button className={lambdaDiagramType === "flowchart" ? "diagram-tab active" : "diagram-tab"} onClick={() => setLambdaDiagramType("flowchart")}>Execution Flow</button>
+                        <button className={lambdaDiagramType === "sequence" ? "diagram-tab active" : "diagram-tab"} onClick={() => setLambdaDiagramType("sequence")}>Sequence Diagram</button>
+                    </div>
+                )}
+            </div>
+
+            {backendChart ? (
+                <MermaidDiagram
+                    chart={backendChart}
+                    title={isContactFlow ? "Contact Flow Sequence Diagram" : metadata.title}
+                    diagramType={isContactFlow ? "Sequence Diagram" : metadata.diagramType}
+                    description={isContactFlow ? "Runtime interaction view derived from the selected contact flow." : metadata.description}
+                />
+            ) : (
+                <div className="info-message">No valid diagram configuration parameters detected inside this file framework.</div>
+            )}
+        </section>
+    );
+}
