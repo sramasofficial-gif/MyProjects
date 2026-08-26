@@ -62,6 +62,35 @@ from services.repo_tools import (
     get_repo_tree
 )
 
+import re # Ensure re is imported at the top of your server.py file
+
+def minimize_source_code(source_code: str) -> str:
+    """
+    Strips single-line and multi-line comments, compresses vertical whitespaces,
+    and clears out empty trailing line padding to minimize token footprint consumption.
+    """
+    if not source_code:
+        return ""
+        
+    # 1. Strip multi-line block comments: /* ... */
+    code = re.sub(r'/\*[\s\S]*?\*/', '', source_code)
+    
+    # 2. Strip single-line comments: // ..., ignoring protocols like http:// or https://
+    lines = []
+    for line in code.splitlines():
+        cleaned_line = re.sub(r'(?<!:)\/\/.*$', '', line)
+        lines.append(cleaned_line)
+    code = "\n".join(lines)
+    
+    # 3. Collapse multiple sequential blank lines down to a clean singular newline split
+    code = re.sub(r'\n\s*\n', '\n', code)
+    
+    # 4. Remove leading/trailing indentation blocks per active functional string row
+    compact_lines = [line.strip() for line in code.splitlines() if line.strip()]
+    
+    return "\n".join(compact_lines)
+
+
 @app.get("/api/repo/tree")
 def repo_tree():
     return get_repo_tree()
@@ -131,7 +160,32 @@ def get_live_copilot_process():
 
 @app.post("/api/diagram/generate")
 def generate_cached_diagram(payload: DiagramGenerationRequest):
-    content_bytes = payload.file_content.encode("utf-8")
+    # Capture original size properties before minification
+    orig_chars = len(payload.file_content) if payload.file_content else 0
+    orig_lines = len(payload.file_content.splitlines()) if payload.file_content else 0
+
+    # 🟢 1. NEW: Clean and compress code weights to save token density
+    minified_content = minimize_source_code(payload.file_content)
+
+    # Capture minified size properties
+    mini_chars = len(minified_content)
+    mini_lines = len(minified_content.splitlines())
+    
+    # Calculate difference metrics
+    char_saved = orig_chars - mini_chars
+    pct_saved = (char_saved / orig_chars * 100) if orig_chars > 0 else 0
+
+    # 🟢 PRINT METRICS BREAKDOWN LOG TO TERMINAL
+    print("\n" + "="*60)
+    print(f"[TOKEN TRIMMER METRICS] For file: {payload.file_path}")
+    print(f" -> Lines:       {orig_lines} original  -->  {mini_lines} minified (Dropped {orig_lines - mini_lines} lines)")
+    print(f" -> Payload:     {orig_chars} characters -->  {mini_chars} characters")
+    print(f" -> Efficiency:  Saved {char_saved} bytes/chars ({pct_saved:.1f}% reduction in prompt footprint)")
+    print("="*60 + "\n")
+    
+    # 🟢 2. UPDATE: Compute cache hash keys based on the minified string text structures
+    content_bytes = minified_content.encode("utf-8")
+    #content_bytes = payload.file_content.encode("utf-8")
     content_hash = hashlib.sha256(content_bytes).hexdigest()
     cache_key = f"{payload.file_path}::{content_hash}::{payload.diagram_type}"
 
@@ -154,7 +208,7 @@ def generate_cached_diagram(payload: DiagramGenerationRequest):
             
             script_payload = {
                 "relativePath": payload.file_path,
-                "source": payload.file_content,
+                "source": minified_content,
                 "diagramType": payload.diagram_type
             }
             
