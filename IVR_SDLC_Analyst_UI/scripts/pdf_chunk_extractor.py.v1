@@ -1,0 +1,99 @@
+import re
+
+class HLDAuditChunker:
+    def __init__(self, target_chunk_size=1200, overlap=200):
+        self.chunk_size = target_chunk_size
+        self.overlap = overlap
+        
+        # Regex to detect major architectural subsections (e.g., "1.2", "Section 4", "###")
+        self.header_pattern = re.compile(
+            r'(?m)^(?:(?:[A-Z\d]+\.)+(?:\d+)?\s+[A-Z\s]{4,}|#{1,4}\s+.*|Section\s+[A-Z\d]+:?.*)$', 
+            re.IGNORECASE
+        )
+        
+        # Critical priority domains for security and integration audits
+        self.audit_keywords = {
+            "security": ["iam", "auth", "encryption", "tls", "rbac", "token", "secrets", "kms", "firewall", "vpc", "dmz"],
+            "integration": ["api", "webhook", "grpc", "kafka", "mq", "payload", "schema", "rest", "endpoint", "middleware"]
+        }
+
+    def _extract_sections(self, text: str) -> list:
+        """Splits the HLD into structural blocks based on section headers."""
+        matches = list(self.header_pattern.finditer(text))
+        if not matches:
+            return [("Global Context", text)]
+        
+        sections = []
+        # Handle preamble text before the first detected header
+        if matches[0].start() > 0:
+            sections.append(("Preamble", text[:matches[0].start()]))
+            
+        for i in range(len(matches)):
+            start = matches[i].start()
+            end = matches[i+1].start() if i + 1 < len(matches) else len(text)
+            header_title = matches[i].group(0).strip()
+            sections.append((header_title, text[start:end]))
+        return sections
+
+    def _tag_chunk_focus(self, chunk_text: str) -> list:
+        """Identifies specific architectural gaps and risks present in the chunk."""
+        lower_text = chunk_text.lower()
+        tags = []
+        for domain, keywords in self.audit_keywords.items():
+            if any(kw in lower_text for kw in keywords):
+                tags.append(domain.upper())
+        return tags
+
+    def create_audit_chunks(self, raw_text: str) -> list:
+        """Generates contextualized chunks optimized for token efficiency."""
+        structured_sections = self._extract_sections(raw_text)
+        final_chunks = []
+        
+        for header, section_content in structured_sections:
+            words = section_content.split()
+            
+            # If section fits safely within limits, retain it as one cohesive block
+            if len(words) <= self.chunk_size:
+                tags = self._tag_chunk_focus(section_content)
+                final_chunks.append({
+                    "metadata": {"parent_section": header, "audit_tags": tags},
+                    "content": f"[Context: {header}] [Focus: {', '.join(tags)}]\n{section_content}"
+                })
+                continue
+                
+            # If section is oversized, perform a structural sliding window split
+            start_idx = 0
+            while start_idx < len(words):
+                end_idx = start_idx + self.chunk_size
+                chunk_words = words[start_idx:end_idx]
+                chunk_text = " ".join(chunk_words)
+                
+                tags = self._tag_chunk_focus(chunk_text)
+                final_chunks.append({
+                    "metadata": {"parent_section": header, "audit_tags": tags, "split_block": True},
+                    "content": f"[Context: {header} (Continued)] [Focus: {', '.join(tags)}]\n{chunk_text}"
+                })
+                start_idx += (self.chunk_size - self.overlap)
+                
+        return final_chunks
+
+# --- Demonstration Execution ---
+if __name__ == "__main__":
+    hld_sample_data = """
+    3.1 Network Security Architecture
+    The architecture relies on a public-facing load balancer routing to a private VPC.
+    All data-at-rest within the storage subsystem must be encrypted using AWS KMS keys.
+    IAM roles enforce strict RBAC policies.
+    
+    4.2 Core Payments Integration API
+    The checkout service sends transactional payloads over HTTPS POST to the downstream middleware gateway.
+    The response schema requires Kafka message streaming brokers to update real-time telemetry pipelines.
+    """
+    
+    chunker = HLDAuditChunker(target_chunk_size=30, overlap=10)
+    processed_chunks = chunker.create_audit_chunks(hld_sample_data)
+    
+    for idx, chunk in enumerate(processed_chunks):
+        print(f"--- CHUNK {idx+1} ---")
+        print(f"Metadata: {chunk['metadata']}")
+        print(f"Body:\n{chunk['content']}\n")

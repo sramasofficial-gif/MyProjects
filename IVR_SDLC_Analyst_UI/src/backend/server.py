@@ -12,6 +12,7 @@ import asyncio # 🟢 Ensure this is imported at the top of server.py
 import threading  # 🟢 NEW: Import native thread locking module
 import hashlib
 from pydantic import BaseModel
+from typing import Optional
 import re
 
 # Cache storage tracking memory arrays
@@ -22,6 +23,12 @@ LIVE_CO_PROCESS = None
 
 # 🟢 CRITICAL DUAL-CALL LOCK PROTECTION: Global re-entrant lock structure
 GLOBAL_THREAD_LOCK = threading.RLock()
+
+# 1. Map Schema models for the Wiki extraction payload boundaries
+class HLDIngestionRequest(BaseModel):
+    document_title: str
+    raw_content: str
+    project_scope: Optional[str] = "IVR Context Validation"
 
 class DiagramGenerationRequest(BaseModel):
     file_path: str
@@ -51,7 +58,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173"
+        "*"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -90,7 +97,67 @@ def minimize_source_code(source_code: str) -> str:
     
     return "\n".join(compact_lines)
 
+@app.post("/api/hld/ingest")
+def ingest_and_segment_hld(payload: HLDIngestionRequest):
+    """
+    Captures unstructured HLD text dumps from the front-end interface or Edge bookmarklet, 
+    routes them straight down into the live Copilot Daemon instance, and forces JSON classification parsing.
+    """
+    if not payload.raw_content.strip():
+        raise HTTPException(status_code=400, detail="The transmitted document data contains no text body.")
 
+    print(f"[HLD INGESTION] Processing metadata structures for: {payload.document_title}")
+    
+    # Pack parameters explicitly targeting the segmenting instruction sets
+    script_payload = {
+        "relativePath": payload.document_title,
+        "source": payload.raw_content,
+        "diagramType": "HLD_SEGMENTATION_MODE" # Signal flag informing our Node script context logic
+    }
+
+    try:
+        proc = get_live_copilot_process()
+        
+        # Write down the pipe stream to our long-lived node worker
+        proc.stdin.write(json.dumps(script_payload) + "\n")
+        proc.stdin.flush()
+        
+        # Synchronously await response line return matching the operational step execution
+        stdout_line = proc.stdout.readline()
+        if not stdout_line:
+            raise Exception("Background generation engine disconnected on text analysis streams.")
+            
+        response_data = json.loads(stdout_line.strip())
+        if not response_data.get("success"):
+            raise HTTPException(status_code=500, detail=response_data.get("error"))
+
+        raw_json_str = response_data.get("mermaid_string", "").strip()
+
+        # Sanitize any accidental markdown code fences dropped by the model stream
+        raw_json_str = re.sub(r'^```(?:json)?\s*', '', raw_json_str, flags=re.IGNORECASE)
+        raw_json_str = re.sub(r'\s*```$', '', raw_json_str).strip()
+
+        # Convert back into a native Python dictionary object before answering downstream
+        structured_blueprint = json.loads(raw_json_str)
+        
+        return {
+            "success": True,
+            "document_title": payload.document_title,
+            "segmented_blueprint": structured_blueprint
+        }
+
+    except json.JSONDecodeError as je:
+        print("[PARSING EXCEPTION] AI failed to output standard structured data syntax profiles.")
+        print("Raw text trace:", raw_json_str)
+        raise HTTPException(status_code=522, detail="Copilot response was not valid JSON format. Try again.")
+    except Exception as e:
+        global LIVE_CO_PROCESS
+        if LIVE_CO_PROCESS:
+            try: LIVE_CO_PROCESS.kill()
+            except: pass
+            LIVE_CO_PROCESS = None
+        raise HTTPException(status_code=500, detail=str(e))
+    
 @app.get("/api/repo/tree")
 def repo_tree():
     return get_repo_tree()
