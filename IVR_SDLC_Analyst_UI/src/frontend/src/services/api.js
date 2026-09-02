@@ -101,3 +101,53 @@ export async function requestDiagramGeneration(path, content, diagramType) {
 }
 
 
+// Append these functions to the bottom of src/frontend/src/services/api.js
+
+/**
+ * Phase 1: Ingests an HLD file to generate or load the verification matrix chunk array.
+ */
+export async function generateHLDMatrix(fileObject) {
+    const formData = new FormData();
+    formData.append("file", fileObject);
+
+    const response = await fetch(`${API_URL}/hld/generate-matrix`, {
+        method: "POST",
+        body: formData // Form data handles stream multi-part payloads implicitly
+    });
+
+    return parseResponse(response);
+}
+
+/**
+ * Clear the saved server cache for a specific document filename.
+ */
+export async function clearHLDMatrixCache(filename) {
+    const response = await fetch(`${API_URL}/hld/clear-matrix-cache`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ filename })
+    });
+
+    return parseResponse(response);
+}
+
+/**
+ * Phase 2: Triggers the backend Copilot Daemon processing session for the validated matrix.
+ */
+export async function runCopilotHLDAudit(filename) {
+    const response = await fetch(`${API_URL}/hld/ingest`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            document_title: filename,
+            raw_content: "ALREADY_CACHED_ON_DISK",
+            project_scope: "IVR Analysis Engine Framework Workflow"
+        })
+    });
+
+    return parseResponse(response);
+}

@@ -1,22 +1,33 @@
 # MyProjects/IVR_SDLC_Analyst_UI/src/backend/server.py
-import os
-import subprocess
+import shutil
 import json
+import os
+import re
+import subprocess
+import pdfplumber
+import easyocr
+import numpy as np
+
 import traceback
-from fastapi import HTTPException
-from services.repo_tools import read_file  # Import your existing file reader
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
 import asyncio # 🟢 Ensure this is imported at the top of server.py
 import threading  # 🟢 NEW: Import native thread locking module
 import hashlib
 from pydantic import BaseModel
 from typing import Optional
-import re
+
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+
+from services.repo_tools import read_file  # Import your existing file reader
+
+from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+
 
 # Cache storage tracking memory arrays
 BACKEND_DIAGRAM_CACHE = {}
+
+# Global pointer for temporary state storage between Phase-1 and Phase-2
+LATEST_MATRIX_CACHE_PATH = "prioritized_audit_chunks.json"
 
 # 🟢 Global execution pointer referencing our live background Node service thread daemon
 LIVE_CO_PROCESS = None
@@ -69,7 +80,120 @@ from services.repo_tools import (
     get_repo_tree
 )
 
-import re # Ensure re is imported at the top of your server.py file
+# Re-use your optimized classes within the server pipeline framework
+class DynamicPDFExtractor:
+    """Checks for a digital font layer before choosing a parsing framework."""
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+
+    def extract_clean_text(self) -> str:
+        text_content = []
+        
+        # 1. Attempt digital text layer parsing first
+        print(f"[🔍] Evaluating digital text layer via pdfplumber: {self.file_path}")
+        with pdfplumber.open(self.file_path) as pdf:
+            for page in pdf.pages:
+                text = page.extract_text()
+                if text:
+                    text_content.append(text + "\n")
+                    
+        raw_digital_text = "".join(text_content).strip()
+        
+        if len(raw_digital_text) > 50:
+            print(f"[✔] Native text layer detected ({len(raw_digital_text)} chars). Skipping OCR.")
+            return raw_digital_text
+
+        # 2. Fallback to local OCR if font layer returns empty shapes
+        print("[⚡] Scanned PDF / Canvas shapes detected. Initializing EasyOCR Engine Fallback...")
+        ocr_text_content = []
+        reader = easyocr.Reader(['en'], gpu=False)
+        
+        with pdfplumber.open(self.file_path) as pdf:
+            total_pages = len(pdf.pages)
+            for idx, page in enumerate(pdf.pages):
+                print(f"    ↳ Fallback OCR: Scanning page {idx+1}/{total_pages}...")
+                page_image = page.to_image(resolution=150)
+                img_np = np.array(page_image.original)
+                strings = reader.readtext(img_np, detail=0)
+                if strings:
+                    ocr_text_content.append("\n".join(strings) + "\n")
+                    
+        return "\n\n".join(ocr_text_content)
+
+class HLDAuditChunker:
+    """Splits structural components into context-aware chunks for LLM security analysis."""
+    def __init__(self, target_chunk_size=1200, overlap=200):
+        self.chunk_size = target_chunk_size
+        self.overlap = overlap
+        
+        # Flexed header pattern for varying OCR layouts
+        self.header_pattern = re.compile(
+            r'(?m)^(?:\d+(?:\.\d+)*\s+[A-Z\s]{4,}|SECTION\s+[A-Z\d]+:?.*)$', 
+            re.IGNORECASE
+        )
+        
+        self.audit_keywords = {
+            "security": ["iam", "auth", "encryption", "tls", "rbac", "token", "secrets", "kms", "firewall", "vpc", "dmz"],
+            "integration": ["api", "webhook", "grpc", "kafka", "mq", "payload", "schema", "rest", "endpoint", "middleware"]
+        }
+
+    def _extract_sections(self, text: str) -> list:
+        matches = list(self.header_pattern.finditer(text))
+        
+        # FIX 1: Safe exit loop if no structural header match targets exist
+        if not matches:
+            return [["Scanned Layout / Complete HLD Stream", text]]
+        
+        sections = []
+        # FIX 2: Protected index check initialization
+        if matches[0].start() > 0:
+            sections.append(["Preamble / Introduction", text[:matches[0].start()]])
+            
+        for i in range(len(matches)):
+            start = matches[i].start()
+            end = matches[i+1].start() if i + 1 < len(matches) else len(text)
+            header_title = matches[i].group(0).strip()
+            sections.append([header_title, text[start:end]])
+        return sections
+
+    def _tag_chunk_focus(self, chunk_text: str) -> list:
+        lower_text = chunk_text.lower()
+        tags = []
+        for domain, keywords in self.audit_keywords.items():
+            if any(kw in lower_text for kw in keywords):
+                tags.append(domain.upper())
+        return tags
+
+    def create_audit_chunks(self, raw_text: str) -> list:
+        structured_sections = self._extract_sections(raw_text)
+        final_chunks = []
+        
+        for header, section_content in structured_sections:
+            words = section_content.split()
+            
+            if len(words) <= self.chunk_size:
+                tags = self._tag_chunk_focus(section_content)
+                final_chunks.append({
+                    "metadata": {"parent_section": header, "audit_tags": tags},
+                    "content": f"[Context: {header}] [Focus: {', '.join(tags)}]\n{section_content}"
+                })
+                continue
+                
+            start_idx = 0
+            while start_idx < len(words):
+                end_idx = start_idx + self.chunk_size
+                chunk_words = words[start_idx:end_idx]
+                chunk_text = " ".join(chunk_words)
+                
+                tags = self._tag_chunk_focus(chunk_text)
+                final_chunks.append({
+                    "metadata": {"parent_section": header, "audit_tags": tags, "split_block": True},
+                    "content": f"[Context: {header} (Cont.)] [Focus: {', '.join(tags)}]\n{chunk_text}"
+                })
+                start_idx += (self.chunk_size - self.overlap)
+                
+        return final_chunks
+
 
 def minimize_source_code(source_code: str) -> str:
     """
@@ -97,66 +221,170 @@ def minimize_source_code(source_code: str) -> str:
     
     return "\n".join(compact_lines)
 
+# --- Phase 1: Ingestion & Matrix Compiling Endpoint ---
+def get_file_cache_path(filename: str) -> str:
+    """Generates an isolated storage filename based on the document name."""
+    # Sanitize filename to prevent directory traversal issues
+    safe_name = "".join([c for c in filename if c.isalpha() or c.isdigit() or c in ['.', '_', '-']]).strip()
+    return f"matrix_cache_{safe_name}.json"
+
+
+@app.post("/api/hld/generate-matrix")
+async def generate_verified_matrix(file: UploadFile = File(...)):
+    """
+    Phase 1: Ingests an HLD, checks if a cache file exists for this specific filename,
+    and returns it instantly. Otherwise, runs the full OCR/Parsing pipeline.
+    """
+    _, file_ext = os.path.splitext(file.filename)
+    file_ext = file_ext.lower()
+    
+    target_cache_path = get_file_cache_path(file.filename)
+
+    # 🟢 CHECK FILENAME CACHE FIRST: Instant load if this specific file was processed earlier
+    if os.path.exists(target_cache_path):
+        print(f"[CACHE HIT] Serving pre-existing matrix for file: {file.filename}")
+        with open(target_cache_path, "r", encoding="utf-8") as f:
+            matrix_chunks = json.load(f)
+        return {
+            "success": True,
+            "filename": file.filename,
+            "matrix": matrix_chunks,
+            "loaded_from_cache": True
+        }
+
+    # Cache Miss: Run your standard local extraction steps
+    temp_file_path = f"temp_upload_{file.filename}"
+    with open(temp_file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    try:
+        raw_text_extracted = ""
+        if file_ext == ".pdf":
+            extractor = DynamicPDFExtractor(temp_file_path)
+            raw_text_extracted = extractor.extract_clean_text()
+        elif file_ext in [".txt", ".html", ".htm"]:
+            with open(temp_file_path, "r", encoding="utf-8", errors="ignore") as f:
+                raw_text_extracted = f.read()
+
+        # Build chunks structure array matrix
+        chunker = HLDAuditChunker(target_chunk_size=1000, overlap=150)
+        matrix_chunks = chunker.create_audit_chunks(raw_text_extracted)
+
+        # Save to disk using the specific filename key
+        with open(target_cache_path, "w", encoding="utf-8") as f:
+            json.dump(matrix_chunks, f, indent=2)
+
+        if os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
+
+        return {
+            "success": True,
+            "filename": file.filename,
+            "matrix": matrix_chunks,
+            "loaded_from_cache": False
+        }
+
+    except Exception as e:
+        if os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/hld/clear-matrix-cache")
+def clear_matrix_cache(payload: dict):
+    """
+    Deletes the saved JSON file for a specific filename, forcing a fresh re-parse.
+    """
+    filename = payload.get("filename")
+    if not filename:
+        raise HTTPException(status_code=400, detail="Missing target filename identifier.")
+        
+    target_cache_path = get_file_cache_path(filename)
+    if os.path.exists(target_cache_path):
+        os.remove(target_cache_path)
+        print(f"[CACHE RESET] Cleared cached matrix for: {filename}")
+        return {"success": True, "message": "Cache successfully cleared."}
+    return {"success": True, "message": "No cache found for this file."}
+
 @app.post("/api/hld/ingest")
 def ingest_and_segment_hld(payload: HLDIngestionRequest):
     """
-    Captures unstructured HLD text dumps from the front-end interface or Edge bookmarklet, 
-    routes them straight down into the live Copilot Daemon instance, and forces JSON classification parsing.
+    Phase 2: Reads the validated local matrix from disk, filters targets,
+    and runs them sequentially through the long-lived Copilot Daemon.
     """
-    if not payload.raw_content.strip():
-        raise HTTPException(status_code=400, detail="The transmitted document data contains no text body.")
+    target_cache_path = get_file_cache_path(payload.document_title)
 
-    print(f"[HLD INGESTION] Processing metadata structures for: {payload.document_title}")
+    if not os.path.exists(target_cache_path):
+        raise HTTPException(status_code=404, detail="No verification matrix found. Please run Phase-1 first.")
+
+    print(f"[HLD AUDIT] Loading cached matrix for: {payload.document_title}")
     
-    # Pack parameters explicitly targeting the segmenting instruction sets
-    script_payload = {
-        "relativePath": payload.document_title,
-        "source": payload.raw_content,
-        "diagramType": "HLD_SEGMENTATION_MODE" # Signal flag informing our Node script context logic
+    # 1. Load the locally saved matrix chunks
+    with open(target_cache_path, "r", encoding="utf-8") as f:
+        matrix_chunks = json.load(f)
+        
+    aggregated_blueprint = {
+        "document_metadata": { "title": payload.document_title, "segments_found": 0 },
+        "review_required_sections": [],
+        "ivr_flow_requirements": []
     }
 
     try:
         proc = get_live_copilot_process()
         
-        # Write down the pipe stream to our long-lived node worker
-        proc.stdin.write(json.dumps(script_payload) + "\n")
-        proc.stdin.flush()
-        
-        # Synchronously await response line return matching the operational step execution
-        stdout_line = proc.stdout.readline()
-        if not stdout_line:
-            raise Exception("Background generation engine disconnected on text analysis streams.")
+        # 2. Filter and loop through chunks with identified risks
+        for idx, chunk in enumerate(matrix_chunks):
+            tags = chunk["metadata"]["audit_tags"]
+            header_context = chunk["metadata"]["parent_section"]
             
-        response_data = json.loads(stdout_line.strip())
-        if not response_data.get("success"):
-            raise HTTPException(status_code=500, detail=response_data.get("error"))
+            # Skip filler pages to optimize tokens
+            if not tags:
+                continue
+                
+            print(f"   ↳ Auditing block {idx+1}/{len(matrix_chunks)}: [{header_context}]")
+            
+            script_payload = {
+                "relativePath": f"{payload.document_title} -> {header_context}",
+                "source": chunk["content"],
+                "diagramType": "HLD_SEGMENTATION_MODE"
+            }
 
-        raw_json_str = response_data.get("mermaid_string", "").strip()
+            proc.stdin.write(json.dumps(script_payload) + "\n")
+            proc.stdin.flush()
+            
+            stdout_line = proc.stdout.readline()
+            if not stdout_line:
+                raise Exception("Copilot background daemon disconnected.")
+                
+            response_data = json.loads(stdout_line.strip())
+            if not response_data.get("success"):
+                continue
 
-        # Sanitize any accidental markdown code fences dropped by the model stream
-        raw_json_str = re.sub(r'^```(?:json)?\s*', '', raw_json_str, flags=re.IGNORECASE)
-        raw_json_str = re.sub(r'\s*```$', '', raw_json_str).strip()
+            raw_json_str = response_data.get("mermaid_string", "").strip()
+            raw_json_str = re.sub(r'^```(?:json)?\s*', '', raw_json_str, flags=re.IGNORECASE)
+            raw_json_str = re.sub(r'\s*```$', '', raw_json_str).strip()
 
-        # Convert back into a native Python dictionary object before answering downstream
-        structured_blueprint = json.loads(raw_json_str)
-        
+            try:
+                chunk_blueprint = json.loads(raw_json_str)
+                if "review_required_sections" in chunk_blueprint:
+                    aggregated_blueprint["review_required_sections"].extend(chunk_blueprint["review_required_sections"])
+                if "ivr_flow_requirements" in chunk_blueprint:
+                    aggregated_blueprint["ivr_flow_requirements"].extend(chunk_blueprint["ivr_flow_requirements"])
+            except json.JSONDecodeError:
+                continue
+
+        total_segments = len(aggregated_blueprint["review_required_sections"]) + len(aggregated_blueprint["ivr_flow_requirements"])
+        aggregated_blueprint["document_metadata"]["segments_found"] = total_segments
+
         return {
             "success": True,
             "document_title": payload.document_title,
-            "segmented_blueprint": structured_blueprint
+            "segmented_blueprint": aggregated_blueprint
         }
 
-    except json.JSONDecodeError as je:
-        print("[PARSING EXCEPTION] AI failed to output standard structured data syntax profiles.")
-        print("Raw text trace:", raw_json_str)
-        raise HTTPException(status_code=522, detail="Copilot response was not valid JSON format. Try again.")
     except Exception as e:
-        global LIVE_CO_PROCESS
-        if LIVE_CO_PROCESS:
-            try: LIVE_CO_PROCESS.kill()
-            except: pass
-            LIVE_CO_PROCESS = None
         raise HTTPException(status_code=500, detail=str(e))
+
     
 @app.get("/api/repo/tree")
 def repo_tree():

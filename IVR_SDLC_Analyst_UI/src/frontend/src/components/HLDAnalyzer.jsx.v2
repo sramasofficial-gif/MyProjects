@@ -1,0 +1,180 @@
+import { useState } from "react";
+
+export default function HLDAnalyzer() {
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [verificationMatrix, setVerificationMatrix] = useState(null);
+    const [analysisResult, setAnalysisResult] = useState(null);
+    const [isLoadedFromCache, setIsLoadedFromCache] = useState(false);
+
+    // 1. File Selection with Automatic Background Cache Checking
+    async function handleFileSelection(e) {
+        const fileList = e.target.files;
+        if (!fileList || fileList.length === 0) return;
+
+        const fileObj = fileList[0]; // 🟢 Explicitly isolated index 0 single file object
+        setError("");
+        setSelectedFile(fileObj);
+        setVerificationMatrix(null);
+        setAnalysisResult(null);
+        setIsLoadedFromCache(false);
+
+        try {
+            const formData = new FormData();
+            formData.append("file", fileObj);
+
+            setLoading(true);
+            const response = await fetch("http://127.0.0.1:8000/api/hld/generate-matrix", {
+                method: "POST",
+                body: formData
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.loaded_from_cache) {
+                    setVerificationMatrix(data.matrix);
+                    setIsLoadedFromCache(true);
+                }
+            }
+        } catch (err) {
+            console.log("Automatic matrix pre-check bypassed.", err);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // Manual fall-through execution if it was a cache miss
+    async function triggerPhase1MatrixIngestion() {
+        if (!selectedFile) return;
+        setLoading(true);
+        setError("");
+
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/hld/generate-matrix", {
+                method: "POST",
+                body: formData
+            });
+            if (!response.ok) throw new Error("Matrix processing pipeline failure.");
+            const data = await response.json();
+            setVerificationMatrix(data.matrix);
+            setIsLoadedFromCache(data.loaded_from_cache);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // 🟢 NEW: Clear explicit cache file line item and force immediate fresh rerun re-parse
+    async function handleForcedCacheClear() {
+        if (!selectedFile) return;
+        setLoading(true);
+        try {
+            const response = await fetch("http://127.0.0.1:8000/api/hld/clear-matrix-cache", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ filename: selectedFile.name })
+            });
+            if (response.ok) {
+                setVerificationMatrix(null);
+                setAnalysisResult(null);
+                setIsLoadedFromCache(false);
+                // Trigger a clean, forced re-parse immediately
+                triggerPhase1MatrixIngestion();
+            }
+        } catch (err) {
+            setError("Failed to reset backend cache matrix correctly.");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function confirmAndTriggerLLMReview() {
+        if (!currentDocHashId) return;
+        setLoading(true);
+        setError("");
+
+        try {
+            const response = await fetch("http://127.0.0", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    document_title: selectedFile.name,
+                    doc_hash_id: currentDocHashId, // Bound extraction tasks tightly to this instance ID
+                    raw_content: "CACHED_INSTANCE_ROUTING"
+                })
+            });
+            if (!response.ok) throw new Error("Copilot cluster session execution exception.");
+            const data = await response.json();
+            setAnalysisResult(data.segmented_blueprint);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    return (
+        <section style={{ padding: "24px", fontFamily: "Segoe UI, sans-serif", display: "grid", gridTemplateColumns: "320px 1fr", gap: "24px" }}>
+            
+            {/* Sidebar Controls Layout Panel Pane */}
+            <div style={{ background: "#fff", padding: "20px", borderRadius: "8px", border: "1px solid #e2e8f0", height: "fit-content", display: "flex", flexDirection: "column", gap: "16px" }}>
+                <div>
+                    <h3 style={{ margin: "0 0 4px 0" }}>Multi-HLD Portal</h3>
+                    <p style={{ margin: 0, fontSize: "0.8rem", color: "#64748b" }}>Isolated processing workspace panels</p>
+                </div>
+
+                <div style={{ background: "#f8fafc", padding: "12px", borderRadius: "6px", border: "1px dashed #cbd5e1" }}>
+                    <input type="file" accept=".pdf,.txt,.html" onChange={handleFileSelection} style={{ fontSize: "0.85rem", width: "100%" }} />
+                </div>
+
+                <button onClick={triggerPhase1MatrixIngestion} disabled={loading || !selectedFile} style={{ background: "#0f6cbd", color: "#fff", padding: "10px", border: "none", borderRadius: "6px", fontWeight: "600", cursor: "pointer" }}>
+                    {loading ? "Parsing File..." : "🔍 Ingest & Analyze Document"}
+                </button>
+
+                {verificationMatrix && (
+                    <button onClick={handleForcedCacheClear} disabled={loading} style={{ background: "#fff", color: "#dc2626", padding: "8px", border: "1px solid #fca5a5", borderRadius: "6px", fontSize: "0.85rem", fontWeight: "600", cursor: "pointer" }}>
+                        🔄 Force Clear Cache & Re-parse
+                    </button>
+                )}
+
+                {error && <div style={{ color: "#ef4444", fontSize: "0.85rem" }}>{error}</div>}
+            </div>
+
+            {/* Main Operations Terminal Pane Display Column */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                {loading && <div style={{ textAlign: "center", padding: "40px" }}>Evaluating document context matrix rules arrays...</div>}
+
+                {verificationMatrix && !analysisResult && !loading && (
+                    <div style={{ background: "#fff", padding: "20px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", borderBottom: "1px solid #e2e8f0", paddingBottom: "12px" }}>
+                            <div>
+                                <h3 style={{ margin: 0, color: "#0f6cbd" }}>
+                                    Verification Matrix {isLoadedFromCache && <span style={{ fontSize: "0.75rem", background: "#e0f2fe", color: "#0369a1", padding: "2px 8px", borderRadius: "20px", marginLeft: "6px" }}>Auto-Loaded From Disk Cache</span>}
+                                </h3>
+                                <p style={{ margin: 0, fontSize: "0.85rem", color: "#64748b" }}>Document Signature Key ID: <span style={{ fontFamily: "monospace" }}>{currentDocHashId.substring(0, 12)}...</span></p>
+                            </div>
+                            <button onClick={confirmAndTriggerLLMReview} style={{ background: "#16a34a", color: "#fff", padding: "10px 16px", border: "none", borderRadius: "6px", fontWeight: "600", cursor: "pointer" }}>Confirm & Run Copilot Audit →</button>
+                        </div>
+
+                        {/* Rendering verification matrix row loop rows continues identically here... */}
+                        <div style={{ display: "flex", flexDirection: "column", gap: "10px", maxHeight: "450px", overflowY: "auto" }}>
+                            {verificationMatrix.map((chunk, idx) => (
+                                <div key={idx} style={{ border: "1px solid #e2e8f0", borderRadius: "6px", padding: "12px", borderLeft: chunk.metadata.audit_tags.length ? "4px solid #0f6cbd" : "4px solid #cbd5e1" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                        <span style={{ fontWeight: "600", fontSize: "0.85rem" }}>{chunk.metadata.parent_section}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+                {/* Final phase-2 analysis report content cards section loops seamlessly follow here... */}
+            </div>
+        </section>
+    );
+}

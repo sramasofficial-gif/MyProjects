@@ -1,0 +1,1200 @@
+[
+  {
+    "metadata": {
+      "parent_section": "Preamble / Introduction",
+      "audit_tags": []
+    },
+    "content": "[Context: Preamble / Introduction] [Focus: ]\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI)\nCreated by Robert Ascan\nEXT, last modified yesterday al 7.25 PM\nPurpose of HLD\nThe High Level Design Document (HLD) is the single solution document created during\nproject: It contains solution summary; architectural informatian and solution\ndelails that are used as a input far development\ntesting activities_\nto\nComplete this Document\nThe BSA (or Solution Delivery Manager in the case where the project is without\nBSA) is responsible for collating information and populating Business Section\n(Section\nof this document\nThe Solution Architect (SA}; with input from the Infra Solution Architect; ICSU and the Enterprise Architect is responsible for completing the Architecture Section\n(Section 2) of this document\nAfter the completion of Sections\nand 2, the SA is responsible for submitting the HLD to the DA for approval\nSequel to DA approval; the BSA\nSolution Delivery Manager in the case where the project is withaut a BSA) is responsible for coordinating and consolidating\ninputs from requisite Tech teams to complete the Technica\nSection (Section 3) of this document and obtaining sign-offs as required:\nThis document must be submitted technical and business stakeholder appravals via Jira workflow, leveraging a\nHLD ticket (see How to Create an HLD\nArtifact ticket for\ndetails)\nIt is recommended that this document (HLD} be hosted as\nshared document on the Project website so updates can be made simultaneously by participating\nstakeholders\nProject ID\nCMC24-115\nProject Delivery Owner\nSougat\nProject Name\nRBCCR - Conlact center replatfarm project\nProject Manager\nRamesh Krishna\nPackage\nBusiness Owner\nOlya Sanakoev\nNumber\nEngagement Manager\nRachel\nPyo\nPackage Name\nSolution Architect\nRobert Ascan\nAbhishek Suman\nProduct owner\nNeil Campbell\nSuyash Vij\nBusiness System\nAnalyst\nDocument Version History\nDate\nVersion\nDescription\nName\n10 Dec 2024\nFirst Draft (For Development stage)\nRobert\nAscan\n18 Dec 2024\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.1\nUprlated the TSYS authentication mechanism from API Key to TSYS HMAC as\nRobert\noutlined in Ihe TSYS APIs authentication\nFinancial and Emerging Services\nAscan",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 1.1\nUprlated the TSYS authentication mechanism from API Key to TSYS HMAC as\nRobert\noutlined in Ihe TSYS APIs authentication\nFinancial and Emerging Services\nAscan] [Focus: SECURITY, INTEGRATION]\n1.1\nUprlated the TSYS authentication mechanism from API Key to TSYS HMAC as\nRobert\noutlined in Ihe TSYS APIs authentication\nFinancial and Emerging Services\nAscan\nRogers Wiki; This update corrects\nmisnomer in previous HLD versions\nThe TSYS\nHMAC mechanism has been in place since\none_\n15 Jan 2025\nAdded a new use case (Get Account Info by ANI match}: included in the scope for\nRobert\nPCI; and further refined descriptions across all sections with additional low-level\nAscan\ntechnical details to enhance design clarity_\nUpdated IAM resources in Section\n2.7.4.2, further narrowing (he scope of permissions to tighten security: Revised\ndiagrams in Sections 2.5_\nand 2.\nto better illustrate Ihe public cryptographic\nhandling mechanism:\nEnhanced Section 2\nwith lower-level technical details to\nclarify the sensitive cardholder data handling process in callfaudio and agent screen\nrecordings. Added AWS\nVetwork Firewall to the architecture\nfollowing new\ndiscovery that TSYS cannot provide\nstatic IP range_\nThese updates do not alter the existing mechanisms for data handling or security\ncontrols_\nnttps  {reqcentral:\ncomfwikilpageslviewpage.action?pageld-728793978\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "140\nand\nHow\nJira\nRay\nday\nkey",
+      "audit_tags": []
+    },
+    "content": "[Context: 140\nand\nHow\nJira\nRay\nday\nkey] [Focus: ]\n140\nand\nHow\nJira\nRay\nday\nkey\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nDocBrrlentiNaming and Versioning\nincorporate the following naming and versioning conventions:\nDocument Versioning\nDocument Name\nProject-id\nProject-name Deliverable-name.doc\nWork in progress file with date stamp\nProject-id Project-name Deliverable-name\nvyyyy-mm-dd.doc\nWork in progress file with tracked updates\nProject-id Project-name Deliverable-name\nvyyyy-mm-dd Name-Initials,doc\nVersioned file\nProject-id Project-name Deliverable-name\nv1.O.doc\nTable of Contents\nPurpose of HLD\nHow t0 Complete this Document\nDocument Version History\nDocument\nNaming and Versioning\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "0 Business Section",
+      "audit_tags": []
+    },
+    "content": "[Context: 0 Business Section] [Focus: ]\n0 Business Section\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.1 Business Solution Summary",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.1 Business Solution Summary] [Focus: ]\n1.1 Business Solution Summary\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.2 Project Objectives",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.2 Project Objectives] [Focus: ]\n1.2 Project Objectives\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.3 Solution Summary\nReferenced Documents",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.3 Solution Summary\nReferenced Documents] [Focus: ]\n1.3 Solution Summary\nReferenced Documents\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "4.1 In Scope",
+      "audit_tags": []
+    },
+    "content": "[Context: 4.1 In Scope] [Focus: ]\n4.1 In Scope\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.4.2 Out of Scope",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.4.2 Out of Scope] [Focus: ]\n1.4.2 Out of Scope\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.4.3 Uses Cases In Scope",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.4.3 Uses Cases In Scope] [Focus: ]\n1.4.3 Uses Cases In Scope\n1,4.4 Use Cases out of Scope\n5 Assumptions, Risks and Constraints\n1.6 Business Processes/Considerations\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.7 Deployment Approach",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.7 Deployment Approach] [Focus: ]\n1.7 Deployment Approach\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.0 Solution Architecture",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.0 Solution Architecture] [Focus: ]\n2.0 Solution Architecture\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.1 Project Context",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.1 Project Context] [Focus: ]\n2.1 Project Context\n2.1.1 In-Scope Applications\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.2 Application Communication",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.2 Application Communication] [Focus: ]\n2.2 Application Communication\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.3 Enterprise Services",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.3 Enterprise Services] [Focus: ]\n2.3 Enterprise Services\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.4 Use Case Realization",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.4 Use Case Realization] [Focus: ]\n2.4 Use Case Realization\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.4.1 Business Processes",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.4.1 Business Processes] [Focus: ]\n2.4.1 Business Processes\n2.5_\nInformation Model\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.5.2 Data Flow Diagram",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.5.2 Data Flow Diagram] [Focus: ]\n2.5.2 Data Flow Diagram\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.5.4 Data Container Details",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.5.4 Data Container Details] [Focus: ]\n2.5.4 Data Container Details\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.5.5 Information Objects",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.5.5 Information Objects] [Focus: ]\n2.5.5 Information Objects\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.6 Data Governance",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.6 Data Governance] [Focus: ]\n2.6 Data Governance\n(Rogers Bank)\n2.6\nDatallnformation Ownership & Stewardship\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.6.2 Data Lifecycle and Retention",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.6.2 Data Lifecycle and Retention] [Focus: ]\n2.6.2 Data Lifecycle and Retention\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.6.3 Metadata Management",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.6.3 Metadata Management] [Focus: ]\n2.6.3 Metadata Management\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.6.5 Provenance and Lineage",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.6.5 Provenance and Lineage] [Focus: ]\n2.6.5 Provenance and Lineage\n2.6.8 Data Integrity and Quality, Ingestion & Extraction\n2.6.\nData Integration\n2.6.8 Data Access & Use\nN/A\n2.6.9 Use of Third Parties & Third-Party Data\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.6.10 Data Residency",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.6.10 Data Residency] [Focus: ]\n2.6.10 Data Residency\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.7 Security Architecture",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.7 Security Architecture] [Focus: ]\n2.7 Security Architecture\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.7.1 Security Solution\nPublic Subnet NACL Configuration\nPrivate Subnet NACL Configuration",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.7.1 Security Solution\nPublic Subnet NACL Configuration\nPrivate Subnet NACL Configuration] [Focus: ]\n2.7.1 Security Solution\nPublic Subnet NACL Configuration\nPrivate Subnet NACL Configuration\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.7.2 Encryption\nData at Rest",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 2.7.2 Encryption\nData at Rest] [Focus: SECURITY, INTEGRATION]\n2.7.2 Encryption\nData at Rest\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.7.3 Encryption\nData in Transit",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 2.7.3 Encryption\nData in Transit] [Focus: SECURITY]\n2.7.3 Encryption\nData in Transit\n2.7.4 Identity and Access Management (IAM)\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.7.4.2 AWS Applications IAM authorization and access control details",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 2.7.4.2 AWS Applications IAM authorization and access control details] [Focus: SECURITY]\n2.7.4.2 AWS Applications IAM authorization and access control details\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.8 Other Architectural Characteristics",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.8 Other Architectural Characteristics] [Focus: ]\n2.8 Other Architectural Characteristics\n2.8.\nAvailability; Scalability, Reliability and Maintainability\nAWS\nambda Development & Deployment (CIICD pipeline)\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.8.2 Disaster Recovery",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.8.2 Disaster Recovery] [Focus: ]\n2.8.2 Disaster Recovery\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.8.3 Response",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.8.3 Response] [Focus: ]\n2.8.3 Response\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.8.4 Industry Compliance",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.8.4 Industry Compliance] [Focus: ]\n2.8.4 Industry Compliance\n2.8.5 Volumetric & Service\nevel Agreement\nHigh Level Impact Analysis\nVolumetric & Service Level Agreement\nHigh Level Impact Analysis\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.8.6 Enterprise Application Monitoring\nTechnical Solution",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.8.6 Enterprise Application Monitoring\nTechnical Solution] [Focus: ]\n2.8.6 Enterprise Application Monitoring\nTechnical Solution\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.3 Application",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.3 Application] [Focus: ]\n3.3 Application\n3.3.1\nApplication Overview:\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.3.2 Application architectureldesign",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.3.2 Application architectureldesign] [Focus: ]\n3.3.2 Application architectureldesign\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.3.3 Application Security Specifications",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.3.3 Application Security Specifications] [Focus: ]\n3.3.3 Application Security Specifications\nSee section 2.7 Security Architecture\nhttps Ilreqcentral comfwikilpageslviewpage action?pageld-728793978\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2140\nView\nTime",
+      "audit_tags": []
+    },
+    "content": "[Context: 2140\nView\nTime] [Focus: ]\n2140\nView\nTime\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nentr?\nSolution\nRelleaHrigctuev\nLevel Technical Solution\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.5.2.1\nConcepts\nRefer to Sec",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.5.2.1\nConcepts\nRefer to Sec] [Focus: ]\n3.5.2.1\nConcepts\nRefer to Sec\n1.3\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.5.2.2 Environments",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.5.2.2 Environments] [Focus: ]\n3.5.2.2 Environments\nDEV, STG\nQA, PROD\nSame as in Sec 3.5.2.2 of the HLD - Card Viewer (PCI) (refer to the\nReferenced Documents'\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "section in Sec 1.3 for the",
+      "audit_tags": []
+    },
+    "content": "[Context: section in Sec 1.3 for the] [Focus: ]\nsection in Sec 1.3 for the\nlink}\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.5.2.3 Locations",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.5.2.3 Locations] [Focus: ]\n3.5.2.3 Locations\nSame as in Sec 3.5.2.3 of the HLD - Card Viewer (PCI} (refer to the \"Referenced Documents\" section in Sec 1.3 for the link)\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.5.2.4 Network Security Zones",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.5.2.4 Network Security Zones] [Focus: ]\n3.5.2.4 Network Security Zones\nSame a5 in Sec 3.5.2.4 of the HLD\nCard Viewer (PCI} (refer to the \"Referenced Documents\" section in Sec 1.3 for the link)\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "4.0 Approvals",
+      "audit_tags": []
+    },
+    "content": "[Context: 4.0 Approvals] [Focus: ]\n4.0 Approvals\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "5.0 Appendix",
+      "audit_tags": []
+    },
+    "content": "[Context: 5.0 Appendix] [Focus: ]\n5.0 Appendix\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "5.1 List of Contributors",
+      "audit_tags": []
+    },
+    "content": "[Context: 5.1 List of Contributors] [Focus: ]\n5.1 List of Contributors\n5.2 Sign-Off Definitions\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "5.3 Document Abbreviations",
+      "audit_tags": []
+    },
+    "content": "[Context: 5.3 Document Abbreviations] [Focus: ]\n5.3 Document Abbreviations\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.0 Business Section",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.0 Business Section] [Focus: ]\n1.0 Business Section\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.1 Business Solution Summary",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.1 Business Solution Summary] [Focus: ]\n1.1 Business Solution Summary\nRogers bank currently uses outsourced vendors for Contact Centre Technology: The Contact Centre Replatform Project will replace the existing vendor owned\ntechnology\nAmazon Web Services Connect: The AWS Connect platform will serve as\nService contact centre solution that will reduce operationa\ncast, increase\ncontact centre flexibility and deliver framework for an improved customer experience_\nThe project will deliver\ntechnology capable of enhancing the customer experience by driving improved options for self-service, and empowering contextual interactions\nacross\ners Bank channels_\nAWS Connect solution will drive\nricher interaction with Contact Centre agents , improving the customer experience by serving context\nand\nfacilitating\nmore personalized conversation\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.2 Project Objectives",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.2 Project Objectives] [Focus: ]\n1.2 Project Objectives\n1) Build Contact Centre platform flexibility and agility by replacing the existing technology stack with AWS Connect Contact Centre as a Service (CCaaS)\n2) Implement\nmodernized\nfuture ready digital\nplatform that enables OMNI channel interactions across Rogers Bank service properties\n3) Enrich Contact Centre interactions by presenting data driven context\nwith Al enhanced recommendations that drive customer experience_\n4) Accelerate Contact Centre efficiencies through expanded self service , agent tooling automated workflows and enhanced data\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.3 Solution Summary\nThe\nfollowing provides",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 1.3 Solution Summary\nThe\nfollowing provides] [Focus: SECURITY]\n1.3 Solution Summary\nThe\nfollowing provides\nhigh-level overview of the solution's architecture, highlighting\ncomponents and their interactions within the system:\nOverview of PCI Solution for CCR (MVP}\nThe CCRIRBCONNECT handles sensitive customer \"Account Data\nof its core functionality: To reduce and narrow the PCI DSS compliance scope,\nRBCONNECT will leverage Rogers Bank\"s Cardholder Data Environment (CDE), which was created as part of the PCI\nsolution for Instant Credit (IC). This CDE design\nand implementatian are cavered in the HLD\nCard Viewer (PCI) document (referenced in the section \"Referenced Documents'\nbelow)_\nThe solution described in this HLD is designed to safeguard sensitive customer data at every stage\nfrom initiab\ndata collection in Amazon Connect t0 secure\ncommunication with TSYS and back\nensuring full compliance with PCI DSS standards_\nNo sensitive authentication data (PIN) is recorded, stored_\nlogged anywhere in the system (outside of TSYS) All processing of sensitive authentication\ndata is performed in volatile memory (RAM} and is not persistent:\nCardholder data (PAN) is not logged anywhere in the system_\nThrough the use of robust\nencryption methods\nsecure credential management, and meticulous segmentation and segregation of roles gnd data, the system ensures\nthat customers can securely set, update_\nverify their PINs and retrieve card information. Strong IAM policies and secure authentication and authorization\nmechanisms further enhance protection_\nsafeguarding sensitive infomation while enabling seamless execution of business logic_\nThis approach delivers\nsecure; efficient, and user-friendly customer experience _\nnttps  {reqcentral:\ncomfwikilpageslviewpage.action?pageld-728793978\n3/40\nKey\nwith\nRoge\nalong\nkey\npart\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\nAWS\nGet PIN, Set PIN,\nPAN\nPIN:\nGet,\nUpdate-\nGet Acc Info by PAN\nPhone-\nGet\nCDE\nGel Acc Info by ANI\nCustomer\nAcc;\nInfo\nPCI Data\"\nPIN truelfalse _\n~Non-PCI Data\nNon-PCI Data-\nor successifail\nAmazon Connect\n4-\nRccucst\nRcsocngc\nRcsponsc\nvith PCI Dala\nPCI Dala\nPCI Data\nReferenced Documents\nProvide links\nversion dates to the additional documents listed below:\nDocument\nLocation\nDate\nVersion\nBusiness\nCMC24-115\nContact Centre\nDec 2024\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.8\nRequirements\nReplatform\nMVP\nBRD\nDocument",
+      "audit_tags": [
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 1.8\nRequirements\nReplatform\nMVP\nBRD\nDocument] [Focus: INTEGRATION]\n1.8\nRequirements\nReplatform\nMVP\nBRD\nDocument\nv1.8\nFinal docx\n(BRD)\nUse Cases\nIVR Flows MVP\nFinancial and\nWIP\nEmerging Services\nRogers\nWiki\nGet Account by ANI API\nFinancial and Emerging\nServices\nRogers Wiki\nCyber STARR\n[CST-42303] RB CCR - AWS\nConnect\nJira Prod\n(reqcentral com)\nHLD for CCR\nHigh\nevel Design\nContact\nWIP\nMVP (Non-\nCenter Re-Platform\nMVP (non-\nPCI)\nPCI) - Financial and Ernerging\nServices\nRogers Wiki\n(reqcentral cam)\nHLD\nCard\nHigh Level Design document -\nWIP\nViewer (PCI)\nCard Viewer (PCI)\nFinancial\nand Emerging Services\nRogers Wiki (reqcentral.com)\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.4 Scope Statement",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.4 Scope Statement] [Focus: ]\n1.4 Scope Statement\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.4.1 In Scope",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.4.1 In Scope] [Focus: ]\n1.4.1 In Scope\nThe in-scope statement should clearly mention the functional deliverables that will be delivered a5\npart of this solution\nImpacted\nIn Scope\nNew\nArea\nIModified\nAWS\nAmazon Connect: AWS public cloud\nModified\nConnect\ncustomer contact center service\nFramework\nCustomer\nAmazon Connect Flows\nNew\nExperience\nIdentification (PAN, Customer\nIdentification using PAN)\nIdentification (Phone number;\nCustomer Identification using ANI)\nnttps  {reqcentral:\ncomfwikilpageslviewpage.action?pageld-728793978\n4140\nSct;\nMiraj\nand\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nentnle aptatorm\nIn Scope\nNew\nArea\nIModified\nSelf-Services\nUpdate PIN\nSet PIN\nVerify PIN\nIntegrations\nTSYS\nNew\nAzure\nDevSecOps (Terraform modules ,\nModified\nDevOps\nAzure Pipeline}\nCDE\nPCI CDE environment to associate\nModified\nselect CCR lambdas with and provide\naccess to TSYS services\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.4.2 Out of Scope",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.4.2 Out of Scope] [Focus: ]\n1.4.2 Out of Scope\nThe Out-of-Scope statement should clearly mention the functionality that will not be delivered as a part of this solution\nImpacted\nOut of Scope\nArea\nPCE\nDesign of CDE environment\nEnvironment\nincluding CVCD infra (Existing}\n& Processes\nNon-PCI\nThe Non-PCI design for\nRBCONNECT\nRBCONNECT is part of a\nDetails\nseparate HLD_\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.4.3 Uses Cases In Scope\nCategory\nUse case\nObjective\nIVR Flow\nIdentification",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 1.4.3 Uses Cases In Scope\nCategory\nUse case\nObjective\nIVR Flow\nIdentification] [Focus: SECURITY, INTEGRATION]\n1.4.3 Uses Cases In Scope\nCategory\nUse case\nObjective\nIVR Flow\nIdentification\nGet Account Info by PAN - Identify customers by\nAbility for an Agent t0 request customer'$ PAN\nGet Account by ANI API\nFinanci\nrequesting their 16 digit PAN if ANI (Automatic Number\nand use it to manually look up the account in\nEmerging Services\nRogers Wik\nIdentification}\nmatching failed.\nTCS GUI.\nIdentification\nGet Account Info by ANI - Identify customers using their\nAbility to get customer details using the phone\nGet Account by ANI API\nFinanci\nphone number from which\nare\ncalling (ANI Match}\nnumber the customer calling from, instead of\nEmerging Services\ners Wik\nasking to enter the PAN:\nSelf-service\nPIN Update\nAs a user\nwould Iike to change PIN for my\nAbility to set or update PIN_\nIVR Flows MVP#ChangePIN\nPIN functions\nexisting card_\nAbility t0 authenticate user based on PIN.\nPIN Set - As\nuser\nwould like to set my PIN for my new\ncard_\nIVR Flows MVP#ChangePIN\nPIN Verify\nAs an agent,\ncan redirect customer{user t0\ncomplete PIN authentication and get the Authentication\nIVR Flows MVP#PINValidation\nstatus back in agent desktop\nPIN Verify\nsystem user\nneed o validate my card\nPIN to confirm authentication and gain secure access to\nspecific services\nIVR Flows MVP#PINValidation\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.4.4 Use Cases out of Scope",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.4.4 Use Cases out of Scope] [Focus: ]\n1.4.4 Use Cases out of Scope\nNon-PCI Use cases\nEnd to End flow from Non-PCI to PCl and back t0 Non-PCI\n5 Assumptions, Risks and Constraints\nAssumptions\nImpacted\nAssumption\nDue\nImpact\napplication\nVerified\ndate\nCDE istwill be\nRBCONNECT\nPCI-DSS\nhttps Ilreqcentral comfwikilpageslviewpage action?pageld-728793978\n5/40\nthey\nRoge\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\nCompliant\nExisting\nRBCONNECT\nDevSecOps\nwill be used as\nadopted for\nCDE\nConstraints/DependenciesiLimitations\nConstraintiRisklDependencies/Limitations\nImpacted\nStakeholders\n& Risk\nponse\nPCI data leakage\nSame a8 CDE\nenvironment\nAccount Compromise\nSame as CDE\nenvironment\nProject timelines due to environment\ncreations\nupdates and process specific\ndelays\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.6 Business ProcessesiConsiderations\nNIA",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.6 Business ProcessesiConsiderations\nNIA] [Focus: ]\n1.6 Business ProcessesiConsiderations\nNIA\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.7 Deployment Approach\nExiting CDE DevSecOps workilow will be used to",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 1.7 Deployment Approach\nExiting CDE DevSecOps workilow will be used to] [Focus: SECURITY, INTEGRATION]\n1.7 Deployment Approach\nExiting CDE DevSecOps workilow will be used to\napplication.\nPhase/Single\nComponents\nPVT\nPET\nBRT\nDrop\nincluded\n(YIN)\n(YIN}\n(YIN)\nDrop\nLambdas\nDeployment Units (ProdIUTIQADev}\nUnit\nName\nRuntime\ntype\nVersion\nlambda\nGetAccountByCard\nnodejs22.X\nlambda\nGelAccountByANI\nnodejszz x\nlambda\nVerifyPIN\nnodejs22.x\nlambda\nChangePIN\nnodejsz2.X\nSecret\n<envz/tsys/RBCONNECT_API_KEY\nNFA\nManager\nKMS\nNFA\nDeployment Method:\nModule\nMethod\nDetails\nType\nLambda\nTFM\nSecret\nNA\nClaudOps\nManager\nKMS\nNA\nCloudOps\nIAM\nNYA\nCloudOps\nroles\nhttps Ilreqcentral comfwikilpageslviewpage.action?pageld-728793978\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "6140\nResp\ndeploy",
+      "audit_tags": []
+    },
+    "content": "[Context: 6140\nResp\ndeploy] [Focus: ]\n6140\nResp\ndeploy\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\n2i0FSolution Architecture\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.1 Project Context",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.1 Project Context] [Focus: ]\n2.1 Project Context\nThis diagram illustrates the overall scope of the CCR project, encompassing both PCI\nand Non-PCE\ndata paths: However; the design for the Non-PCI use cases is\ncovered in a separate document, the HLD for CCR MVP (Non-PCI) (refer to\nReferenced Documents'\nin Sec\n.3 for the link}:\nThe RBCONNECT solution utilizes an existing CDE hosted in a separate AWS account (see HLD =\nCard Viewer (PCI) (refer to the \"Referenced Documents'\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "section in",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: section in] [Focus: SECURITY, INTEGRATION]\nsection in\nSec\n33 for the link})\nThe PCI data path is highlighted in RED for clarity\nrefer to the diagram legend for more details.\nThe return path from the CDE does not contain\nPCI data_\nFor both PCI and Non-PCI data paths_\nno network modifications are required (e.g-, TSYS whitelisting or changes to RCIIRB egress configurations} , as these setups\nare already in place_\nTo implement PCI use cases for RBCONNECT,\nfew Lambda functions and encryption keys will be associated with the CDE VPC _\nRBConnect Context Diagram\nNo Change\nNew Integralicn\n(Non-PCI}\nIT Admins;\nIT Admins\nChange\nDevelopers\nDevelopers\nExisting\nAWS\nAwS\nAWS\nNew Irlegration\nQut -\nScupe\nConsole\nConsole\n{PCI)\nTech Support\nAWS Control plane\nAWS Control plane\nAmazan Connect\nTSYS\nOps Manager\nPCE\nuse cases:\nTyCo\nSct/-pdatc\nCDE\nOpen APIs\nCustomer\nPCl use cases:\nL\n#MAstByR\nCreate TSYS Interaction\nVendor\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1\nTCS Portab\nAgenls",
+      "audit_tags": []
+    },
+    "content": "[Context: 1\nTCS Portab\nAgenls] [Focus: ]\n1\nTCS Portab\nAgenls\nNon-PCI use cases\nX-PLATFORM\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1\nBusiness\nCitrix Cloud\nDynatrace\nCSR\nADASTRA\nRCI Firewall",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 1\nBusiness\nCitrix Cloud\nDynatrace\nCSR\nADASTRA\nRCI Firewall] [Focus: SECURITY]\n1\nBusiness\nCitrix Cloud\nDynatrace\nCSR\nADASTRA\nRCI Firewall\nNOTE: From this point forward; the focus shifts to the PCI pathway of the project: Details regarding the CDE are documented in the HLD\nCard Viewer (PCI) (refer to\nthe\nReferenced Dacuments\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "section in Sec 1.3 for the link}:",
+      "audit_tags": []
+    },
+    "content": "[Context: section in Sec 1.3 for the link}:] [Focus: ]\nsection in Sec 1.3 for the link}:\n2.1.1 In-Scope Applications\nFor each app in the Project Context diagram, provide the following details\nThe HLD will not be approved if any impacted application, new or existing; Is not\ncorrectly recorded in the Application Inventory\nApp\nApp Name\nNew\nDescription of the Apps\nApp\nChange\nClassification\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1991\nRBCONNECT\nChange",
+      "audit_tags": []
+    },
+    "content": "[Context: 1991\nRBCONNECT\nChange] [Focus: ]\n1991\nRBCONNECT\nChange\nCloud-based contact center\nImportant\nimplementation\nnttps  {reqcentral:\ncomlwikilpageslviewpage.action?pageld-728793978\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "7440\nany",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 7440\nany] [Focus: SECURITY]\n7440\nany\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\n(focusing only on PCI path)\nNIA\nTSYS (PCI\nOut of\nNYA\nImportant\ninterface)\nscope\nNFA\nCDE\nNew\nCCR PCI Lambda functions\nImportant\nto be deployed in the CDE\nVPC:\nChangePin (Card\nPIN Set'Update use\ncase)\nVer_fyPin (Card\nPIN Verify use case)\n{e-Accouns-\nBycard\n(Get Account Info\nusing PAN use case)\nG-Accoun-BYAN[\n(Get Account Info\nusing ANI match use\ncase)\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.2 Application Communication",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.2 Application Communication] [Focus: ]\n2.2 Application Communication\nN/A\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.3 Enterprise Services",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 2.3 Enterprise Services] [Focus: SECURITY]\n2.3 Enterprise Services\n<< List the\nEnterprise Services that will be used in this solution:\nService Name\nProducing\nNew\nExisting\nApplication\nAmazon\nAmazon Web\nExisting (from\nConnect\nServices\nNon-PCI\naccount)\nAmazon $3\nAmazon Web\nExisting\nServices\nAWS Lambda\nAmazon Web\nExisting\nServices\nAWS IAM\nAmazon Web\nExisting\nServices\nAWS Secret\nAmazan Web\nExisting\nManager\nServices\nAWS\nAmazon Web\nExisting\nCloudWatch\nServices\nAwS X-Ray\nAmazan Web\nExisting\nServices\nAWS\nAmazon Web\nExisting\nCloudTrail\nServices\nAzure DevOps\nMicrosoft\nExisting\nGitHub Version\nGitHub\nExisting\nControl\nRegistry\nJFrog Artifactory\nExisting\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.4 Use Case Realization",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 2.4 Use Case Realization] [Focus: SECURITY, INTEGRATION]\n2.4 Use Case Realization\nnttps  {reqcentral:\ncomfwikilpageslviewpage.action?pageld-728793978\n8140\n\n\n2116/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nNote: Forsimolicity, the following diagrams do not depict data flows involving AWS-managed services Iike Secrets Manager and KMS_\nVerify PIN\nVERIFY-PIN\nUser'Agent\nAWS Connect\nContact Flows\nLambda (CDE)\nTSYS\nMake Transfer call\nFlpw\nDisable Ingrec\nCalleci\ndigit PIN\nEncrypt PIN\nVerify-PIN\n(paylcad-enc(PIN4}\nDecrypt PIN\nCreate_TSYS HMAC signature_\nparallel\npos-X (1,2,3,4}\nviewPIN\nasync\nPaybad\ntacclO,cUsIID, val Prjs}\nRelurn\nPayl Ad=(val; p(s)\ncompare pDS\nresul\nequa\nalt 2\ncompare pOS\nresull\nfail\nExit\nJoin responses\nTrue False\nTrue False\nUpdate Flow Altribule\nBusiness logic as per\nnon-PCI design\nVerify PIN Use Case\nASYNC API Requests:\nFor verifying\nPIN, the Lambda function checks all four PIN positions against TSYS asynchronously to optimize performance_\nThe Lambda function sends four independent ASYNC API requests to TSYS ,\neach\nchecking\nspecific PIN position:\nThese requests are processed in parallel, meaning the\n'request\ndoes not wait for the server's response before continuing:\nOnce all responses are received, the Lambda function\naggregates them and compares them to form\nconsolidated result (Success/Fail}\nThe aggregated result is returned to the caller; ensuring etficient and accurate PIN verification.\nThe workflow is blocking,\nmeaning no further processing occurs until the response is received:\nProcessing all PIN positions in parallel significantly speeds up the verification process_\nSet\nUpdate PIN\nnttps  {reqcentral\ncomfwikilpageslviewpage.action?pageld-728793978\n9/40\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\nSETIUPDATE-PIN\nUseriAgent\nAWVS Connect\nContact Flows\nLambda\n{CDE}\nTSYS\nMakeiTransfer call\nFlcw\nDisable Ipgrrec\nCpllect\ndigit PIN\nEncrypt PIN\nupdalePIN\n{paylad-enc PIN)\nDecrypt PIN\nCreate TSYS HMAC signature\nChangePIN\nsync\nPaybad\n(PIN. acclu_\ncustI)\nRelurn\nFaillSuccess\n(FailSuccess)\nSet Fail Sucess Attribute\nBusiness logic as per\nnon-PCI design\nGet Account Info by PAN\nGET-ACCOUNT-INFO-USING-FAN\nUser\nAwS Connect\nContact Flows\nLambda (CDE)\nTSyS\nMake Transfer call\nFlgw\nDisable loglrec\nCollect 16 digit PAN\nEncrypt FAN\nget-accinfotencPAN\nDecrypt PAN\nCreate TSYS HMAC signature\nAccountSearch\nsync\nPaylcad-{PAN)\nRetum\naccID, custID\nPaybad-(PAN, accID,\ncustid \netc:}\nacciD_\ncustiD\nBusiness logic as per\nnon-PCI design\nGet Account Info by ANI\nhttps Ilreqcentral comfwikilpageslviewpage.action?pageld-728793978\n10F40\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\nGET-ACCOUNT-INFO-BY-ANI\nUser\nAWVS Connect\nContact Flows\nLambda\n{CDE}\nTSYS\nMakeiTransfer call\nFlcw\nDisable logtrec\nDetect custoner's phone\nget-accinfo(Phone:\nCreate TSYS HMAC signature\nAcccuntSearch\nsync\nPayload\n{Phone)\nReturn\nPAN\nLast4,\naccID, custID\nPayload\n(PAN:\nRequest Last4\naccID, cUstID, etc}\nucclD_\ncustID\nBusiness logic as per\nnon-PCI design\nGet Accaunt Info by PAN, Get Account Info by ANI and SetUpdate PIN Use Cases\nSYNC API Requests:\nThese use cases require immediate processing and response from the TSYS system:\nFor instance, when retrieving card information (incl. accountID, customerID and PAN), or settinglupdating\nPIN, the Lambda function makes\nsynchronous\nAPI call to TSYS\nThe Lambda function waits for the response from TSYS before proceeding further: The caller\nAmazon Connect Contact Flow is paused until the response is\nreceived before moving forward_\nThe workilow is blocking\nmeaning no further processing occurs until the response is received:\nSYNC requests ensure reliability and maintain sequenlial integrity, which is critical for these types of operations.\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.4.1 Business Processes\nIdentify the Business Processes that will be impacted as",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 2.4.1 Business Processes\nIdentify the Business Processes that will be impacted as] [Focus: SECURITY]\n2.4.1 Business Processes\nIdentify the Business Processes that will be impacted as\npart of this solution. The business process(s) should map it to TMForum Business Process (eTOM)\nFrameworx:\nTMForum Business Processes can be found here.\nEntitylActor\nChangellmpact\nCustomer\nNo direct impacl, customer gets\nsecure environment for\nauthentication and PIN functions\nAdministrator\nNo change\nSupervisor\nNo change\nAgent\nNo change\nIT Admins\nPINIPAN function related issues\ncant be troubleshooted in Non-PCI\nenviranment\nWorkforce\nNo change\nManager\nhttps Ilreqcentral comfwikilpageslviewpage.action?pageld-728793978\n11/40\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.5 BalaiArchitecture",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 2.5 BalaiArchitecture] [Focus: SECURITY]\n2.5 BalaiArchitecture\n2.5.\nInformation Model\nIdentify Domains and Entity (Lt) that wil be impacted as & part of this solution \nRogers Bank Data Domains\nMarketing & Sales\nChannels\nSales\nDigital\nin-app chat\nPhone\nSales\nCampaign\nMarketing comm_\nAnabtics\nconversation\nDigital Conlent\nconversation\nSurvey\nCustomer\nCustomer Experience\nProduct\nCredit Risk\nOperations\nContact Center\nContact Center\nContact Center Agents' Experience\nWorkforce\n{Quality and relevance of real-time information delivered to\nManagement\nProductivity\nEfficiency\n(WFM}\nagents through dashboards during calls}\nInformation\nTechnology (Delivery; InfoSec, Architecture)\nService\nUser\nApp. Logs\nAccess Matrix\nCredentials\nAuthentication\nAccess Logs\nPerf: Melric\nIncidenl\nLogs\nEnterprise\nFinance\nLegal\nCompliance\nEnterprise Risk\nNew\nExisting\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.5.2 Data Flow Diagram",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ],
+      "split_block": true
+    },
+    "content": "[Context: 2.5.2 Data Flow Diagram (Cont.)] [Focus: SECURITY, INTEGRATION]\n2.5.2 Data Flow Diagram This is a high-level diagram showing end-to-end data flow nttps {reqcentral: comfwikilpageslviewpage.action?pageld-728793978 12140 2016/25,2.28 AM High Level Design Contact Center Re-Platform MVP (PCI) Financial and Emerging Services Rogers Wiki enire Replatform Legend Exlarnal Aws Cuelomar Rogers TSYS Rajueat zaspcnae Acc_ Info FCI Data PIh arueifelse Suctegg/fel Kejuest Jebonnee tal hc Ll FCCal ri 3a Customer Adentmters E,ent Zlc\" AWS Amazon Conncct Bank Dcvclopcr Phohr CDE Enc(PANY Lo Enc(PINI Com-in# Cnde Devopg Events Deplct Pipeline AwS CloudWatch Lambda Nor-PCI Data phone PANI TSYS Opcn APIs The following diagrams explains Account Data path for each use cases; Verify PIN nttps {reqcentral: comfwikilpageslviewpage.action?pageld-728793978 13/40 Fhong 2116/25, 2.28 AM High Level Design Contact Center Re-Platform MVP (PCI) - Financial and Emerging Services Rogers Wiki enire Replatform DATA FLOW Verlfy PIN AWS Accdunt CDE AYs Account {Non-PCI) Kv Pmivate <AY ceievanmger ITIN dernci KexlO KaySecret CDE VPC Lambda Seryvice YPc {AWS-anaged} Nuhlic Kex 4F4enchyol\" MPS TLS1.2 1 LancdE 31\"cE CCR Lambds lun-lior Cuslamar iCura Flais; HTTPS (Lala Nlanei NAT Uie Lnnk TLS 1.2 Amazon Connect Caleway Firexall (anlp AAA2 IX: iFrrd ~ren AnC #ent 040 (aidpdIler Ijala {CHIX Jecitmlerl and Seni mvar NctPCIXEcour1 Sen:Owe PCIAECCL)I Dala rexelved cver NG MAicc anPC Cmpm;W CDE SY&nifir ;K1kil 4- Ser rity estwith PCI Data Fetct non-PCI coleci 7862i rCl data Rebponse wih nar-PCI [iata Set Update PIN DATA FLOW SET UPDATE PIN AWS Account CDE AYvS Account 'Noi-PcI KMS Priyatb Saalian3obi dccpti TSYGKud Kusuuill (@ Lampd7 Jaryicd VPC CDE VPC IAWS-managad) Puhlic; Kus iPIy encr pl; httAC TLS 1.2 1 :mediBet0 CCR Lanihda Iunzlinu Customer Icor;t - Flane: I[Jilli) Nehvork TLS 1.2 Amazon Cannact GGalcxdv Firetrall CardrolderCals \"CFC Enc clad sent Oe Cardr-Ider Dala CHD) Jecr ptedano Zenl Cyart TPS\"LS Uc~Pcucnur Diahns O0c' PCuAL EAi[AePcdAC HIIPX MenaqeC an] PC Consliant Rnne Tssmarajed {- SuC JNL KeqLeslmilh PCI Dala Fulct MOr-PCI Dolac Kesdx JXF PCI dala Rexdduse witi fiar-PC Data Get Account Info by PAN https Ireqcentral comfwikilpageslviewpage.action?pageld-728793978 14}40 ATTPS KneS Rogc Rea Reedc MFS Ptiit! Httes 2116/25, 2.28 AM High Level Design Contact Center Re-Platform MVP (PCI) - Financial and Emerging Services Rogers Wiki enire Replatform DATA FLOW GET ACCOUNT INFO BY PAN AWS Accdunt CDE Aws Account (Hon-PCI) Kv Pmivate <AY ceievanmger 'PAN decoO: KexlO KaySecret CDE VPC Lambda Seryvice YPc {AWS-anaged} Nuhlic Kex (FAK & OYG MPS TLS1.2 1 LancdE 31\"cE CCR Lambds lun:lion Cuslamar iCura Flais; HTTPS (Lala Nlanei NAT NutCIiC TLS 1.2 Amazon Connect Caleway Firexall (anlp AAA2 IX: iFrrd ~ren AnC #ent 040 (aidpdIler Ijala {CHIX JecitOiel ann S#ni mvar [PXU NctPCIXEcour1 Sen:Owe PCIAECCL)I Dala rexelved cver A MAi anPC ( m-pli;W CDE SY&nifir ;K1kil 4- Ser rity estwith PCI Data Fetct non-PCI coleci nbemiF rCl data Rebponse wih nar-PCI [iata Get Account Info By ANI match DATA FLOW GET ACCQUNT INFO BY ANI AwS Account CDF 1l4B Accobtt (Non-PCI) Seuelianaoer TSyS Kclo KcySccrcl Ke COE VPc Lambda Saryice VPC {AWS-managad} HTTPS Lantds CCH Lambd? lunrho Customer (Corjtoi MdanE: HTTPS ([jala Planci NAT Netucdc TLS 1.2 Amazon Connect (Galyay Firex\"all Unenclyplej VCi -FC CJeicme Data sen-jve_ Lnencrpte Non-rc Custom oyer HTS DcCPCUTC D;lsun\" PuineculiinV GAldivc (rrNiTTPZ ~ar ,jed and XCC Rulte CDE 5tsMa` XJed Sec rib= G-DuD 320025 Wth Ciz-PCIDa? Fetch non-PCI chieci Respnnsewvitt PCidata Respcnse wilh nor-PCI Data The following table outlines the flows (for all four PCE use cases combined) , triggered when Amazon Cannect invokes any f the PCE use cases within scope; nttps {reqcentral: comfwikilpageslviewpage.action?pageld-728793978 15/40 ATTPS KneS Rogc Rea Reedc 2116/25,2.28 AM High Level Design Contact Center Re-Platform MVP (PCI) - Financial and Emerging Services Rogers Wiki eilbe RechDorm ORIGIN DESTINATION DETAILS (YIN} PSTN Amazon When customer's call is connected to SIP Connect Amazon Connect, the plalform or an agent ContactlIVR initiates Contact Flow that triggers a self- Flows service workilow to handle the interaction based on the configured call-routing logic. The data is encrypted public stored in Amazon Connect This encryption* is handled internally by Amazon Connect. The encrypted data is then passed as flow attribute to the Amazon Connect workflow for further handling: Data: PAN, PIN PSTN Amazon WYhen customer's call is connected t0 SIP Connect Amazon Connect; the platform initiates a ContactlVR Contact that triggers self-service PCI Flows workilaw to handle the interactian based on the configured call-routing logic: Customer's phone number from which call is received s passed as an attribute in Contact Flow for further handling and to get customer detail: Data: Cuslomer's phone number Amazon Lambda WVhen customer or an agent selects a PCI Connect use case; the associated AWS Lambda function is invoked by Amazon Connect: The Lambda function is configured t0 run within the CDE VPC and private subnet with tightly configured security groups , ensuring enhanced network isolation: AWS manages the internal segmentation of Lambda functions to further contribute to PCI DSS compliance_ The Lambda function processes event objects containing sensitive data, such a8 the PAN or PIN_ This data is securely transmitted via encrypted RESTful APIs (over HTTPS with TLS 1.2 or higher) to TSYS to retrieve or update customer accaunt information_ Data: Encrypted PANIPIN: Za Amazon Lambda WYhen customer r an agent selects PCI Connect use case; the associated AWS Lambda function is invoked by Amazon Connect: For PCI compliance, the Lambda function is configured to run within the CDE VPC and private subnet with tightly configured security groups , ensuring enhanced network isolation_ AWS also manages the internal segmentation of Lambda functions, contributing to compliance with PCI DSS requirements The Lambda function processes the event payload, extracting the customer's phone number (provided a5 an attribute of the event} It securely transmits this data via encrypted RESTfulAPIs (HTTPS with TLS 1.2 or higher) TSYS to retrieve customer account information: This configuration ensures compliance with PCI DSS guidelines, including secure transmission, data access cpntrols _ and secure connectivity within the private network Data: Customer's phone number Lambda AWS KMS WYhen the Lambda function receives an encrypted payload from Amazon Connect, it calls AWS KMS via Ihe AWS SDK, invoking the cc: YF : API."
+  },
+  {
+    "metadata": {
+      "parent_section": "2.5.2 Data Flow Diagram",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ],
+      "split_block": true
+    },
+    "content": "[Context: 2.5.2 Data Flow Diagram (Cont.)] [Focus: SECURITY, INTEGRATION]\nPCI Connect use case; the associated AWS Lambda function is invoked by Amazon Connect: For PCI compliance, the Lambda function is configured to run within the CDE VPC and private subnet with tightly configured security groups , ensuring enhanced network isolation_ AWS also manages the internal segmentation of Lambda functions, contributing to compliance with PCI DSS requirements The Lambda function processes the event payload, extracting the customer's phone number (provided a5 an attribute of the event} It securely transmits this data via encrypted RESTfulAPIs (HTTPS with TLS 1.2 or higher) TSYS to retrieve customer account information: This configuration ensures compliance with PCI DSS guidelines, including secure transmission, data access cpntrols _ and secure connectivity within the private network Data: Customer's phone number Lambda AWS KMS WYhen the Lambda function receives an encrypted payload from Amazon Connect, it calls AWS KMS via Ihe AWS SDK, invoking the cc: YF : API. The encrypted data is ecurely sent to KMS aver HTTPS_ secured with TLS 2 or higher: Since the payload was encrypted with the public key of an https Ilreqcentral comfwikilpageslviewpage.action?pageld-728793978 16}40 PCI using key Flow 2116/25,2.28 AM High Level Design Contact Center Re-Platform MVP (PCI) - Financial and Emerging Services Rogers Wiki enire Replatform asymmetric pair, AWS KMS uses the corresponding private (stored exclusively within KMS) to decrypt the data. KMS then securely retums the decrypted plaintext to the Lambda function over the same encrypted connection. This ensures that the decryption process is securely performed within KMS and that the sensitive data is anly accessible to authorized Lambda functions operating within the secure CDE_ Data: Lambda-KMS: Encrypted PANIPIN; KMS_Lambda: plainlexl PANIPIN Lambda AWS Secrets The Lambda function securely retrieves the Manager TSYS APE credentials (KeyID and KeySecret) from AWS Secrets Manager: These credentials are used to generate an HMAC signature_ authenticate requests and establish secure interactions with TSYS systems_ (For more details about the authentication process refer t0 Section 2.7.4. Authentication\" in this HLD:) Data: TSYS KeylD and KeySecret Lambda TSYS The ambda function sends an authenticated HTTPS request to TSYS, first processed by the NAT Gateway, which acts salely as pass - through service The request then flows through the AWS Network Firewall: Domain-based firewall rules in AWS Network Firewall ensure only traffic to the TSYS domain is allowed The NAT Gateway forwards encrypted traffic without inspecting, modifying: or storing data payloads , ensuring no CHD is lagged stored, or persistently processed_ The request includes sensitive data such a5 the PAN and PIN_ secured using an HMAC- based authentication header: This header is dynamically constructed using the TSYS KeylD and an HMAC signature generated with the TSYS KeySecret; both securely retrieved from AWS Secrets Manager: Data: PANIPIN TSYS KeylD HMAC signature generated using TSYS KeySecrel 5a Lambda TSYS Same as in # 5 except for the payload content: The request includes customers phone number; and it i5 secured using an HMAC- based authentication header: Data: Customer's phpne number TSYS Lambda PCI data returned by TSYS to the ambda function is securely encrypted and transmitted over H\" TPS with TLS .2 or higher; ensuring end-ta-end encryption during transit: This secure communication adheres to PCI DSS encryption requirements, enabling the Lambda function t0 validate and process the returned data without exposing sensitive information. Data: Verify PIN use case: PIN (encrypted with TLS 1.2 or higher}: Set Update PIN use case: Success status (True/False): https Ilreqcentral comfwikilpageslviewpage.action?pageld-728793978"
+  },
+  {
+    "metadata": {
+      "parent_section": "17440\nkey\nkey",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 17440\nkey\nkey] [Focus: SECURITY]\n17440\nkey\nkey\n\n\n2116/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\nGet Account Info by PAN use case (all\nencrypted with TLS 1.2 or higher):\nPAN_\naccountID_\nclientid\ncustomer'5 phone number;\nOther accaunt info_\nGet Accaunt Info by ANI Match use\ncase (all encrypted with TLS 1.2 or\nhigher):\nPAN\naccountID_\nclientID \ncustomer'\nphone number;\nOther account info_\nLambda\nAmazon\nThe Lambda function sets non-PCE\ndata_\nsuch\nConnect\nas PAN Last4 digits_\naccountiD_\nclientID_\nand\nsuccess status\n(True/False),\nas contact flow\nattributes. After setting these attributes_\nthe\nLambda function continues t0 execute non-\nPCI business logic_\nensuring that sensitive PCI\ndata is excluded from this stage of processing\nWrapping algorithm used by Amazon Connect t0 encrypt PAN or PIN =>\n\"RSAECBIOAEPWithSHA-512AndMGFIPadding'\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.5.3 Data Integration Details",
+      "audit_tags": [
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 2.5.3 Data Integration Details] [Focus: INTEGRATION]\n2.5.3 Data Integration Details\nDescribe the Data Integration Details for the application. This should include following details for each Integration. Include the data\nintegration diagram.\nInt\nSource\nTarget\nInitial\nInterface\nDescription\nTechnology\nSystem\nSystem(s)\nLoad\nType\nOne\n(Real\nTime\nTime/Batch)\nOn-\nGoing\nLead\nRBCONNECT\nTSYS\nOngoing\nReal Time\nHTTPS\nREST API\n(multiple\ninteractions}\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.5.4 Data Container Details",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 2.5.4 Data Container Details] [Focus: SECURITY, INTEGRATION]\n2.5.4 Data Container Details\nProvide the information for Data containers where data will be persisted. This could be\ntypicel DBMS(Oracle, SQL Server} or & typicel cloud storage like AWS S3 or\nAzure Blob\nType\nDatabase\nPlatform\nProvider\nChange Description\nName\nLogGroup\nAWS\nCloud\nAWS\nSolution components_\nCloudWatch\nincluding Amazon\nConnect and AWS\nLambda, leverage\nAWS n CloudWatch to\nlog events in their\nrespective\nGroups\nThis centralized\nlogging enables\nmonitoring,\ntroubleshooting; and\nauditing of system\nactivity across the\nsolution:\nAWS S3\nCloud\nAWS\nused t0 backed up\nbackup\ncloud watch log\nSource\nGitHub\nCloud\nMS\nNew lambda source\ncontrol\ncpde and\nconfiguration\nhttps Ilreqcentral comfwikilpageslviewpage.action?pageld-728793978\n18/40\nLog\"\nLog\n\n\n2116/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\n3,5+8 hforgatian Objects\nDescrbe the list of entities that will be utilized as\npart of this solution. Also identify name of the system that is system of records for this data_\nAll new EntitylAttribute defined a5\npart of the project should follow naming conventions_\nFor Logical Naming Conventions follow TMForum Information Model,\nApplication\nDomain\nIntormation\nObject\nChange Description\nName\nName\nDomain\nObject\nType\nName\nRBCONNECT\nProduct\nSelf-\nAccountlD_\nNumeric\nRetrieved from TSYS\nServe\nClientID\nTSYS\nProduct\nKeylD,\nAlpha-\nUsed for authentication With\nKeySecret\nnumeric\nTSYS. (For more details about\nString\nthe authentication process\nrefer to Section 2.74.\n\"Authentication\"\nin this HLD:}\nRBCONNECT\nCustomer\nSelf-\nPIN,\nPAN\nNumeric\nReceived from Customer\nServe\nRBCONNECT\nCustomer\nAutomatic\nCaller's\nNumeric\nANI match\nPhone\nNumber\nRBCONNECT\nProduct\nPublic -\nX.5Og\nUsed to encrypted and decrypt\nPrivate\nPEM\nPINIPAN\nformal\n2.6 Data Governance (Rogers Bank)\nThis SECTION Must BE COMPLETE FOR ALL PROGRAMSIPROJECTS WHERE DATA IS BEING COLLECTED, CREATED, MIGRATED , EXTRACTED\nTRANSFORMED, LANDED or UTILIZED IN ANY MANNER NOT MENTIONED HERE TO DELIVER THE BUSINESS or IT OUTCOME:\nThe following Project intake must be completed DGC Project Intake\nCollibra whenever data is being created, modified, or updated. This includes schema creation or\nmodification;\ntable creation and modification\nand any data migration projects Data Dictionaries must be provided for each deployment\n2.6.1\nDatallnformation Ownership & Stewardship\nMarketing domain\nBank Ownership TBD\negal Domain\nBeth Posno\nCall domain\nBank Ownership TBD\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.6.2 Data\nifecycle and Retention",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.6.2 Data\nifecycle and Retention] [Focus: ]\n2.6.2 Data\nifecycle and Retention\nPlease describe the process and the retention period utilized to appropriately archive and purging data in compliance with Rogers standards. (2 plus current year _ low\nlatency access, high latencyloffline storage 0f data up fo\nyears, and subsequent purge process}\nData\nRetention\nRemark\nPIN\nNA\nNot stored\nanywnere\nPAN\nNA\nNot stored\nanywhere\nPhone\nNYA\nNot stared\nnumber\nanywhere\nKEYS\nmanths\nRecommended\nduration\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.6.3 Metadata Management\nNA",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 2.6.3 Metadata Management\nNA] [Focus: SECURITY, INTEGRATION]\n2.6.3 Metadata Management\nNA\n2.6.4 Data Classification & Privacy\nData\nClass\nRemark\nPIN\nConfidential\nPCI-Cardholder Data_\nnot stored anywhere\nPAN\nConfidential\nPCI-Sensitive Data_\nnot stored anywhere\nnttps  {reqcentral:\ncomfwikilpageslviewpage.action?pageld-728793978\n19}40\nKey\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\nKEYS\nInternal\nPrivate Keys to decrypt PCI data at lambda\nruntime are stored in KMS provisioned in CDE\nAWS account\nAccountiD\nRestricted\nnot stored anywhere\nCustomerID\nRestricted\nnpt stored anywhere\nPlease note: column level classification is not required For HLD sign-off, but is required prior to implementation.\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.6.5 Provenance and Lineage\nNA",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.6.5 Provenance and Lineage\nNA] [Focus: ]\n2.6.5 Provenance and Lineage\nNA\n2.6.6 Data Integrity and Quality, Ingestion & Extraction\nBAU\nNo change as part of the current solution\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.6.7 Data Integration\nNA",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.6.7 Data Integration\nNA] [Focus: ]\n2.6.7 Data Integration\nNA\n2.6.8 Data Access & Use\nThe new solution will implement replacement data flows s0 the same data can continue to land in\nRogers Bank Data and Analytics environment.\nThe access control\nprocess on that environment is executed as per Bank's standards and procedures. Only allowed Bank personnel has access to it.\nNIA\n2.6.9 Use of Third Parties & Third-Party Data\nNIA\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.6.10 Data Residency",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.6.10 Data Residency] [Focus: ]\n2.6.10 Data Residency\nThe data handled by RBCONNECT solution will be stored in one AWS Region (Canada Central1\npossibly replicated to Canada West in future phase_\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.7 Security Architecture",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 2.7 Security Architecture] [Focus: SECURITY, INTEGRATION]\n2.7 Security Architecture\nAll services used will abide by ICSU security controls listed at https-Ifregcentral com/pluginsfservletfeazybilaccounts/153/cubesAssets/reporfs/5054-11-cloud-controls\nlist\nWhere no security controls currently exist; the process will be followed tO ensure new controls, approvals and exemptions as needed are provided.\nArchitecture Overview:\nAmazon Connect integrates\nTSYS back-end systems via AWS Lambdas in the Cardholder Data Environment\n(CDE) All egress to TSYS passes through AWS\nNetwork Firewall (with domain-based filtering) and the NAT Gateway, maintaining\nsecure_\nPCI-compliant path;\nMulti-Factor Authentication (MFA) for Access\nAmazon Connect enforces MFA for all user and administrator access\nensuring\nsecure authentication to meet compliance requirements_\nNo PIN in Call and Screen Recordings:\nSensitive Authentication Data (SAD) are not captured in call and screen recordings within Amazon Connect, adhering to PCI DSS guidelines and ensuring\nsensitive data is not inadvertently exposed_\nPCE\nData in Transit:\nAIl PCI data transmitted from the Cardholder Data Environment (CDE) to TSYS (Rogers Bank's third-party system of record) is sent over HTTPS using TLS 1.2\nor higher: Similarly:\nPCI data returned by TSYS to the CDE is also transmitted via HTTPS with TLS 1.2 or higher: Beyond these secure exchanges with\nTSYS_\nno PCI data leaves the CDE account\nRole of Lambda Functions\nAWS Lambda functions are invoked by Amazon Connect based on contact ilow logic, serving as the primary processors for customer requests_\nThe\nambda\nfunctions designated for PCI-related use cases include:\nGe\nAci:=\nRyCarai: Retrieves customer account information using 16 digits PAN.\nGe\nAcij:\nRyAN-\nRetrieves customer account information using ANI match_\nVe\n#: Verifies the PIN using TSYS APIs_\nChanae\n::Updates or sets\nnew PIN securely:\nFrequent Compliance Audits:\nRegular compliance audits are required to validate the secure\nhandling of data within Amazon Connect and its integration with the CDE\nensuring continuous\nadherence ta PCI DSS standards_\nTraffic Flow and Communication;\nhttps Ilreqcentral comfwikilpageslviewpage action?pageld-728793978\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "20140\nwith\nany",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 20140\nwith\nany] [Focus: SECURITY, INTEGRATION]\n20140\nwith\nany\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nInfo by PAN; Get Account Info by ANI\nSet Update PIN Use Cases:\nenire\nfee respecrven_\nLambda functions use synchronous (SYNC) TSYS API requests ta ensure immediate processing and response for these pperations_\nVerify PIN Use Case:\nThe\nambda function sends asynchronous (ASYNC) TSYSAPI requests in parallel for all four PIN positions_\nIt then aggregates the responses and returns the\nconsolidated result to the caller (Amazon Connect Contact Flow}.\nGeneral Flow:\nThe Amazon Connect invokes the appropriate\nampda\nPrivate Subnet\nNAT Gateway -AWS Network Firewall (domain filter)\nInternet Gateway\nTSYS domain path.\nTSYS process the request\nsends the response back through Ihe same flow in reverse_\nAmazon Connect resumes execution of non-\nPCI logic upon receiving the Lambda result:\nSecurity Considerations:\nThe PCI compliance of the CDE Is addressed in detail the HLD\nCard Viewer (PCI) (refer to the \"Referenced Documents'\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "section in Sec",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: section in Sec] [Focus: SECURITY, INTEGRATION]\nsection in Sec\n3 for the link}:\nThis section highlights specific changes related to RBCONNECT PCI\nuse case integrations:\nEncryption at Amazon Connect:\nAmazon Connect leverages\ncombination of asymmetric and symmetric cryptographic methods, in accordance with PCI DSS requirements,\nto ensure the\nsecure\nhandling of sensitive account data\nEnd-to-End Traffic Encryption:\nAII API traffic between the Lambda functions\nTSYS is encrypted in transit end-to-end using TLS 1.2 or higher; ensuring sensitive data remains protected\nduring transit_\nEncryption of Data at Rest:\nNo sensitive data is stored at rest.\nSecure Credentia)\nManagement:\nTSYS API credentials (KeylD\nKeySecret) are securely stored in AWS Secrets Manager: These credentials are retrieved by the Lambda functions at runtime\nvia secure AWS SDK calls_\nEnhanced Traffic Security:\nSecurity groups are configured for each\nambda function running in a VPC and are attached to the Elastic Network Interfaces (ENIs) created during function\nexecution_\nInbound rules allow traffic from Amazon Connect; while outbound rules allow HTTPS (port 443) to the NAT Gateway: These security groups act as\nvirtua\nfirewalls, controlling inbound and outbound traffic to and from the\nambda function based 0n defined rules_\nAfter the Lambda sends outbound traffic;\nit dlows to the NAT Gateway: which forwards the encrypted request to the AWS Network Firewall: The firewall then\nenforces domain-based filtering (allow-listing\nfar TSYS before the traffic proceeds ta the Internet Gateway: This design ensures that only traffic ta the TSYS\ndomain\npermitted, providing an additional\nlayer of security and monitoring:\nNOTE: It is assumed that the CDE is fully PCI-compliant (expected to be) , including the implementation of required processes_\nthe assignment of roles and\nresponsibilities to personnel, and the monitaring of logs and\naccess through foundational AWS services\nSecrets Manager and IAM Roles:\nIAM Roles Configuration:\nEach Lambda function is configured with\ndedicated AWS IAM role_\nensuring role separation and fine-grained access control.\nThese roles are assigned to the\nLambda execution environments_\nrespectively; allowing them to securely retrieve Becrets from AWS Secrets Manager without embedding credentials in the\ncontainer images or using enviranment variables_\nThis approach adheres to the principle of least privilege _\nensuring that each Lambda function can access only\nthe secrets and resources it is explicitly authorized to use. (For further info\nrefer to Sec 2.74.2)\nSecure Secrets Management:\nsensitive data_\nincluding the TSYS KeylD and KeySecret; are securely stored in AWS Secrets Manager: According to TSYS documentation, these keys have\nan expiration time_\nnecess\nitating\nrotation process. TSYS is expected to send notification emails in advance of expiration: This approach minimizes the risk of\ncredentiab\ncompromise and supports compliance with security best practices and PCI DSS requirements\nSecure Communication:\nData Privacy in Amazon Connect:\nAudio Recording\nCall recording must be enabled and configured in the Amazon Connect instance using the \"Set recording and analytics behavior\" block within contact\nflows_\nPIN_\nTo avoid capturing PINs (classified as Sensitive Aulhenticalion Data (SAD) in PCI DSS) in\nrecordings,\nuse the Sus cricCo\"\naclRcoor\n0:T\nand :esujeconlac Xeco-d_\nng APIs to programmatically pause and resume call recordings whenever PIN is collected: These APIs can be invoked\ndirectly within contact flows t0 ensure no PIN is recorded\nPAN: Amazon Connect records customer calls (audip) and stores them in Amazon 53_\nThere is\nstrong business requirement for retaining of call\nrecordings containing the PAN for\nspecified period (possibly up to\nyears\nTBC) To comply with PC\nDSS\nthese\nrecordings must:\nBe securely encrypted at rest\nHave access restricted t0 authorized personnel\nvia Role-Based Access Controls (RBAC) to protect sensitive information_\nNote; Call audio recordings are stored in a dedicated S3 bucket created in the CDE AWS accotint: Amazon Connect instance (created and nunning in RB\nDefault AWS Account (non-PCI)) is configured to send the recordings to this 53 bucket:\nScreen Recording\nTo facilitate agent screen recording functionalities Amazon Connect Client Application must be installed and correctly configured\non agent's virtual\ndesktops (hosted on RCI's on-prem VDI farm and managed by Citrix Cloud)\nTBC\nhttps Ilreqcentral comfwikilpageslviewpage.action?pageld-728793978\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "21140\nand\nand\nand\nand\naudio",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 21140\nand\nand\nand\nand\naudio] [Focus: SECURITY, INTEGRATION]\n21140\nand\nand\nand\nand\naudio\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nReplatBIN; The customers PIN is not displayed on the TSYS GUI screens, eliminating the risk of capturing PINs in agent screen recordings_\nenire\nPAN\nThe PAN is displayed in the TSYS GUI and may be captured in agent screen\nrecordings\nSimilar to audio recordings, there is\nstrong business\nrequirement to retain these recordings containing PANs for\nspecific period\nTBC) Compliance measures for these recording include\nSecure encryption at rest_\nRestricting access to authorized personnen\nvia Role-Based Access Controls (RBAC) to safeguard sensitive information\nNote; Agent screen recordings are stored in a dedicated 83 bucket created in the CDE AWS account:\nAmazon Connect instance (created and running\nin RB Default AWS Account (non-PCI)) is configured to send the recordings to this S3 bucket:\nContact Trace Records\n(CTR) and Agent Events (AE) Data\nCTR data includes metadata about customer interactions\nsuch as timestamps\nagent IDs\ncall duration_\nand call disposition_\nBy design, it generally does\nnot include sensitive customer data, such as PAN or PIN, unless explicitly misconfigured to log such details_\nSince our workflows do not pass PAN or PIN\ndata to Amazon Connect or its related logs (refer to Sec 2.5.2\nData Flow Diagrams'\nthere is no risk of such data sneaking into CTR or AE data.\nAE dala focuses on agent-related events ,\nsuch as agent login; call holdIrelrieve\nor disconnect actions_\nIt is highly unlikely to include PAN or PIN unless\nthese values are explicitly passed or logged during the interaction Ilaw_\nWorkilows and data\nhandling processes are designed to prevent the capture or storage of sensitive data in Contact Trace Records (CTRs) Specifically:\nEnsure Lambda functions processing PANPIN do not log this data a8 part of debug information or custom attributes passed to Amazon Connect\nVerify that contact flows are configured to avoid passing PAN or PIN as custom attributes (e.g , for IVR verification purposes)\nRegularly review Lambda function code to ensure sensitive data is neither logged nor inadvertently included in Amazon Connect attributes.\nConduct periodic audits of Amazon Connect configurations and custom attributes in CTRIAE data to confirm no sensitive data is inadvertently\ncaptured_\nAccess to CTR and AE data is restricted to authorized persannel through Role-Based Access Controls (RBAC) ensuring that sensitive information\nremains secure. Additionally, any handling of CTRJAE data aligns with PCI DSS requirements, including logging and access restrictions:\nNote\nCTRs and AEs are stored in a dedicated S3 bucket created in the RB Default AWS Account (non-PCI) _\nThis S3 bucket i5 encrypted at rest using\ndedicated SSE-KMS key:\nEncryption of Sensitive Account Data:\nAmazon Connect encrypts payloads containing sensitive account data (such as PANs and PINs} collected from\nuser within a contactIIVR flow using\npublic-key cryptography:\nAn AWS-managed asymmetric public-private\npair is generated by AWS KMS in the Cardholder Data Environment (CDE) AWS Account \nThe public\nis used t0 encrypt the data in Amazon Connect; and the private key\nalways retained in AWS KMS\nhandles decryption operations_\nSince Amazon Connect does not natively integrate with AWS KMS for public key management, authorized administrators must export the public key from\nKMS and configure it manually in Amazon Connect. Rogers Bank's authorized personnel\nwith the kn:s :GetPub_icKey permission can use the\nGetP_bl\ncKey APl or the AWS Management Console to export the public\nPEM format: Once exported; the public key is manually added to the\nAmazon Connect instance, where it is stored and used to encrypt paylads containing sensitive cardholder data (CHD)\nSafeguards must be\nin place to prevent unauthorized modification of the public key after export;\nas tampering could compromise encryption integrity:\nThe private\nrerains securely stored in AWS KMS within the CDE AWS Account and is never exported. All decryption operations are performed within\nKMS, aligning with PCI DSS requirements by confining sensitive cryptographic actions to a PCI-compliant environment.\nLambda\nIntegration with CDE VPC:\nambda functions are associated with the CDE VPC (and the same private subnet as the IC lambdas). ensuring that all traffic is routed within the private\nnetwork. enhancing security\ncompliance_\nSecure Retrieval of Secrets:\nLambda functions securely retrieve TSYS KeylD and KeySecret from AWS Secrets Manager at runtime using the AWS SDK\nThis approach avoids hardcoding\nsensitive credentials in the Lambda code or configurations: The functions communicate with TSYS using HTTPS secured\nTLS 1.2 (or higher) to ensure\nend-to-end encryption of data in transil:\nData Containment:\nNo sensitive Cardholder Data\n(CHD) leaves the CDE environment to return to Amazon Connect contact flows, ensuring strict adherence to PCI DSS\nsegmentation and data protection standards_\nAuto Scaling and Hlgh Avallability:\nCDE VPC and Subnet Association:\nLambda functions are configured to run within CDE VPC.\nare associated with an existing private subnet; ensuring secure routing and compliance with PCI\nDSS requirements\nNative Auto\nScaling:\nAWS\nambda functions leverage native auto-scaling capabilities managed by AWS. The number of cancurrent\nambda executions automatically scales (within\nthe defined account concurrency limits} based on the demand generaled by Amazon Connect, ensuring high availability and responsiveness even during peak\nusage periods_\nOutbound Network Traffic:\nEgress Traffic Handling:\nEgress trafiic from the Lambda function to TSYS first passes through the NAT Galeway; which forwards the encrypted request to the AWS Network Firewall:\nThe Network Firewall then applies domain-based allow-listing before directing the traffic to the Internet Gateway for TSYS Open API calls. This setup ensures\nthat only outhound connectians to the TSYS domain are permitted_\nprevents unauthorized inbound traffic _\nprovides\nsecure _\nmonitared path for sensitive\ndata\nManaged Stateful Service:\nNAT Gateway is a fully managed_\nstateful service designed to pass data through while performing real-time IP address translation\nOperating at the netwark\nnttps  {reqcentral:\ncomfwikilpageslviewpage.action?pageld-728793978\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "22140\nkey\nkey\nkey\nput\nkey\nand\nwith\nThey\nand",
+      "audit_tags": []
+    },
+    "content": "[Context: 22140\nkey\nkey\nkey\nput\nkey\nand\nwith\nThey\nand] [Focus: ]\n22140\nkey\nkey\nkey\nput\nkey\nand\nwith\nThey\nand\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3 of the OSL",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 3 of the OSL] [Focus: SECURITY, INTEGRATION]\n3 of the OSL\nmodel);\nprovides high-performance and reliable IP translation while maintaining cannection state during sessions t0 ensure proper\nenire\nloreng-ayreturai ,\ntraffic. AWS automatically provisions the NAT Gateway across multiple Availability Zones (AZs) for redundancy, ensuring resiliency and high\navailability:\nEphemeral Operations:\nThe NAT Gateway operates at the network layer; performing operations (e.g., IP translation) in real-time\nThese operations are ephemeral and occur in memory\nonly; with no data written to disk or persistent storage_\nConnection State Management:\nConnection state information (e.g:\nsource and destination IPs,\nporls) required far NAT translation is maintained temporarily in memory while the conneclion is\nactive_\nThis state information is automatically cleared when the session ends, ensuring no residual sensitive data remains in memory:\nEncryption Integrity:\nThe NAT Gateway does not inspect, modify, or store data payloads, including Cardholder Data (CHD}\nprocesses data in transit without storing or\npersisting it.\nPayloads remain end-to-end encrypted in transit via HTTPS with TLS 1.2 or higher; ensuring compliance with PCI DSS encryption requirements.\nNAT Gateway\nThe NAT Gateway does not inspect, modify, or slore data payloads, including Cardholder Data (CHD} It processes encrypted tralfic as\npass-through without\ndecrypting it, ensuring no CHD is logged,\nstored\nor processed persistently:\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.7.1 Security Solution View",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ],
+      "split_block": true
+    },
+    "content": "[Context: 2.7.1 Security Solution View (Cont.)] [Focus: SECURITY, INTEGRATION]\n2.7.1 Security Solution View NOTE: This is a logical representation_ The Lambda functions data planeslruntime environments are technically part of the Lambda Service but access VPC resources through ENIs (AWS Elastic Network Interface) created within the VPC by the ambda Service_ nttps {reqcentral: comfwikilpageslviewpage.action?pageld-728793978 23/40 2116/25,2.28 AM High Level Design Contact Center Re-Platform MVP (PCI) - Financial and Emerging Services Rogers Wiki enire Replatform Phore PSTN RBCONNECT Security Architecture Custcmers AWS Account (Non-PCI} Amazon HTTPS AwS IAY Connect Upload A\"vS IAM AlvS IAM Public Keys {PAN; PIN} TPS AWSIAv HTTrS HTTrS AWS IAM Avs IAM '0FF Ckucta Clojuualde Inxokiny La nLdps Lambda Audin Sc per Serice Recording Recrdinu VPC HTTPS AYyS |AM ecutioni \"(aCA Ld TiLdzn Senice HTTPS,AWvS IAM X-Kay (Co:Placu} CDE AwS ECCouDC IPS MMPS (X#Vatch Lods CUqS CCR PCI CCR PCI Lags Gcuar hUcic Utp CoE VPC Prlvate Subret COE CCR PCI Logs Gocurit 7183.Mily (aue Lirc?.J0i C4r* Lno ^ Priyale HTTPS HTTPS /wS Mv Decryp CCRLanhda: CCR Aninicas ENI Endooirb - KMs IPS_ (iiBADej {Dala Plne) Cayload {nhfne Paybad {DANACIN} TSYS Kevld TSYSKeyiD Instant Credit (IC} Kexcecret Sz0_\"l; Keyld HMAC Signatiie HMA- Sionatlte PCI Lambdas CCF Grc 0 2 HIPS (Net_ Scnpe} HTTPS HTTPS vPC ENIZ Fndpcint-? Secrets ATTPS,AwvSIAM Manager Public sub 7et NACL ATTS Galewdy {wilh EIP) NACL Htips Firewall $ ubnet TSYS domain namels} whltelisted Neit fk Tamic irryaminj N+i;JrR Firewal damain_ sed Filering Firewal Endpomt https Ilreqcentral comfwikilpageslviewpage action?pageld-728793978 24140 {2-1 AwS TS3 2016/25,2.28 AM High Level Design Contact Center Re-Platform MVP (PCI) - Financial and Emerging Services Rogers Wiki efire Replatform Fievai TPS MIPS VPC; MTPS Fknw Logjs Tkw Lcs\"\" Servire CloudWatch Lcus InterneC HIIPS Gateway {CDF Flcx 4TTPS. TSYS HMAC HITPS Contac stakel' Loy? {CUL; Ccabd cvcnts Fvents Lcas SS0 CDE} Sccurity Securit; ncin(s JLArne CME RCI IP {CDE} whitelisted RCI GuarDuty Centalized Security Pavload TSts Kavil Lenier Clad Securily HMAC Sigralie CloudTrailLcas (CDE)- Adrin {nor-CDE) ClaudTrail Senliriel (SIEM) Tlys RCI Centralized Security CloudTiail Loas} {Beyond Ite scope this HLD inciuced Open APIs LFus clixgrarr Tr reterenck DLICADSPS csrilyj CCR PCI Lambda functions: Lambda function Use Case Description Lambda Lambda Output TSYS API Input Veri:y?it: Verify PIN Decrypts the Encrypted isValid (True/False) lissuingidigitallcard {accountld}customer{{customerld} pin{{ customer digit PIN PIN and validates it accountID Digital Engagement TSYS Developers customerlD comparing it to the PIN fetched from TSYS Crarge? SetUpdate Send the Encrypted Success status lissuingfdigitallcard {accountld}customer{{customerld}setu PIN request to digit PIN TruefFalse) TSYS to update the Digital Engagement TSYS Developers new PIN entered by customer: Geln:ccurlRyCard Get This function Encrypted 16 accountID issuing/accountisearch Account get digit card Info by account number (PAN) customerD PAN details which AccountStatus Cansumer Essentials TSYS Developers includes card details Custamer\"'$ [egistered by laking phone number PAN as input Gclnccur URYAKT Get This function Incoming call's Last digits of PAN issuinglaccountisearch Account get phane number Info by ANI account accountID Match details which customerD Cansumer Essentials TSYS Developers includes details AccountStatus by laking Customer's [egistered incoming phone number call s phone number (if it matches customer 5 phone https Ilreqcentral comfwikilpageslviewpage.action?pageld-728793978 25/40 Loj- fkst Logi YPc FWa Clal $ Htips Loj: ard {CDE MIll MIll card 2016/25,2.28 AM High Level Design Contact Center Re-Platform MVP (PCI) - Financial and Emerging Services Rogers Wiki enire Replatform number} as input INTERACTION DETAILS CONTROL Public key Rogers Bank's authorized personnel with Amazon the %s Ge Paol cke permission can use the the AWS Connect Management Console or the Ce Fo cKeyAPlto export the public keys (PAN Key -ublic and PIN public) in PEM format. Once exported_ the public keys are manually uploaded to Amazon Connect, where they are securely stored and used to encrypt payloads containing sensitive cardholder data (CHD} Amazon Connect 5upports uploading up to two keys at time_ This is a one-time configuration process and does not occur for every customer interaclion with Amazan Connect The public-private pairs are periodically regenerated by AWS KMS as part f a key rotation policy: This ensures adherence to security best practices and ongoing compliance with PCI DSS requirements Lambda When a customer or an agent selects PCE Use case, the invaration assaciated AWS Lambda functian is invoked by Amazon Connect: The encrypted payload is passed to Ihe Lambda function over HTTPS on AWS internal network NOTE; For the Get Account Info by ANI use case, encryption of the payload (customer's phone number}) at Amazon Connect is not required. Security Groups Lambda functions configured to run within the CDE VPC utilize Lambda Elastic Network Interfaces (ENIs) are created by the functions Lambdas and placed in the CDE private subnet The ENIs are attached to security groups, which define inboundloutbound mules_ These security groups are configured t0 allow outbound HTTPS (port 443) trafiic to the NAT Gateway The NAT Gateway then fonwards the traffic to the AWS Network Firewall_ where domain-based filtering of outbound traffic to TSYS i5 enforced_ (For simplicity, Ihe Lambda ENIs are not depicted in Ihis logical diagram)_ Lambda The ambda function's IAM execution role must have execution {n? Cecryzt permission for the specific KMS ensuring Decrypt that only authorized Lambda functions can request decryption of encrypted payloads When the ambda function receives an encrypted payload from Amazon Connect; it calls AWS KMS via the AWS SDK, invoking the Deczyp= API The encrypted payload is sent to KMS for decryption_ KMS key policy must allow Ihe ambda functions execution role to perform decryption_ Importantly; the private key used for decryption i5 never exposed or retrieved by the Lambda function; it i5 securely stored and managed by AWS KMS_ KMS handles Ihe decryption process using the private key and returns the decrypted plaintext to the Lambda function. This ensures tha the sensitive data is decrypled securely within KMS and is only accessible t0 authorized functions By relying on AWS KMS for decryption, the ambda function avoids handling sensitive cryptographic operations directly; adhering to best practices for security and compliance. Permissions are tightly managed using IAM policies and KMS policies. AIl KMS key operations, including encryption, decryption, and usage API events will be logged"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.7.1 Security Solution View",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ],
+      "split_block": true
+    },
+    "content": "[Context: 2.7.1 Security Solution View (Cont.)] [Focus: SECURITY, INTEGRATION]\nreceives an encrypted payload from Amazon Connect; it calls AWS KMS via the AWS SDK, invoking the Deczyp= API The encrypted payload is sent to KMS for decryption_ KMS key policy must allow Ihe ambda functions execution role to perform decryption_ Importantly; the private key used for decryption i5 never exposed or retrieved by the Lambda function; it i5 securely stored and managed by AWS KMS_ KMS handles Ihe decryption process using the private key and returns the decrypted plaintext to the Lambda function. This ensures tha the sensitive data is decrypled securely within KMS and is only accessible t0 authorized functions By relying on AWS KMS for decryption, the ambda function avoids handling sensitive cryptographic operations directly; adhering to best practices for security and compliance. Permissions are tightly managed using IAM policies and KMS policies. AIl KMS key operations, including encryption, decryption, and usage API events will be logged in AWS CloudTrail nttps {reqcentral: comlwikilpageslviewpage.action?pageld-728793978"
+  },
+  {
+    "metadata": {
+      "parent_section": "26140\nKey\nkey\nthat\nkey\nThe\nkey\nkey",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 26140\nKey\nkey\nthat\nkey\nThe\nkey\nkey] [Focus: SECURITY, INTEGRATION]\n26140\nKey\nkey\nthat\nkey\nThe\nkey\nkey\n\n\n2116/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\n(deployed in RCIs Centralized Security Account), ensuring\ntraceability:\nAWS GuardDuty: also deployed in RCIs Centralized Security\nAccount, will monitor and ilag unauthorized attempts or\nanomalies related to KMS key usage_\nNOTE: The specific canfiguration of RCIs Centralized Security\nAccount is beyond the scope of this HLD and is included in the\ndiagram solely for reference_\nFor more information_\nplease refer\nto the HLD - Card Viewer (PCI) , accessible via the link provided\nin the\nReferenced Documents\nsection (Section 1.3}_\nVPC Endpoint -\nLambda functions deployed in a VPC use an Interface VPC\nKMS\nEndpoint-\nto securely access AWS KMS without traversing the\npublic internet:\nTo enforce least privilege, improve isolation, and enhance\nauditability; two distinct sets of AWS KMS\nencryptionldecryption\npairs will be used in this solution:\nOne key pair (PAN Key) for the Lambda function handling\nthe Get Account Info by PAN use case_\nshared key pair (PIN\nfor the SetUpdate PIN and\nVerify PIN use cases_\nThis separation aligns with the nature of the data handled by\nthese use cases\nGel Account Info by PAN use case\nDeals with PAN,\nSet{Update PIN and Verify PIN use cases: Handle PIN-\nrelated data_\nwhich is inherently different:\nNOTE: For the Get Account Info by ANI use case\nencryption of\nthe payload (customer's phone number} at Amazon Connect\nnot required_\nSecurity Group\nThis is\nnetwork-based conlrol mechanism that manages\nENI-1\ninbound and outbound traffic to and fram the elastic network\ninterface (ENI) associated with the VPC endpoint for AWS KMS_\nThe security group is attached to the ENI created by the VPC\nendpoint in the CDE private subnet and controls IP-level traffic\nbetween the CCR PCE\nambda functions and the VPC endpoint:\nThis security graup is configured to allow inbound HTTPS (port\n443) traffic specifically from the security groups attached to the\nLambda functions that require access ta the KMS VPC endpoint:\nAWS automatically manages the\nof traffic from the VPC\nendpoint to the KMS service\nand the default outbound rules of\nthe security group (allowing all outbound traffic) are sufficient:\ncanfiguration ensures that only authorized\nambda\nfunctions within the specified security groups can securely\ncommunicate with the KMS endpoint\nLambda\nThe Lambda functian retrieves Ihe TSYS KeylD ad KeySecret\nexecutipn\nfrom AWS Secrets Manager: It uses these credentials to\nTSyS\ngenerate the HMAC signature and construct the authentication\ncredentials\nheader required for secure communication with TSYS APIs_\nVPC Endpoint _\nLambda functions deployed in a VPC use an Interface VPC\nSecrets\nEndpoint-2 to securely access AWS Secrets Manager; retrieve\nManager\nthe TSYS KeylD ad KeySecret; and use\nfor authenticalion\nwith TSYS Open APIs _\nSecurity Group\nThis is\nnetwork-based control mechanism that manages\nENI-Z\ninbound and outbound traffic to and from the elastic network\ninterface (ENI) associated with the VPC endpoint for AWS\nSecrets Manager_\nThe Becurity group is attached to the ENI\ncreated by the VPC\nendpoint in the CDE private subnet and\ncontrols IP-Ievel traffic between the CCR PCI Lambda functions\nand the VPC endpoint:\nThis security group is configured to allow inbound HTTPS (port\n443) traffic specifically from the security groups attached to the\nLambda functions that require access to the Secrets\nManager\nVPC endpoint:\nAWS automatically manages the routing Of traffic from the VPC\nendpoint to the Secrets service , and the default outbound rules\nof the security group (allowing all outbound traffic) are\nsufficient: This configuration ensures that only authorized\nnttps  {reqcentral:\ncomlwikilpageslviewpage.action?pageld-728793978\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "27140\nkey\nOne",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 27140\nkey\nOne] [Focus: SECURITY, INTEGRATION]\n27140\nkey\nOne\nKey)\nrouting\nThis\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\nLambda functions within the specified security groups can\nsecurely communicate with the Secrets Manager endpoint:\nOutbound\nOutbound traffic from the private subnet is first routed to the NAT\nRequest to\nGateway; which forwards it to AVS Network Firewall for domain-\nTSYS\nbased inspection and filtering: After passing the firewall; traffic\nproceeds via the Internel Gateway to TSYS over HTTPS (TLS\n1.2 or higher). AWS Network Firewall applies domain-based\nfiltering rules to ensure only requests to TSYS's domain are\nallowed , providing strict outbound control without requiring static\nIP allow-lists from TSYS_\nOutbound traffic\nFor outbound communication to TSYS\nthe private subnet's route\nvia AWS NAT\ntable directs all 0.0.0.0/0 traffic to the NAT Gateway, which is\nGateway\ndeployed in\npublic subnet within the CDE VPC and has an\nattached Elastic IP (EIP} The NAT Gateway then forwards traffic\nto AWS Network Firewall for domain-based inspection and\nfiltering:\nAfter passing through the firewall, traffic egresses to the\nInternet Gateway (IG) for TSYS Open APE\nendpoints_\nAWS NAT Gateway is\nstateful, AWS-managed service that\nautomatically allows returnfresponse traffic from TSYS\nrouting it\nback to the\nambda functions withput arditional inbound\nconfiguration_\nThe NAT Gateway does not allow any unsolicited\ninbound connections_\nNetwork Access\nNACLs (Network Access Control Lists} are stateless_\nControl Lists\nrequiring explicit rules to allow both outbound requests and\n(NACLs)\ninbound responses_\nPublic Subnet NACL Configuration\nQutbound Rule:\nEnsure the public subnet NACL allows outbound traffic from\nthe NAT Gateway ta the Network Firewall subnet (or firewall\nendpoint). This rule enables traffic to ilow from internal\nresources through the firewall:\nInbound Rule;\nAllow relurn traffic from Ihe Network Firewall subnet t0 the\nNAT Gateway on ephemeral ports. The ephemeral ports are\ndynamically allocated during the autbpund connectipn and\nare used by the NAT Gateway for receiving responses\nNote that the NAT Gateway itself is merely\ntranslating IPs_\nhandling outbound traffic and return responses\nand is not an\napplication-level service \"listening\non specific ports like 443_\nInstead\nconnections initiated by the lambdas use ephemeral\nports (1024-65535) for outbound requests and inbound\nrespunses_\nTherefore\nDo not open inbound port 443 on the public subnet NACL\nfor the NAT Gateway;\na5 it is unnecessary\ncould\ninadvertently expose the infrastructure\nInstead\nconfigure the NACL to allow the entire ephemeral\nport range (1024-65535) for both outbound traffic and\ninbound responses_\nPrivate Subnet NACL Configuration\nUse the default\nallow-all\" rules far the private subnet\nNACL. Traffic from the private subnet is routed through the\nNAT Gateway and subsequently filtered by the Netwark\nFirewall, providing centralized control over security and\naccess\npolicies_\nNo Need for TSYS IPs in the NACL: Since we're relying on\ndomain-based filtering in AWS Network Firewall;\nwe dont have\nto manage largefdynamic IP ranges in the NACL. Instead, the\nNACL rules should simply permit traffic flows between\nNAT\nGateway and the Network Firewall subnets_\nThe firewall will\nenforce fine-grained domain-based allow-lists_\nThis configuration maintains\ndefault deny-all posture at the\nNACL layer; except for explicitly required ports. AWS Network\nFirewall enforces domain-based filtering; providing an additional\nlayer of security without relying on cumbersome IP-based\nconfiguration\nnttps  {reqcentral:\ncomlwikilpageslviewpage.action?pageld-728793978\n28/40\nand\nthe\n\n\n2116/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\nAWS Network\nPCI DSS emphasizes controlling and monitoring both inbound\nFirewall\nand outbound traffic to protect the Cardholder Data Environment\n(CDE)_\nIn this design\nLambda functions reside in a private\nsubnet within the CDE VPC_\nOutbound traffic from the\nambdas\nis routed to the NAT Gateway (in\npublic subnet}, then proceeds\nto AWS Network Firewall for domain-based filtering and finally\negresses via the Internet Gateway to TSYS.\nThe Firewall Endpoint:\nActs as an interface in a dedicated Firewall subnet that\nforwards network traffic to AWS Network Firewall for domain-\nbased filtering\nEnsure TSYS domain namefs) are whitelisted\nLambda traffic attempting to reach that domain i5 allowed,\nwhile all other domains are blocked_\nThis Network Firewall;\nUses stateful Domain Name rules to restrict egress traffic\nexclusively to TSYS's domain on port 443_\nconfigured with\nFQDN match conditions_\nCaptures logs to provide visibility into network activity for\ncontinuous monitoring and auditing\nmust beexplicitly\nAnabbled}\nEnsure logging of both Alert logs (to record traffic\nthat matches alert rules) and Flow logs (lo record the traffic\nflow (allawed}denied} through Ihe firewall,\nInternet\nEgress endpoint for all outbound traffic from the CDE_\nGateway\nTraffic passes from the private subnets\nNAT Gateway\nAWS\nNetwork Firewall\nInternet\nGateway\nTSYS domain:\nAIl egress dala is sent over HTTPS_\nsecured wilh TLS 1.2 or\nhigher:\nCall to TSYS\nThe Internet-facing portion of the traffic ilow begins after the\noutbound request passes through the NAT Gateway and AWS\nNetwork Firewall: From there. the request traverses the Internet\nGateway to reach the TSYS domain. Data remains encrypted in\ntransit using TLS 1.2 or higher; ensuring secure communication.\nExecution traces\nLambda traces are securely transmitted to AWS X-Ray using\nHTTPS,\nX-Ray relies on public network endpoints_\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "15\nLambda Logs\nLambda logs are captured in CloudWatch Logs and securely\nstreamed over HTTPS\nEach Lambda function will have unique logging identifiers and\npolicies to ensure logs can be distinctly attributed to individual",
+      "audit_tags": []
+    },
+    "content": "[Context: 15\nLambda Logs\nLambda logs are captured in CloudWatch Logs and securely\nstreamed over HTTPS\nEach Lambda function will have unique logging identifiers and\npolicies to ensure logs can be distinctly attributed to individual] [Focus: ]\n15\nLambda Logs\nLambda logs are captured in CloudWatch Logs and securely\nstreamed over HTTPS\nEach Lambda function will have unique logging identifiers and\npolicies to ensure logs can be distinctly attributed to individual\nfunctions, enhancing traceability for debugging, troubleshooting _\nand\nauditing purposes\n16\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "53 storage",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 53 storage] [Focus: SECURITY, INTEGRATION]\n53 storage\nLambda logs are archived in an S3 bucket dedicated to CCR PCI\n{Lambdas logs)\nlambdas (cezAczount-YCard_\nSetaceoun-LyAN]\nChanyep_\n{erisy?i:)\nThis S3 bucket is:\nEncrypted at rest using an SSE-KMS key that is distinct from\nthe key used for Lambda logs in the Instant Credit (IC)\nsolution_\nOrganized into dedicated folder prefixes for each CCR PCI\nLambda function (e.g.=\n1Ge\nAcccustoyard;\nGeticcoun-BYANI\n{Changepin,\n/Vezisy? -)for each Lambda function; ensuring clear\nBeparation and easier management of log data_\nFirewall logs\nFirewall lpgs are captured in CloudWatch Logs and securely\nstreamed over HTTPS_\n18\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "53 storage",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 53 storage] [Focus: SECURITY, INTEGRATION]\n53 storage\nFirewall logs are archived in an 53 bucket dedicated to CCR\n(Firewall logs}\nCDE Firewall\nThis S3 bucket is encrypted at rest using a dedicated SSE-KMS\nkey that is distinct from the\nused for Lambda logs or the VPC\nFlow Logs_\nVPC Flow Logs\nVPC Flow Logs are captured in CloudWatch Logs and streamed\nsecurely over HTTPS_\nnttps  {reqcentral:\ncomlwikilpageslviewpage.action?pageld-728793978\n29/40\nzny\nlogs\nkey\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\n20\nS3 storage\nVPC Flow Logs are archived in a dedicated S3 bucket and\n(VPC Flow logs)\nencrypted at rest using a dedicated SSE-KMS\nfor security:\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "53 storage\nCall audio and\nscreen",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 53 storage\nCall audio and\nscreen] [Focus: SECURITY, INTEGRATION]\n53 storage\nCall audio and\nscreen\nrecordings are stared in separate 53\nCCR PCI Audio\nbuckets_\nand Screen\nGranular Access Control:\nRecordings\nApply distinct access policies to audio and screen recordings,\nensuring belter control over who can access each type pf\ndata_\nCustomizable Retention Periods:\nDefine different retention periods for audio and screen\nrecordings to meet regulatory or business needs (TBD)_\nCost Optimization;\nUtilize separate storage classes based on access patterns:\nStore frequently accessed screen recordings in 53\nStandard (TBD}\nArchive audio recordings in S3 Glacier to reduce costs\nwhile ensuring compliance with long-term retention\npolicies (TBD)\nLinking Related Data:\nTo correlate audio and screen recordings for the same\ninteraction;\nImplement metadata tracking (e.g-,\nstore interaction IDs\nor timestamps a5\nor in\ndatabase} (TBD)-\nUse\nconsistent folder structure across buckets (e.g:=\n<icar?_\n<Mort:?\n~ay>\n(ntcract\n0r137/}\nData Security:\nEncrypt each bucket at rest using dedicated SSE-KMS\nkeys. This ensures that the data is independently secured,\nmeeting PCI DSS standards and minimizing the risk of cross-\nbucket compromise_\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.7.2 Encryption\nData at Rest",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 2.7.2 Encryption\nData at Rest] [Focus: SECURITY, INTEGRATION]\n2.7.2 Encryption\nData at Rest\nEncryption of Lambda Environment Variables:\nEnvironment variables used by Lambda functions are encrypted at rest using AWS Key Management Service (KMS}\nensuring secure storage of sensitive\nconfiguration data\nNo Storage or Logging of Account Data:\nAccount data is neither stored nor logged at any stage within the solution; adhering Btrictly to PCI DSS requirements.\nEncryption of Logs and Storage:\nIt is assumed that CloudWatch logs within the CDE are encrypted at rest. Similarly,\n53 storage utilized for logs or other data is configured to use server-side\nencryption (SSE) with AWS-managed keys_\n2.7.3 Encryption _ Data in Transit\nSecure Communication with TSYS:\nAll interaclions between AWS Lambda functions and TSYS backend APls are conducted over HTTPS_\nsecured with TLS v1.2 or higher; ensuring data in transit\nencrypted and protected_\nEncryption of Account Data:\nSensitive Account Data is encrypted within Amazon Connect using robust encryption mechanisms t0 safeguard information during processing:\nSecure Lambda Invocations\nAII AWS Lambda invocations are conducted over HTTPS by default, ensuring secure communication between components within the AWS environment:\n2.7.4 Identity and Access Management (IAM)\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.7.4.1 Authentication",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 2.7.4.1 Authentication] [Focus: SECURITY, INTEGRATION]\n2.7.4.1 Authentication\nAuthentication with TSYS is implemented using TSYS HMAC,\nas outlined in the following documentation: TSYS APIs authentication\nFinancial and\nEmerging Services\nRogers Wiki_\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.7.4.2 AWS Applications IAM authorization and access control details",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 2.7.4.2 AWS Applications IAM authorization and access control details] [Focus: SECURITY, INTEGRATION]\n2.7.4.2 AWS Applications IAM authorization and access control details\nLeast privilege policies for IAM roles will be defined and reviewed during every change Or, at\nminimum; every 6 months_\nIAM; 53 bucket; and KMS\npolicies will\nbe regularly reviewed and audited to ensure alignment with business needs and the security\npesi\npractices_\nnttps  {reqcentral:\ncomlwikilpageslviewpage.action?pageld-728793978\n30140\nkey\nlag5\nany\nKey\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nJhe\ntable provides an overview of key IAM resources and control mechanism essential for secure and proper functioning of the solution in AWS. Each\nTesouctewi?Jes\ngned to adhere ta the principles of least\nprivilege, isolation, and auditability: Resources will be configured specifically for each environment (DEV, STG,\nQA, PROD) to ensure consistency compliance, and alignment with environment-specific requirements_\nNo.\nType\nResource\nDescription\nPurpose\nKey Permissions Scope\nResource-based\nKMS Key Policy\nPAN\nAttached directly to the KMS key used\nGrants\nX01s\nTecry?1. to Lambda PAN role\nPolicy\nfor PAN data\nGrants key mgmt perms (xria\nGel?ur\ncXey,\nAdministrator role\nResource-based\nKMS Key Policy\nPIN\nAttached directly to the KMS\nused\nGrants ns\nTecryzt to\nambda PIN rcle\nPolicy\nfor PIN data_\nGrants\nmgmt perms\n{0:\nGe\n70;\nRey,\n*8\nTea;\nAdministrator role\nResource-based\nSecrets Manager Secret\nAttached directly to the secret\nRestricts who can readlupdate a secret:\nPolicy\ngrants or denies access directly on the\nresource the secret resource_\nResource-based\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "53 Bucket",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 53 Bucket] [Focus: SECURITY, INTEGRATION]\n53 Bucket\nAttached t0\nAWS 53 (CCR PCI\nAllows &3\n?ulOb\necu\n33\nGe-Oc\necl for trusted IAR\nPolicy\nAudio) bucket that stores PCI call\nDenies public access_\naudio recordings and chat transcripts\nRestricts read{write access t0\nauthorized principals only: Enforces\nserver-side encryption\nResource-based\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "53 Bucket Policy",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 53 Bucket Policy] [Focus: SECURITY, INTEGRATION]\n53 Bucket Policy\nAttached to the AWS S3 (CCR PCI\nAllpws 9;\n?ulOb\n\"c,\n83\nGo-Oc\noclfor trusted IAR\nPolicy\nScreens) bucket that stores PCI call\nDenies public access_\naudio recordings and chat transcripts\nRestricts read{write access to\nauthorized principals only: Enforces\nsenver-side\nencryption\nIAM Role\nKMS Key Administrator\nManage KMS keys (create, rotate _\nKTS\nCrcstescy,\n{D1S\nSctiup_\n#Kcy-\n{DM\nLcucsibc_\nRole\ndelete, alias) and retrieve public keys_\nKIcS\nListiliascs\nX01a\nUrca\nCA1-as\nNo data encryptionfdecryption\nIAM Role\n{eunco-nlRyCar\nLeast privilege and scoped\nkir3\nYPI. for the specific key\nPAN key ARN (reql\nLambda Execution Role\npermissions for;\npayload decryption)\nAccessing\nspecific private key in\n2ecretsma-eger Getsecre_Va_\n:e 0n the specific\nAWS KMS\ncredentials' secret ARN\nRetrieving specific credentials\nCreatelogozoup_\n1383:Creaze_csstreal\n{TSYS KeylD & KeySecret} from\nFutlogive-tzto enable\nlogging to CloudWatch\nAWS Secrets Manager\nxra}\nPut race\nsegmenz?andxray-\npstle\neme-\nLogging to CloudWatch\nsupport distributed and execution tracing_\nSending execution traces to AWS\nall other KMS keys _\nX-Ray\nIAM Role\nGel.cco-nlByAN\nSame a5 for GetAccountByCard\n#Fcrelsaraje: ge\nSecre:Va\nfor the\nspecific\nLambda Execution Role\nlogs\nCreatelogaroup_\n1o88\nCreaze_ogstream;\n1c98\nFullog ve:I.s to enable logging\nxray\nPut?racezegme ;?andxzay\nI-tTeleme\nsupport distributed and execution tracing\nIAM Role\nYerifyPin Lambda\nSame as above\nkns\nDecrypt for the specific key\nPIN\nARN requir\nExecution Role\npayload decryption_\nsccrc\nSTU   a;Cs Cetoccr?\nva_\njc far the specific\ncgv\nCrod\nclogc\nQup_\n?39\nrca-\nOmslncat,\nlcaw;\nPutbog_vot\nto enable logging\nray\nFul\nraceeo)c-\nand\nXC\nP:tTc\n@.IC\nsupport distributed and execution tracing\nnttps  {reqcentral:\ncomfwikilpageslviewpage.action?pageld-728793978\n31140\nKey\n43\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "369\nKey\nkey\nKey\nkey\nKey\nand\nPolicy\nPolicy",
+      "audit_tags": []
+    },
+    "content": "[Context: 369\nKey\nkey\nKey\nkey\nKey\nand\nPolicy\nPolicy] [Focus: ]\n369\nKey\nkey\nKey\nkey\nKey\nand\nPolicy\nPolicy\nthe_\nDeS\n1cg?=\nlogs=\ncr}\nDeny -\nt.ry\nkey .\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI)\nFinancial and Emerging Services\nRogers Wiki\nemNe\nReplatfornType\nResource\nDescription\nPurpose\nKey Permissions Scope\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "10\nIAM Role\nChangcPin Lambda",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 10\nIAM Role\nChangcPin Lambda] [Focus: SECURITY]\n10\nIAM Role\nChangcPin Lambda\nSame a8 for VerifyPIN\nSame a8 for VerifyPIN\nExecution Role\nIAM Service Role\nAmazon Connect Service-\nStandard role for Connect.\nNo direct KMS permissions (key is manually uploaded)\nLinked Role\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "12\nIAM Role\nAmazon Connect\nConfigure Amazon Connect ilows and\nConnecs\non the relevantAmazon Connect instance res\nAdminiDeveloper Role\nupload public",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 12\nIAM Role\nAmazon Connect\nConfigure Amazon Connect ilows and\nConnecs\non the relevantAmazon Connect instance res\nAdminiDeveloper Role\nupload public] [Focus: SECURITY]\n12\nIAM Role\nAmazon Connect\nConfigure Amazon Connect ilows and\nConnecs\non the relevantAmazon Connect instance res\nAdminiDeveloper Role\nupload public\nNo KMS permissions needed (public key is already retrieve\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "13\nIAM Policy\nVPC Policy\nUsed by Lambdas to be able to",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 13\nIAM Policy\nVPC Policy\nUsed by Lambdas to be able to] [Focus: SECURITY, INTEGRATION]\n13\nIAM Policy\nVPC Policy\nUsed by Lambdas to be able to\nTo enforce the principle of least privilege:\nassociate with CDE VPC_\nSeparate VPC policies remain in place to ensure Lambd\nonly have permissions tO\nconfigure network interfaces in\nsubnets_\nEach\nambda function is\ngranted only the pemissions\nattach to the designated subnets_\nsecurity groups, and\nrelevant Interface VPC endpoints (VPC Endpoint-\nfor A\nVPC Endpoint-Z for AWS Secrets Manager)-\nSeparate policies for each\nambda functipn will be created\npermissioning:\nNetwork-based\nSecurity Group\nThis is\nnetwork-based control\nThis security group is configured to allow inbound HTTPS\ncontrol mechanism\nmechanism that manages inbound and\ntraffic specifically from the security groups attached to the\noutbound traffic to and from the elastic\nfunctions that require access t the KMS VPC endpoint\nnetwork interface (ENI) associated with\nthe VPC endpoint for AWS KMS . The\nAWS automatically manages the routing of traific from the V\nsecurity\nis attached to the ENI\nto the KMS service_\nthe default outbound rules of the\nsecated gyone VPC rheroint inethe\ngroup (allowing all outbound traffic) are sufficient: This cQ\nCDE private subnet and controls IP\nensures that only authorized\nambda functions within the SF\nlevel traffic between the CCR PCI\nsecurity groups can securely communicate with the KMS en\nLambda functions and the VPC\nendpoint:\nNetwork-based\nSecurity Graup 2\nThis i5 a network-based control\nThis security group is configured to allow inbound HTTPS\ncontrol mechanism\nmechanism that manages inbound and\ntraffic specifically from the securily groups attached Io the L:\noutbound traffic to and from the elastic\nfunctions that require access to the Secrets Manager VPC \u20ac\nnetwork interface (ENI) associated with\nthe VPC endpoint for AWS Secrets\nAWS automatically manages the routing of traffic from the V\nManager.\nThe security\nto the Secrets service_\nand the default outbaund rules of th\ngroup\nattached to the ENI created by the\ngroup (allowing all outbound traffic) are sulficient: This CO\nVPC endpoint in the CDE private\nensures that only authorized\nambda functions within the SF\nsubnet and controls IP-level traffic\nsecurity groups can securely communicate with the Secrets\nbetween the CCR PCI Lambda\nendpoint:\nfunctions and the VPC endpoint.\n16\nNetwork-based\nSecurity Group 3\nAttached to\nAllows outbound HTTPS (port 443) traffic only to the NAT G,\ncontrol mechanism\nGelfccc-nlRyAHT Lambda function\n(deployed in the public subnet in the CDE VPC), which sub:\nto limit outbound access\nroutes traffic through the AWS Network Firewall.\nThe AWS Network Firewall enforces dorain-based filtering\ndestined to\ntsys.com_\nStrict egress rules in the security group\ndomain filtering in\nNetwork Firewall ensures only authorized HTTPs traffic to\ndomain is permitted_\nNetwork-based\nSecurity Group 4\nAttached t0 Verify?in Lambda\nSame a8 above_\ncontrol mechanism\nfunction to limit outbound access_\n18\nNetwork-based\nSecurity Graup 5\nAttached to Zha:jc?in Lambda\nSame as above\ncontrol mechanism\nfunction to limit outbound access_\n19\nNetwork-based\nSecurity Group 6\nAttached t0\nSame a5 above\ncontrol mechanism\nGetlcceentByCardLambda function\nto limit outbound access\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "20\nIAM Role\nTerraform Module\nTerraform Module Deployer Role for",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 20\nIAM Role\nTerraform Module\nTerraform Module Deployer Role for] [Focus: SECURITY, INTEGRATION]\n20\nIAM Role\nTerraform Module\nTerraform Module Deployer Role for\nThis role's permissions will be scoped and restricted to only\nCDE account\nrequired for Terraform deployments_\nsuch as resource creati\nupdates\nwithout granting unnecessary readlwrite access to\nresources_\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "21\nIAM role\nDeveloper Role",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 21\nIAM role\nDeveloper Role] [Focus: SECURITY]\n21\nIAM role\nDeveloper Role\nDeveloper role for CDE account:\nThis role will ensure developers only have access to resour\nnecessary for their tasks, avoiding direct access to productic\nunless explicitly required_\nSeparate development and production roles will be defined,\ndeveloper role is scoped to non-production environmenls by\nPeriodic reviews of developer permissions will be conductec\nprivilege creep_\nhttps Ilreqcentral comfwikilpageslviewpage.action?pageld-728793978\n32140\nkey'\nand\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nemNe\nReplatfornType\nResource\nDescription\nPurpose\nKey Permissions Scope\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "22\nIAM Policy\nLambda Insights and X\nThis IAM policy is attached to the",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 22\nIAM Policy\nLambda Insights and X\nThis IAM policy is attached to the] [Focus: SECURITY, INTEGRATION]\n22\nIAM Policy\nLambda Insights and X\nThis IAM policy is attached to the\nPermissions are restricted to the minimum) required for integ\nRay\nrole(s} assumed by the CCR PCI\nCCR PCI Lambda functions with CloudWalch and\nLambda functions at runtime and is\nintended for monitoring and\nThe policy grants access to CloudWatch for metrics and log:\nRay for both execution and distributed\nenabling cor\ntroubleshooting, ensuring observability\nfor compliance and operational needs_\nmonitoring of the Lambda functions performance and interat\nThis integration provides visibility into\nCloudWatch permissions include actions such as Putke\nmetrics, logs\nand end-ta-end traces\nand Creazelcystrean\nacross the monitored Lambda\nfunctions and their dependencies_\nx-Ray permissions include Pi_I.\naceSegnen_s and\nPulTe\nemF\nYRecorda \nIAM Service Role\nCloudWatchLogsToS3Role\nAllows CloudWatch to deliver logs to\n23:cutObject on the CloudWatch bucket\n53 (CCR)\nkir.3\nGene\nai.eDa 4\nKs\nSncryor\non the relev;\nKMS\nused on the 53 (CCR) bucket_\nTrust Policy: Trust\nc9R\n;e_\nivery\nacazo-avs\n:Or\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "24\nIAM Service Role\nNetwork Firewall Logging",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 24\nIAM Service Role\nNetwork Firewall Logging] [Focus: SECURITY]\n24\nIAM Service Role\nNetwork Firewall Logging\nAllows AWS Network Firewall t0 send\nlcg3\nCrcatelogstrcad:\ncg?\nPut_ockvc:taon\nRole\nlogs to CloudWatch\nogs and 53_\nTrust\nPolicy: Trust netwerk-firew::\na-al zonav;\nco\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "25\nIAM Service Role\nVPC Flow Logs Role\nConsider custom role for VPC Flow",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 25\nIAM Service Role\nVPC Flow Logs Role\nConsider custom role for VPC Flow] [Focus: SECURITY]\n25\nIAM Service Role\nVPC Flow Logs Role\nConsider custom role for VPC Flow\nIc98\nCrea\nelcgsi.eai\n0gs\nCijl:ceEve:1son\nLogs delivery (instead of the default\nlog group\nservice-linked role}l?\nKMS permissions for SSE-KMS_\nTrust Policy: Trust ce_\nvery log?\naCazoraxs\nCoc.\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "26\nIAM Service Role\nLambda Logging Role\nAllpws AWS Lambda to write its Own",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 26\nIAM Service Role\nLambda Logging Role\nAllpws AWS Lambda to write its Own] [Focus: SECURITY]\n26\nIAM Service Role\nLambda Logging Role\nAllpws AWS Lambda to write its Own\nUsually satisfied by the AWS-managed policy\nlogs to CloudWatch Logs_\nARic\nam0c09a8\nRxccj:\ncAR?lc-\nMinimum needed is\nCOs\neAl.elcG\nOP,\ncs\nCrod\nclSl rdr:\nVd?\nPul\nQdb\nvi\nTrust Policy: Trust\narbda\nama:awS\ncoi\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "27\nIAM Service Role\nAmazon Connect",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ]
+    },
+    "content": "[Context: 27\nIAM Service Role\nAmazon Connect] [Focus: SECURITY, INTEGRATION]\n27\nIAM Service Role\nAmazon Connect\nAllows Amazon Connect t0 store call\n23:cutObject on the Connect recordings buckets_\nRecording Role\naudio recordings and agent screen\n{8\nGeneratejATaRey_\nKnS\nEnerypt for SSE-KMS\nrecordings in S3\nTrust Policy: trust corne:t\naiax?raws\ncoi:\n28\nIAM-based\nInterface VPC Endpoint-1\nAttached to the VPC endpoint for KMS_\nA JSON policy that specifies the ARNs of the lambda functic\nEndpoint Policy\nPolicy\nfurther restricting which principals\ncall kIz\nDecrypt via the VPC endpoint:\nwhich actions_\nwhich resources can\nuse (he VPC endpoint:\n29\nIAM-based\nInterface VPC Endpoint-2\nAttached to the VPC endpoint for\nA JSON policy that specifies the ARNs of the lambda functic\nEndpoint Policy\nPolicy\nSecrets Manager; further restricting\ncall eecretsma-ager\nGetsecre-Va_\n:evia the VPC enc\nwhich principals, which actions\nwhich\nresources can use the VPC endpoint\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "30\nIAM Service Role\nCloudTrail Service Role\nAllows Cloud Trail to deliver logs to a",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 30\nIAM Service Role\nCloudTrail Service Role\nAllows Cloud Trail to deliver logs to a] [Focus: SECURITY]\n30\nIAM Service Role\nCloudTrail Service Role\nAllows Cloud Trail to deliver logs to a\n\"Utobjoct on the CloudTrail bucket\nIAM Policy\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "53 Bucket Policy",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 53 Bucket Policy] [Focus: SECURITY]\n53 Bucket Policy\ndedicated S3 (CDE CloudTrail logs).\nkic $;\nL.crypt since SSE-KMS is used on the 53 bucke\nIAM Service Role\nGuardDuty Service Role\nAllows GuardDuty to monitor and\nStandard read-only loglevent permissions\ndetect threats_\n2.7.4.2.2 IT Dev roles_\naccess control and Operations RACI\nAligned with the HLD =\nCard Viewer (PCI) (refer to the \"Referenced Documents\"\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "section in Sec 1.3 for",
+      "audit_tags": []
+    },
+    "content": "[Context: section in Sec 1.3 for] [Focus: ]\nsection in Sec 1.3 for\nthe link)\nMembers of Rogers Bank dev squads will have access to the different AWS accounts created for our AWS environments as follows_\nAWS Access and roles\nFinancial and Emerging Services\nRogers Wiki (reqcentral.com)\nThe RACI for application support and operations can be reviewed in the below link:\nRogers Bank Day 2 Support RACI\nAWS\nRogers Wiki (reqcentral.com)\n2.7,5 Audit Logging and Monitoring\nRefer to Sec 2.7.5 of the the HLD\nCard Viewer (PCI) (refer to the\nReferenced Documents\"\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "section in Sec 1.3 for the link}",
+      "audit_tags": []
+    },
+    "content": "[Context: section in Sec 1.3 for the link}] [Focus: ]\nsection in Sec 1.3 for the link}\nhttps Ilreqcentral comfwikilpageslviewpage.action?pageld-728793978\n33/40\nX-Ray:\ntracing_\nKey\nkey\n\n\n2116/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\n28 @lbed Architectural Characteristics\n2.8.1 Availability, Scalability, Reliability and Maintainability\nAvailability:\nThe application is built using\nserverless architecture leveraging AWS\nambda functions: Logs are stored\nAmazon 53 for durability and accessibility:\nFor this MVP phase\nthe solution'5 availability is limited to the ca-central-1 AWS Region and applies to all AWS services used within this region_\nScalability:\nAWS Lambda automatically scales the number Df execution environments in respanse to demand_\nup to the account's concurrency limit; which is set to 1,000\nby default\nThis limit is shared among all applications running within the same Rogers Bank (RB) AWS account, including other services consuming the same quata_\nAdditional scalability considerations depend on AWS service quotas and may require adjustments as usage increases\nReliability:\nThe solution leverages AWS serverless services (such as Lambda\nAmazon S3) to ensure high availability and recovery from potential\nservice failures. AWS'5\ninherent redundancy and fault tolerance further enhance reliability:\nMaintainability =\nThe serverless architecture simplifies infrastructure management, especially for compute-intensive and event-driven applications_\nas the tools become\nincreasingly accessible and cost-effective:\nThe foundation of this architecture relies on stateless functions, which may introduce maintainability challenges due to their transient nature and lack of\npersistent state\nTo ensure robust maintainability:\nThe environment will be deployed and managed following RCIIRB best practices_\nThe codebase will reside under version control in Rogers' enterprise GitHub_\nRCE\nDevOps pipeline templates (ADO) will be utilized, enforcing code quality and vulnerability scanning via tools like SonarQube_\nAWS Lambda Development & Deployment (CIICD pipeline)\n1} CICD Pipeline:\nCode Signing with AWS Signer:\nambda functions will be signed\nAWS Signer with Rogers-specified keys. Code signing ensures that only trusted code runs in our Lambda functions_\nWhen enabled_\nLambda verifies every code deployment to ensure the package is signed by\ntrusted source before allowing execution:\nVulnerability Scanning:\nAs part of the CIICD pipeline _\nLambda function code will be inspected for vulnerabilities using\nvulnerability database _\nThis includes:\nScrutinizing Lambda package\nependencies for known vulnerabilities using appropriate tools.\nEnsuring that any identified vulnerabilities are addressed before deployment:\n2} Code Development:\nRuntime Environment:\nAII Lambda functions will use Nodejjs 22 as the runtime environment:\nDependency Management:\nDependencies listed in package\njsc:\nmust be pinned to exact versions that are approved and tested_\nensures consistent and secure builds across environments_\nRetry Logic;\nRetry logic will be defined as part of the Low-Level Design (LLD) The application architecture should also allow flexibility to implement an overall\nmechanism if needed_\nRequest Validation\nAII Lambda functions must validate incoming request parameters to ensure data integrity and security:\nSecure Logging:\nambda functions must not log any PCI ar PII data to maintain PCI compliance and protect sensitive information_\nCode Linting:\nA code linter must be set up for the Lambda project, and no warnings should be reported during development and deployment:\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.8.2 Disaster Recovery\nYes\nComponent\nDetails\nCDE\nAs per CDE\nDesign\nAmazon\nAs per\nConnect\nRBCONNECT",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.8.2 Disaster Recovery\nYes\nComponent\nDetails\nCDE\nAs per CDE\nDesign\nAmazon\nAs per\nConnect\nRBCONNECT] [Focus: ]\n2.8.2 Disaster Recovery\nYes\nComponent\nDetails\nCDE\nAs per CDE\nDesign\nAmazon\nAs per\nConnect\nRBCONNECT\nNon-PCI HLD\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.8.3 Response Time",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.8.3 Response Time] [Focus: ]\n2.8.3 Response Time\nThe solution aims t0 minimize IVR voice response times, ensuring that the duration from the user's input to the system\"s response does not exceed 3 seconds_\nhttps Ilreqcentral comfwikilpageslviewpage.action?pageld-728793978\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "34140\nusing\nThis\nretry",
+      "audit_tags": []
+    },
+    "content": "[Context: 34140\nusing\nThis\nretry] [Focus: ]\n34140\nusing\nThis\nretry\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.8.4 Industry Compliance",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 2.8.4 Industry Compliance] [Focus: SECURITY]\n2.8.4 Industry Compliance\nAll use cases outlined in this document are designed to comply with PCI DSS v1.4 standards.\nThis HLD details how the in-scope use cases are implemented within\nthe CDE VPC , ensuring alignment with PCI compliance requirements_\n2.8.5 Volumetric & Service Level Agreement\nHigh Level Impact Analysis\nVolumetric & Service Level Agreement - High Level Impact Analysis\n<<Discuss how solution addresses peak\naverage transaction requirements, maximum concurrent transactions and response time requirements. For each SLA andfor\nBusiness Metric, document what will this solution will deliver at Jaunch and the life of the solulion. ie.\nThe solution will deliver average hourly throughput of XXX with a\nmaximum hard limit of XXX\nSolution covers\nyears of BAU growth of 10% per month >\nNo\nSystem/Application\nService andlor\nVolume\nConcurrent\nbusiness process\nUsers\n(batch, online, Or\nweb)\nAverage\nPeak\nPeak\nDaily\nHourly\nConcurrent\nVolume\nVolume\nUsers\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1991\nRBConnect\nCloud Contact Centre",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 1991\nRBConnect\nCloud Contact Centre] [Focus: SECURITY]\n1991\nRBConnect\nCloud Contact Centre\n6942\n1278\n766\nPlatform (MVP\nPhase}\nNQIE:\nGiven the data\nindicating\npeak load of\n66 concurrent sers_\nthe default AWS account concurrency limit of\nQ0Q should be sufficient to handle the expected\nworkload_\nHowever;\nto mitigate cold start delays and improve performance, provisioned concurrency will be enabled to keep these\nambda functions warm_\nreducing cold start delays\nensuring consistent performance _\nIt's been decided t0 start with 50 concurrent lambdas and fine-tune based 0n real-time as needed_\nSimilarly, AWS KMS has\nthrottling limit for\n0OQ callslsec for an account: As per the currently expected volure it is deemed to be sufficient: However; any additional\nuse cases Or increase in volume must consider this limit.\nCostt* with and without provisioned concurrency for Lambdas with 3 sec duration and S12MB memory handling 800 request\nsec (Canada region}\nNormal wlo any\nwarming\nprovisioned\nfunction (complex)\nconcurrency-800\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "466 USDImonth",
+      "audit_tags": []
+    },
+    "content": "[Context: 466 USDImonth] [Focus: ]\n466 USDImonth\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "615 USDImonth",
+      "audit_tags": []
+    },
+    "content": "[Context: 615 USDImonth] [Focus: ]\n615 USDImonth\nThis represents the worst-case scenario_\nwith potential opportunities for optimization as more accurate data becomes available.\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "2.8.6 Enterprise Application Monitoring",
+      "audit_tags": []
+    },
+    "content": "[Context: 2.8.6 Enterprise Application Monitoring] [Focus: ]\n2.8.6 Enterprise Application Monitoring\nThe app classification is: Important and non-prod before Q2-2025_\nApplication Monitoring and day 2 operations in general will be responsibility of Rogers Bank\ndedicated resources via CloudWatch (Alerts, dashboard5\netc} .\nNIA\nTechnical Solution\nList all the impacted applications\nrepeat the section 3\nand it's subsections to cover the\nto-end solution for all impacted applications_\nThis section will be\ncompleted by application owners for their respective applications_\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.0 Technical Solution Overview",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.0 Technical Solution Overview] [Focus: ]\n3.0 Technical Solution Overview\nThe summary of the solution\"s architecture is as follows:\nproject leverages the CDE environment created in the CDE AWS account (discussed in HLD Card Viewer (PCI)\nrefer t0 the \"Referenced Documents\"\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "section in",
+      "audit_tags": []
+    },
+    "content": "[Context: section in] [Focus: ]\nsection in\nSec\n.3 for the link} to execute PCE\nuse cases_\nNo\ndata is returned from the CDEAWS\nccount to the CCR (RBCONNECT) non-PCE\naccount,\nas this separation\nenforced through strict security controls and the abstraction provided by AWS Lambda Service_\nCCR RBCONNECT non-PCI use cases are described in the HLD for CCR MVP (Non-PCI} (refer to the\nReferenced Documents\" section in Sec\n33 for the link}\nNewlModifiediDecommissioned Interfaces\nNFA\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.3 Application\nRBCONNECT",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.3 Application\nRBCONNECT] [Focus: ]\n3.3 Application\nRBCONNECT\nhttps Ilreqcentral comfwikilpageslviewpage.action?pageld-728793978\n35/40\nand\nand\nend-\nThis\nPCI\n\n\n2116/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\n3,3+4 Aeplicetion Overview:\nSee Section 2_\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.3.2 Application architectureldesign\nNZA",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.3.2 Application architectureldesign\nNZA] [Focus: ]\n3.3.2 Application architectureldesign\nNZA\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.3.3 Application Security Specifications",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.3.3 Application Security Specifications] [Focus: ]\n3.3.3 Application Security Specifications\nSee section 2.7 Security Architecture\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.5 Infrastructure Solution",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.5 Infrastructure Solution] [Focus: ]\n3.5 Infrastructure Solution\n<< This section only needs to be produced if solution is implementing any new technolagy application\nplatform or solution require any infrastrucfure changes\ndescribes the platform configurations for the solution:\nRefer t0 Sec. 2.8.1\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.5.2 High Level Technical Solution",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.5.2 High Level Technical Solution] [Focus: ]\n3.5.2 High Level Technical Solution\nRefer to the Solution Architecture section (Fpr logical diagrams):\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.5.2.1 Key Concepts",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.5.2.1 Key Concepts] [Focus: ]\n3.5.2.1 Key Concepts\nRefer to Sec_\n13\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.5.2.2 Environments",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.5.2.2 Environments] [Focus: ]\n3.5.2.2 Environments\nDEV, STG\nQA, PROD\nSame as in Sec 3.5.2.2 of the HLD\nCard Viewer (PCI) (refer t0 the\n'Referenced\nDocuments\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "section in Sec 1.3 for the link)",
+      "audit_tags": []
+    },
+    "content": "[Context: section in Sec 1.3 for the link)] [Focus: ]\nsection in Sec 1.3 for the link)\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.5.2.3 Locations",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.5.2.3 Locations] [Focus: ]\n3.5.2.3 Locations\nSame as in Sec 3.5.2.3 of the HLD\nCard Viewer (PCI) (refer to the \"Referenced Documents\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "section in Sec 1.3 for the link)",
+      "audit_tags": []
+    },
+    "content": "[Context: section in Sec 1.3 for the link)] [Focus: ]\nsection in Sec 1.3 for the link)\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.5.2.4 Network Security Zones",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.5.2.4 Network Security Zones] [Focus: ]\n3.5.2.4 Network Security Zones\nSame as in Sec 3.5.2.4 of the HLD\nCard Viewer (PCI) (refer to the\nReferenced Documents\"\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "section in Sec 1.3 for the link)",
+      "audit_tags": []
+    },
+    "content": "[Context: section in Sec 1.3 for the link)] [Focus: ]\nsection in Sec 1.3 for the link)\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.5.2.5 Availability",
+      "audit_tags": [
+        "SECURITY"
+      ]
+    },
+    "content": "[Context: 3.5.2.5 Availability] [Focus: SECURITY]\n3.5.2.5 Availability\nTarget availability SLA criteria met based on app Classification (Critical). Application and Service Classification Description\nCloud Architecture\nRogers Wiki\n(reqcentral\ncom)\nUse case\nClassification\nComponents\nEstimated Compound SLA\nTarget Uptime\nSLA\nGet Account Info by PAN, Verify PIN_\nCritical\nAmazon Connect, Lambda\nKMS_\nSecret\n9999 x 0.9995\n0.9999g X 0.99g9 X\n.995\nSetUpdate PIN\nManager; TSYS\n9999 =0.9992\nGet Account Info by ANI\nCritical\nAmazon Connect; Lambda\nSecret\n9999 x 0.9995\n0.9999 x 0.9999\n0.995\nManager; TSYS\n=0.9992\nNo\nApplication\nAvailability\nScalability\nMaintainability\n83\n99.99%\nprovides infinitely\nAWS managed the physical\nStandard\nscalable storage\ninfrastructure the OS and\n(TBC)\nruntime\n8 3,500 write\nrequest per second\n5,500 read\nrequest per second\nWrite\nfile per day\nLambda\n99.95%\nAuto\nscaling turned\nAWS managed the physical\nan\ninfrastructure the OS and\nruntime\nnttps  {reqcentral:\ncomlwikilpageslviewpage.action?pageld-728793978\n36140\n\n\n2016/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nergre Reflidorm\n99.9g9%\ndefault value is\nAWS managed the physical\n10,000 for customer\ninfrastructure the 0S and\nmanaged Keys\nruntime\nwe are using it Tor\nSecrets\n99.99%\nQuota for secrets i5\nAWS managed the physical\nManager\n500,00Q\ninfrastructure\nthe OS and\nruntime\nUsed for TSYS\nKeylD and\nKeySecret\nAWS\n99.99%\nAWS Connect can\nRegular updates and\nConnect\nautomatically scale\nimprovements are\nta handle increased\nautomatically applied,\ncall volumes\nensuring you always have\nallowing businesses\naccess ta the latest fealures\nto meet demand\nand security enhancements\nwithout manual\nwithout manual intervention.\nintervention_\nCloudWatch\n99.9%\nAWS Managed\nTSYS\n99.99%\nTSYS Managed\n<< Include uptime window, mainlenance window; overall infra availability requirements; High Availability; {ailure management:\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.5.2.6 Recoverability",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.5.2.6 Recoverability] [Focus: ]\n3.5.2.6 Recoverability\n<< Document Backup and Recovery policy (standard vS custom), need for Disaster Recovery; RTO (Recovery Time Objective) , RPO (Recovery Point Objective},\nMTTR (Mean Time To Repair} \nThe Cardholder Data Environment (CDE) is planned to be deployed across multiple Availability Zones (AZs) to enhance availability\nfault tolerance_\nThe Lambda functions associated\nwith tne\ntargeted private subnets will also be deployed across multiple AZs _\nensuring high availability\nresilience\nAmazon S3, being region-specific, will be implemented with versioning enabled to protect data integrity. Additionally, litecycle policies will be configured to\ntransition data to S3 Glacier for cost-effective long-term storage_\nThe code and CIICD pipeline will follow existing Rogers practices to maintain consistency and compliance with organizational standards.\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.5.2.7 Capacity Management",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.5.2.7 Capacity Management] [Focus: ]\n3.5.2.7 Capacity Management\n<<AIl new\napplications require\nCapacity Plan\nidentified KPIs and the ability to publish capacity status repors:\nThe process and requirement for the reports will\ndepend on the application ar service criticality\nMore information around these report requirements can be found on the IT Capacity SharePoint:\nThe solution employs AWS Lambda with provisioned concurrency initially set to 50, based on estimated trafiic. This configuration should be actively monitored to\nassess for throttling or underutilization. Alongside standard KPIs such as memory usage and CPU utilization_\njs recommended tomonitar throtiling_metrics and\nexception rates (e.g.=\nThrottles and ProvisionedConcurrencySpilloverinvocations) to ensure optimal scaling and performance.\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.6 Infrastructure Design",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.6 Infrastructure Design] [Focus: ]\n3.6 Infrastructure Design\n3.6.\nCurrent State\nCDE AWS account and CDE VFC are already available. Refer to the HLD - Card Viewer (PCI) (refer to the\n'Referenced Documents\"\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "section in Sec",
+      "audit_tags": []
+    },
+    "content": "[Context: section in Sec] [Focus: ]\nsection in Sec\n3 for the link)\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "3.6.2 Next State\nNA",
+      "audit_tags": []
+    },
+    "content": "[Context: 3.6.2 Next State\nNA] [Focus: ]\n3.6.2 Next State\nNA\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "4.0 Approvals",
+      "audit_tags": []
+    },
+    "content": "[Context: 4.0 Approvals] [Focus: ]\n4.0 Approvals\nArtifact Submission and Sign-off\nImportant Note' This artifact must be submilted to stakeholder approval via & Jira HLD ficket and not via email (See How to Create an HLD Artifact ticket for details):\nEmbedded approval\nemails are not acceptable anymore_\nrequirements below would only apply in the exceptional case that Jira is not available,\nand approval of\nthis artifact cannot wait for Jira to be back online. PMO CoE reserves the right to rejact this artifact\nit has been approved via email and there is enough grounds for\nPMO CoE to understand proper approval process via Jira could have been followed\nRegarding Sigr-off Emails\nThe sign-off must be received by email:\nNot acceptable_\nconditional\napproval (e.g\nof conditional approval\napprove pending John Doe's approval of ABC\"=\nb. The sign-off email must include, at minimum, the project EPIC #, package # and version of the artifact: (e.g. 19EBO012\nPackage 2 - ORD v2.1)\nThe sign-ffs must be embedded in the artifact\nFor the complete list of standards\nvisit the PMO Knowledge Hub\nhttps Ilreqcentral comfwikilpageslviewpage.action?pageld-728793978\n37/40\nkey\nand\nand\nwifh\nTne\n\n\n2116/25,2.28 AM\nHigh\nevel Design\nContact Center Re-Platform\nMVP (PCI)\nFinancial and Emerging Services\nRogers Wiki\nBandateryaGbeck\nOperational Readiness Checklist (IT Scope) has been completed and shared with Operational Readiness Team:\nYes\nNo\nPlease note: above check is for capturing the status of OR checklist and selecting\n\"No\" will not contribute to HLD rejection by PCO_\nFunction\nName\nProject\nSign-off\nSign-off\nArea\nRoles\nDefinitions\nRogers Bank\nJose Navarrd\nEnterprise\nv1.0\nArchitecture\nArchitect\n10 Dec 2024\nv1.2\n21 Jan 2025\nCloud\nDwayne\nCloud\nv1.o\nArchitecture\nMcGarty\nArchitect\n03 Dec 2024\nv1.2\n23 Jan 2025\nInfoSecICSU\nSam Karbassi\nNetwork\nv1.o\nCyber\nSecurity\n10 Dec 2024\nSecurity\nArchitect\nDelivery and\nAdviser\nV1.\n28 Jan 2025\nClassified\nPrograms\nData\nSina\nSenipr\nv1.0 _\nAs Data\nGavemance\nKashanizadeh\nManager\n09 Dec 2024\novernance\nyou approve\nthat the EZE\nsolution;..\n[more]\nRogers Bank\nNeil Campbell\nProduct\nv1.0\nDelivery\nOwner\n10 Dec 2024\nv1.2\n21 Jan 2025\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "5.0 Appendix\nList of Contributors",
+      "audit_tags": []
+    },
+    "content": "[Context: 5.0 Appendix\nList of Contributors] [Focus: ]\n5.0 Appendix\nList of Contributors\nList all contributars that provided input to this document;\nFunction\nName\nProject Role\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "Section\nArea",
+      "audit_tags": []
+    },
+    "content": "[Context: Section\nArea] [Focus: ]\nSection\nArea\ncontributed\nRogers\nNeil\nProduct Owner\nBank\nCampbell\n14,1.6;\nDelivery\n1.7;,2.5.7\nRogers\nRamesh\nProject Manager\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "1.7\nBank\nKrishna\nDelivery\nHCL\nAbhishek\nHCL",
+      "audit_tags": []
+    },
+    "content": "[Context: 1.7\nBank\nKrishna\nDelivery\nHCL\nAbhishek\nHCL] [Focus: ]\n1.7\nBank\nKrishna\nDelivery\nHCL\nAbhishek\nHCL\n1.3, 1,4;\nSuman\nConsultant Solution\nArchitect\n2.0,2.4; 2.5\n{version\n1.0}; 2.6;\n2.7 (version\n1.0}; 2.8;\n3.0; 3.3;\n3.5, 3.6\nHCL\nAbhiraj\nHCL Consultant\n14.3,2.7.1\nGhandi\n{Lambdas\ntable for\nversion 1.2)\nnttps  {reqcentral:\ncomfwikilpageslviewpage.action?pageld-728793978\n38/40\nthey\n\n\n2116/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\nFunction\nName\nProject Role\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "Section\nArea",
+      "audit_tags": []
+    },
+    "content": "[Context: Section\nArea] [Focus: ]\nSection\nArea\nthey\ncontributed\nRogers\nRobert\nSolution Manager\nBank\nAscan\nSolution Architect\nDelivery\n2.0, 2.44_\n2.5,2.6\n2.7,2.8;\n3,0, 3,3;\n3.5; 3.6\n5.2 Sign-Off Definitions\nHighlights the accountabilities of each approver in this document:\nEnterprise Data Governance\nAs Enterprise Data Governance, yau confirm that the End-to-End solution:\nComplies to all relevant data and security policies and standards, including but not limited to the Data Governance Policy\n(ISEC4) ad the Rogers\nInformation Security Standard (RISS)\nWVas\nigned in accordance with relevant technology roadmap(s), data strategy, and data govemance best practices\nDoes not deviate from approved access\nconsumption, and protection methods\ndata created or modified has been developed and deployed in\nmanner that is fit for use, purpose and ongoing integrity:\nSolution Delivery Manager\nAs Solution Delivery Manager; yOu confirm that the End-to-End solution:\nIs sound and complete\nWas designed in compliance with relevant technology roadmap(s) , SDLC standards and\npest\npractices\niii, Incorporates all the inputs provided by the impacted functional areas\nincluding Production Support & Operations, and all\nassumptions\nrisks\nand issues have been addressed except those listed in section\niv. Meels the functianal\nand non-functional requirements _\nas committed in the Requiremenls Matrix, and its delivery approach is feasible within the\nproposed Plan of Record and considering the listed constraints/dependenciesllimitations\nPlatform Engineering Manager\nAs Platform Engineering Manager; you approve of the Infrastructure solution in this document, confirming;\nThe infrastructure design is sound and complete\nCompliance with relevant infrastructure roadmap(s), standards and best practices\niii. The infrastructure design meets the technical requirements based an the solution architecture and application-level specifications\nDelivery feasibility within the proposed Plan of Record, considering the listed constraints/dependenciesllimitations\nQA\nAs QA\nyou accept the Requirements Matrix and the HLD based on static testing confirming:\nThe quality of the functional and non-functional requirements in the Requirements Matrix\nii. The quality of the solution specifications in the HLD\nThe EZE solution specifications meet the IT response to the functiona \nand non-functional requirements\nas committed in the Requirements Matrix\nIT Delivery Owner\nAs IT Delivery Owner; you commit to deliver Ihe End-to-End solution;\nIn alignment with the proposed Plan of Record (PoR)\nAs committed in the IT response t0 the functional\nand non-functional requirements in the Requirements Matrix\nAs designed in the HLD and considering the listed constraints/dependencies/limitations and key utstanding assumptions\nrisks and issues\niv. In compliance with SDLC methodology: processes\nstandards\nand best\npractices\nBusiness Owner\nAs Business Owner; you accept the End-to-End solution for the Plan of Record (PoR}:\nBased on the IT response to the functional\nand non-functiona\nrequirements_\nas committed in the Requirements Matrix\nBased on the scope defined in the HLD Section\nconsidering the listed constraints/dependencieslimitations and key outstanding assumptions,\nrisks and isbues\n"
+  },
+  {
+    "metadata": {
+      "parent_section": "5.3 Document Abbreviations",
+      "audit_tags": []
+    },
+    "content": "[Context: 5.3 Document Abbreviations] [Focus: ]\n5.3 Document Abbreviations\nabbreviations and acronyms used in this document:\nAbbreviation\nDefinition\nContext\n(HowlWhen\nit' $ used}\nnttps  {reqcentral:\ncomfwikilpageslviewpage.action?pageld-728793978\n39/40\ndesi\nAny\nkey\nList\n\n\n2116/25,2.28 AM\nHigh Level Design\nContact Center Re-Platform\nMVP (PCI) - Financial and Emerging Services\nRogers Wiki\nenire\nReplatform\nNo one has confirmed reading this\nhld\nnttps  {reqcentral:\ncomfwikilpageslviewpage.action?pageld-728793978\n40}40\n"
+  }
+]

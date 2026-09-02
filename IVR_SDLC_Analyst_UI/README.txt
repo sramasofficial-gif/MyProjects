@@ -260,3 +260,5 @@ pip install easyocr pillow numpy opencv-python-headless
 pip install poppler-utils
 
 pip install pymupdf
+
+pip install python-multipart
