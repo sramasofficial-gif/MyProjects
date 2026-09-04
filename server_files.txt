@@ -1,4 +1,7 @@
+- Enhancements to diagram rendering
+	- Need option to save the image in PNG format
 - Introduce server settings :
+	- Enable/Disable diagram caching, to avoid wasting AI credits during development phase
 	- Enable/Disable simulation mode for dummy server responses to avoid wasting AI credits during development phase
 	- Enable/Disable persistency of AI responses, and offer refresh in front end to retrieve fresh request 
 	- Provide server settings configuration option in UI for above settings

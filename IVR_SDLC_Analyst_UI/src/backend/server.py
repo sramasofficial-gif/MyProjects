@@ -237,7 +237,7 @@ async def generate_verified_matrix(file: UploadFile = File(...)):
     """
     _, file_ext = os.path.splitext(file.filename)
     file_ext = file_ext.lower()
-    
+
     target_cache_path = get_file_cache_path(file.filename)
 
     # 🟢 CHECK FILENAME CACHE FIRST: Instant load if this specific file was processed earlier
@@ -453,8 +453,111 @@ def get_live_copilot_process():
     )
     return LIVE_CO_PROCESS
 
+# ==============================================================================
+# 🟢 UPDATED: ASYNC-NATIVE LOCKING FOR NON-BLOCKING EVENT LOOP
+# Replace your old `threading.RLock()` with this async-safe constructor gate
+# ==============================================================================
+GLOBAL_ASYNC_LOCK = asyncio.Lock()
+
+
+# ==============================================================================
+# 🟢 UPDATED: FULLY ASYNCHRONOUS NON-BLOCKING DIAGRAM GENERATION PIPELINE
+# Upgraded to `async def` to allow safe, scalable multi-user execution
+# ==============================================================================
 @app.post("/api/diagram/generate")
-def generate_cached_diagram(payload: DiagramGenerationRequest):
+async def generate_cached_diagram(payload: DiagramGenerationRequest):
+    # Capture original size properties before minification
+    orig_chars = len(payload.file_content) if payload.file_content else 0
+    orig_lines = len(payload.file_content.splitlines()) if payload.file_content else 0
+
+    # Clean and compress code weights to save token density
+    minified_content = minimize_source_code(payload.file_content)
+
+    # Capture minified size properties
+    mini_chars = len(minified_content)
+    mini_lines = len(minified_content.splitlines())
+    
+    # Calculate difference metrics
+    char_saved = orig_chars - mini_chars
+    pct_saved = (char_saved / orig_chars * 100) if orig_chars > 0 else 0
+
+    # Print structural metrics logs to the backend terminal
+    print("\n" + "="*60)
+    print(f"[TOKEN TRIMMER METRICS] For file: {payload.file_path}")
+    print(f" -> Lines:       {orig_lines} original  -->  {mini_lines} minified (Dropped {orig_lines - mini_lines} lines)")
+    print(f" -> Payload:     {orig_chars} characters -->  {mini_chars} characters")
+    print(f" -> Efficiency:  Saved {char_saved} bytes/chars ({pct_saved:.1f}% reduction in prompt footprint)")
+    print("="*60 + "\n")
+    
+    # Compute cache hash keys based on the minified string text structures
+    content_bytes = minified_content.encode("utf-8")
+    content_hash = hashlib.sha256(content_bytes).hexdigest()
+    cache_key = f"{payload.file_path}::{content_hash}::{payload.diagram_type}"
+
+    # 1. Fast Cache Hit Check (Unlocked for instant reads if already calculated)
+    if cache_key in BACKEND_DIAGRAM_CACHE:
+        return {"mermaid_string": BACKEND_DIAGRAM_CACHE[cache_key], "cached": True}
+
+    # 2. Acquire async lock before hitting the background pipe to block concurrent threads
+    # Using `async with` yields execution back to the loop instead of blocking the thread
+    async with GLOBAL_ASYNC_LOCK:
+        # Double-check inside lock context. The second duplicate call waits at the lock gate,
+        # then hits this block immediately once the first thread finishes compiling.
+        if cache_key in BACKEND_DIAGRAM_CACHE:
+            print(f"[CONCURRENT ROUTE BLOCKED] Secondary port request intercepted and served from Cache.")
+            return {"mermaid_string": BACKEND_DIAGRAM_CACHE[cache_key], "cached": True}
+
+        print(f"[CACHE MISS - DIAGRAM] Fetching {payload.diagram_type} via Copilot Subprocess for {payload.file_path}")
+
+        try:
+            proc = get_live_copilot_process()
+            
+            script_payload = {
+                "relativePath": payload.file_path,
+                "source": minified_content,
+                "diagramType": payload.diagram_type
+            }
+            
+            # Send serialized instruction packet down line pipe stream
+            proc.stdin.write(json.dumps(script_payload) + "\n")
+            proc.stdin.flush()
+            
+            # 🟢 CRITICAL FIX: Run the blocking synchronous readline inside a worker thread pool executor.
+            # This keeps your main FastAPI event loop completely free to handle other traffic.
+            loop = asyncio.get_running_loop()
+            stdout_line = await loop.run_in_executor(None, proc.stdout.readline)
+            
+            if not stdout_line:
+                raise Exception("The background daemon dropped the connection line pipe abruptly.")
+                
+            parsed_response = json.loads(stdout_line.strip())
+            if not parsed_response.get("success"):
+                raise HTTPException(status_code=500, detail=parsed_response.get("error"))
+
+            extracted_mermaid = parsed_response.get("mermaid_string", "").strip()
+            extracted_mermaid = re.sub(r'^```[a-zA-Z0-9_-]*\s*', '', extracted_mermaid)
+            extracted_mermaid = re.sub(r'\s*```$', '', extracted_mermaid).strip()
+
+            if not extracted_mermaid:
+                raise HTTPException(status_code=522, detail="Empty token payload received from pipeline.")
+
+            # Commit value to the hot cache storage matrix
+            BACKEND_DIAGRAM_CACHE[cache_key] = extracted_mermaid
+            return {"mermaid_string": extracted_mermaid, "cached": False}
+
+        except Exception as e:
+            # Clean corrupt thread parameters gracefully
+            # global LIVE_CO_PROCESS
+            if LIVE_CO_PROCESS:
+                try:
+                    LIVE_CO_PROCESS.kill()
+                except:
+                    pass
+                LIVE_CO_PROCESS = None
+            if isinstance(e, HTTPException):
+                raise e
+            raise HTTPException(status_code=500, detail=str(e))
+
     # Capture original size properties before minification
     orig_chars = len(payload.file_content) if payload.file_content else 0
     orig_lines = len(payload.file_content.splitlines()) if payload.file_content else 0
@@ -533,7 +636,7 @@ def generate_cached_diagram(payload: DiagramGenerationRequest):
 
         except Exception as e:
             # Clean corrupt thread parameters gracefully
-            global LIVE_CO_PROCESS
+            # global LIVE_CO_PROCESS
             if LIVE_CO_PROCESS:
                 try:
                     LIVE_CO_PROCESS.kill()
