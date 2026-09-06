@@ -4,6 +4,7 @@ import { requestDiagramGeneration } from "../services/api";
 import { contactFlowToSequenceDiagram } from "../utils/contactFlowToSequence";
 // 🟢 IMPORT: Bring in your graphic export download snapshot element
 import { ExportPNGButton } from './SystemSettingsPanel';
+import mermaid from 'mermaid';
 
 export default function FlowDiagramTab({ selectedFile, content, loading, error }) {
     const [lambdaDiagramType, setLambdaDiagramType] = useState("dependency");

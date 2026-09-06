@@ -1,0 +1,17 @@
+[
+  {
+    "file_name": "lambda/ActivateCard/activate-card.ts",
+    "graph_type": "dependency",
+    "mermaid_string": "Flowchart TD\nA[\"activateCard(accountId, customerId)\"] --> B{\"ENDPOINT missing?\"}\nB -->|\"Yes\"| C[\"throw RequestError('ENDPOINT is missing!', 406)\"]\nB -->|\"No\"| D[\"relUrl = ENDPOINT.replace(accountId).replace(customerId)\"]\nD --> E[\"apiEp = BASE_URL + relUrl\"]\nE --> F[\"res = await xpPut('API_ARN', apiEp, JSON.stringify(accountId, customerId))\"]\nF --> G{\"res.status != 200?\"}\nG -->|\"Yes\"| H[\"throw RequestError(res.data.message, res.status)\"]\nG -->|\"No\"| I[\"data = res.data\"]\nI --> J[\"response.statusCode = res.status\"]\nJ --> K[\"response.status = data.activateStatus.status\"]\nK --> L[\"response.confirmationNumber = data.activateStatus.confirmationNumber\"]\nL --> M[\"response.referenceNumber = data.activateStatus.referenceNumber\"]\nM --> N[\"return response: FinalResponse\"]\nO[(\"process.env: ENDPOINT, BASE_URL\")] --> B\nO --> D\nO --> E\nP[\"@ccrlayer/common: xpPut, RequestError\"] --> F\nP --> C\nP --> H\nQ[\"./model: FinalResponse\"] --> A\nQ --> N"
+  },
+  {
+    "file_name": "lambda/ActivateCard/activate-card.ts",
+    "graph_type": "flowchart",
+    "mermaid_string": "flowchart TD\n    Start([\"Start: activateCard(accountId, customerId)\"]) --> InitResp[\"response: FinalResponse = {}\"]\n    InitResp --> CheckEndpoint{\"ENDPOINT env var missing?\"}\n    CheckEndpoint -->|\"Yes\"| ThrowMissing[\"throw RequestError('ENDPOINT is missing!', 406)\"]\n    ThrowMissing --> End1([\"End: Exception\"])\n    CheckEndpoint -->|\"No\"| BuildRelUrl[\"relUrl = ENDPOINT.replace('{accountId}', accountId).replace('{customerId}', customerId)\"]\n    BuildRelUrl --> BuildApiEp[\"apiEp = BASE_URL + relUrl\"]\n    BuildApiEp --> CallXpPut[\"res = await xpPut('API_ARN', apiEp, JSON.stringify({accountId, customerId}))\"]\n    CallXpPut --> CheckStatus{\"res.status != 200?\"}\n    CheckStatus -->|\"Yes\"| ThrowError[\"throw RequestError(res.data.message, res.status)\"]\n    ThrowError --> End2([\"End: Exception\"])\n    CheckStatus -->|\"No\"| ExtractData[\"data = res.data\"]\n    ExtractData --> SetStatusCode[\"response.statusCode = res.status\"]\n    SetStatusCode --> SetStatus[\"response.status = data.activateStatus.status\"]\n    SetStatus --> SetConfirmation[\"response.confirmationNumber = data.activateStatus.confirmationNumber\"]\n    SetConfirmation --> SetReference[\"response.referenceNumber = data.activateStatus.referenceNumber\"]\n    SetReference --> ReturnResp([\"Return: response\"])"
+  },
+  {
+    "file_name": "lambda/ActivateCard/activate-card.ts",
+    "graph_type": "sequence",
+    "mermaid_string": "sequenceDiagram\n    autonumber\n    Client->>Lambda: Invoke activateCard()\n    Lambda->>Database: UPDATE cards SET active=1\n    Database-->>Lambda: Success\n    Lambda-->>Client: HTTP 200 OK"
+  }
+]

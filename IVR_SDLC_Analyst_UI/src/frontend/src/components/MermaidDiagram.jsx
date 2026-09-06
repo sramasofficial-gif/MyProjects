@@ -44,17 +44,48 @@ export default function MermaidDiagram({
             const diagramId = `mermaid-${reactId}-${Date.now()}`.replace(/[^a-zA-Z0-9-_]/g, "");
 
             try {
+                const normalizedChart = chart
+                    .replace(/&gt;/g, ">")
+                    .replace(/&lt;/g, "<")
+                    .replace(/^Flowchart\s+/i, "flowchart ");
                 // 1. Pre-validate syntax before injecting to protect canvas stability
-                const isValid = await mermaid.parse(chart);
+                const isValid = await mermaid.parse(normalizedChart);
                 if (!isValid) {
                     throw new Error("Mermaid Parser rejected the diagram text structure formatting specifications.");
                 }
 
-                const { svg, bindFunctions } = await mermaid.render(diagramId, chart);
+                console.log("Rendering Mermaid...");
+                console.log(chart);
+
+                const { svg, bindFunctions } = await mermaid.render(diagramId, normalizedChart);
+
+                console.log(svg);
 
                 if (cancelled || !containerRef.current) return;
 
                 containerRef.current.innerHTML = svg;
+                const renderedSvg =
+                    containerRef.current.querySelector("svg");
+
+                if (renderedSvg) {
+                    const viewBox =
+                        renderedSvg.getAttribute("viewBox");
+
+                    if (viewBox) {
+                        const [, , w, h] =
+                            viewBox.split(" ");
+
+                        renderedSvg.setAttribute(
+                            "width",
+                            w
+                        );
+
+                        renderedSvg.setAttribute(
+                            "height",
+                            h
+                        );
+                    }
+                }
                 bindFunctions?.(containerRef.current);
             } catch (error) {
                 if (cancelled) return;

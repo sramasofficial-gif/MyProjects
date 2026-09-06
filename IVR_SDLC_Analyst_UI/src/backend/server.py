@@ -12,6 +12,8 @@ import traceback
 import asyncio # 🟢 Ensure this is imported at the top of server.py
 import threading  # 🟢 NEW: Import native thread locking module
 import hashlib
+from pathlib import Path
+
 from pydantic import BaseModel
 from typing import Optional
 
@@ -71,6 +73,11 @@ LIVE_CO_PROCESS = None
 # 🟢 CRITICAL DUAL-CALL LOCK PROTECTION: Global re-entrant lock structure
 GLOBAL_THREAD_LOCK = threading.RLock()
 
+# Binds paths to local config sheets safely
+CONFIG_DIR = Path(__file__).resolve().parent / "conf"
+SETTINGS_FILE_PATH = os.path.join(CONFIG_DIR, "server_settings.json")
+SIMULATION_FILE_PATH = os.path.join(CONFIG_DIR, "simulation_graphs.json")
+
 # 1. Map Schema models for the Wiki extraction payload boundaries
 class HLDIngestionRequest(BaseModel):
     document_title: str
@@ -85,11 +92,67 @@ class DiagramGenerationRequest(BaseModel):
 # 1. Define Server Controls Configuration Model State Schema
 class SystemSettingsProfile(BaseModel):
     enable_diagram_caching: bool = True
-    enable_simulation_mode: bool = False
+    enable_simulation_mode: bool = True
     enable_persistence: bool = True
 
+
+# ==============================================================================
+# 🟢 ENHANCEMENT: FILE PERSISTENCE LIFECYCLE CONTROLLERS
+# ==============================================================================
+def load_persisted_settings() -> SystemSettingsProfile:
+    """Reads configuration data from a JSON file on initialization."""
+    print(f"[INFO] Settings path set to:  {SETTINGS_FILE_PATH}")
+    if os.path.exists(SETTINGS_FILE_PATH):
+        try:
+            with open(SETTINGS_FILE_PATH, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                print(f"[⚙️ CONFIG LAUNCH] Successfully loaded settings profile from disk.")
+                return SystemSettingsProfile(**data)
+        except Exception as e:
+            print(f"[⚠️ CONFIG ERROR] Failed to load server_settings.json, falling back to defaults: {e}")
+    return SystemSettingsProfile()
+
+def save_settings_to_file(settings: SystemSettingsProfile):
+    """Writes active configurations directly out to hard text files."""
+    try:
+        with open(SETTINGS_FILE_PATH, "w", encoding="utf-8") as f:
+            json.dump(settings.dict(), f, indent=2)
+        print("[⚙️ CONFIG SYNCHRONIZED] settings profile committed safely to server_settings.json")
+    except Exception as e:
+        print(f"[⚠️ PERSIST FAILURE] Could not write system configurations to disk: {e}")
+
+def get_simulated_graph(file_name: str, graph_type: str) -> str:
+    """Scans the simulation matrix for matching file and diagram keys."""
+    if not os.path.exists(SIMULATION_FILE_PATH):
+        print(f"[⚠️ SIMULATION WARNING] simulation_graphs.json file missing at {SIMULATION_FILE_PATH}")
+        return None
+        
+    try:
+        with open(SIMULATION_FILE_PATH, "r", encoding="utf-8") as f:
+            mock_records = json.load(f)
+            
+        # Normalize incoming string values to prevent casing mismatches
+        target_file = file_name.strip().lower().replace('\\', '/')
+        target_type = graph_type.strip().lower()
+
+        print(f"[SIMULATION CHECK] Finding matching record for file '{file_name}' and graph type '{graph_type}' in {SIMULATION_FILE_PATH}")
+        
+        for record in mock_records:
+            current_file = record.get("file_name", "").strip().lower().replace('\\', '/')
+            current_type = record.get("graph_type", "").strip().lower()
+            
+            if current_file == target_file and current_type == target_type:
+                return record.get("mermaid_string", "").strip()
+    except Exception as e:
+        print(f"[⚠️ OCR/SIMULATION ERROR] Breakdown reading simulation ledger: {e}")
+        
+    return None
+
+# Global structural memory state tracking initialized straight from local persistent file
+SERVER_CONFIG = load_persisted_settings()
+
 # Global structural memory state tracking variable pointer initialization
-SERVER_CONFIG = SystemSettingsProfile()
+#SERVER_CONFIG = SystemSettingsProfile()
 
 # Re-use your optimized classes within the server pipeline framework
 class DynamicPDFExtractor:
@@ -511,14 +574,28 @@ GLOBAL_ASYNC_LOCK = asyncio.Lock()
 @app.post("/api/diagram/generate")
 async def generate_cached_diagram(payload: DiagramGenerationRequest):
 
-    # --- 🟢 UPGRADE: CHECK CONFIGURATION SIMULATION SWAP TOGGLE ---
+    # --- 🟢 UPGRADE: SMART SIMULATION GRID WITH JSON CONFIG LEDGER FALLBACK ---
+    print(f"[SETTINGS] Simulation mode is \"{SERVER_CONFIG.enable_simulation_mode}\"")
     if SERVER_CONFIG.enable_simulation_mode:
-        print("[⚙ MOCK SIMULATION MODE] Intercepting execution pipeline and dispatching dummy text.")
-        return {
-            "mermaid_string": "sequenceDiagram\n    autonumber\n    Participant->>MockServer: Simulation Active\n    MockServer-->>Participant: Mock Data Returned",
-            "cached": False,
-            "simulated": True
-        }
+        print(f"[⚙️ MOCK SIMULATION] Checking configuration ledger for {payload.file_path} [{payload.diagram_type}]")
+        mock_graph = get_simulated_graph(payload.file_path, payload.diagram_type)
+        
+        if mock_graph:
+            return {
+                "mermaid_string": mock_graph,
+                "cached": False,
+                "simulated": True
+            }
+        else:
+            # Smart default fallback if configuration matrix lacks a file-specific record entry
+            print(f"[ℹ️ SIMULATION MISS] No matching record entry found. Dispatching generic chart helper.")
+            fallback_chart = f"sequenceDiagram\n    autonumber\n    Client->>MockServer: Simulation Active ({payload.diagram_type})\n    Note over MockServer: File: {payload.file_path}\n    MockServer-->>Client: Standard Generic Mock Returned"
+            return {
+                "mermaid_string": fallback_chart,
+                "cached": False,
+                "simulated": True
+            }
+
     
     # Capture original size properties before minification
     orig_chars = len(payload.file_content) if payload.file_content else 0
@@ -798,5 +875,7 @@ def get_application_settings():
 def update_application_settings(payload: SystemSettingsProfile):
     global SERVER_CONFIG
     SERVER_CONFIG = payload
+    # 🚀 Preserves modifications permanently across restarts
+    save_settings_to_file(SERVER_CONFIG)
     print(f"[⚙ SYSTEM CONFIG UPDATE] Toggles adjusted -> Caching: {SERVER_CONFIG.enable_diagram_caching}, Simulation: {SERVER_CONFIG.enable_simulation_mode}, Persistence: {SERVER_CONFIG.enable_persistence}")
     return {"success": True, "current_settings": SERVER_CONFIG}

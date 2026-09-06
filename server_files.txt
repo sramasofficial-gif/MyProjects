@@ -1,4 +1,6 @@
-- Enhancements to diagram rendering
+Requirements-1
+---------------
+- Front End Enhancements to diagram rendering 
 	- Need option to save the image in PNG format
 - Introduce server settings :
 	- Enable/Disable diagram caching, to avoid wasting AI credits during development phase
@@ -9,4 +11,30 @@
 	- split the document and run in parallel threads
 	- Assemble the parts into full document finally
 	- Generate matrix using the final document version
-- 
+
+Requirements-2
+---------------
+- Save & retrieve settings in json files, to preserve the state between server restarts
+- Use simulation graphs from JSON configuration file that contain {"File Name", "Graph Type", "Mermaid Graph String"} for each 
+  file & diagram type combination, which is of below format :
+
+File Name :  Lambda/ActivateCard/activate-card.ts
+Graph Type:  Execution
+Mermaid String  :  "
+flowchart TD
+    Start(["Start: activateCard(accountId, customerId)"]) --> InitResp["response: FinalResponse = {}"]
+    InitResp --> CheckEndpoint{"ENDPOINT env var missing?"}
+    CheckEndpoint -->|"Yes"| ThrowMissing["throw RequestError('ENDPOINT is missing!', 406)"]
+    ThrowMissing --> End1(["End: Exception"])
+    CheckEndpoint -->|"No"| BuildRelUrl["relUrl = ENDPOINT.replace('{accountId}', accountId).replace('{customerId}', customerId)"]
+    BuildRelUrl --> BuildApiEp["apiEp = BASE_URL + relUrl"]
+    BuildApiEp --> CallXpPut["res = await xpPut('API_ARN', apiEp, JSON.stringify({accountId, customerId}))"]
+    CallXpPut --> CheckStatus{"res.status != 200?"}
+    CheckStatus -->|"Yes"| ThrowError["throw RequestError(res.data.message, res.status)"]
+    ThrowError --> End2(["End: Exception"])
+    CheckStatus -->|"No"| ExtractData["data = res.data"]
+    ExtractData --> SetStatusCode["response.statusCode = res.status"]
+    SetStatusCode --> SetStatus["response.status = data.activateStatus.status"]
+    SetStatus --> SetConfirmation["response.confirmationNumber = data.activateStatus.confirmationNumber"]
+    SetConfirmation --> SetReference["response.referenceNumber = data.activateStatus.referenceNumber"]
+    SetReference --> ReturnResp(["Return: response"])

@@ -427,12 +427,23 @@ thead th { position: sticky; top: 0; z-index: 10; background: white; }
 
 /* Parent workplane container handles the wide horizontal scrollbars safely */
 .mermaid-scroll-container {
-    overflow-x: auto !important;  /* Yields scroll vectors horizontally */
-    overflow-y: hidden;
+    overflow: auto !important;  /* Yields scroll vectors horizontally */
     width: 100%;
+    max-height: calc(100vh - 280px);
     padding: 16px;
     box-sizing: border-box;
 }
+
+/*
+.mermaid-scroll-container {
+    overflow-x: auto !important;  / * Yields scroll vectors horizontally * /
+    overflow-y: hidden;
+    width: 100%;
+    max-height: calc(100vh - 280px);
+    padding: 16px;
+    box-sizing: border-box;
+}
+*/
 
 .diagram-canvas {
     display: inline-block;
