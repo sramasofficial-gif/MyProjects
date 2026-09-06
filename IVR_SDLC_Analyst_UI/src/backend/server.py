@@ -22,6 +22,42 @@ from services.repo_tools import read_file  # Import your existing file reader
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
+import concurrent.futures
+from functools import partial
+
+from services.repo_tools import (
+    find_files,
+    read_file,
+    resolve_repository_file
+)
+
+from services.flow_audit import (
+    audit_contact_flow_file
+)
+
+from services.lambda_analysis import (
+    analyze_lambda
+)
+
+from services.repo_tools import (
+    get_repo_tree
+)
+
+from fastapi.middleware.cors import CORSMiddleware
+
+load_dotenv()
+    
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "*"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 # Cache storage tracking memory arrays
 BACKEND_DIAGRAM_CACHE = {}
@@ -46,45 +82,42 @@ class DiagramGenerationRequest(BaseModel):
     file_content: str
     diagram_type: str
 
-from services.repo_tools import (
-    find_files,
-    read_file,
-    resolve_repository_file
-)
+# 1. Define Server Controls Configuration Model State Schema
+class SystemSettingsProfile(BaseModel):
+    enable_diagram_caching: bool = True
+    enable_simulation_mode: bool = False
+    enable_persistence: bool = True
 
-from services.flow_audit import (
-    audit_contact_flow_file
-)
-
-from services.lambda_analysis import (
-    analyze_lambda
-)
-
-from fastapi.middleware.cors import CORSMiddleware
-
-load_dotenv()
-    
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "*"
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
-)
-
-from services.repo_tools import (
-    get_repo_tree
-)
+# Global structural memory state tracking variable pointer initialization
+SERVER_CONFIG = SystemSettingsProfile()
 
 # Re-use your optimized classes within the server pipeline framework
 class DynamicPDFExtractor:
-    """Checks for a digital font layer before choosing a parsing framework."""
+    """Checks for a digital font layer before choosing a parallelized parsing framework."""
     def __init__(self, file_path: str):
         self.file_path = file_path
+
+    def _ocr_single_page(self, page_index: int) -> str:
+        """Isolated single-page worker loop designed for explicit parallel thread execution."""
+        # Clean local import scope initialized per active core pipeline thread instance
+        import pdfplumber
+        import easyocr
+        import numpy as np
+
+        print(f"    ↳ [⚡ Thread Worker] Starting local OCR scanning for Page {page_index + 1}...")
+        
+        # Initialize an isolated execution engine inside the worker thread boundaries
+        reader = easyocr.Reader(['en'], gpu=False)
+        
+        with pdfplumber.open(self.file_path) as pdf:
+            page = pdf.pages[page_index]
+            page_image = page.to_image(resolution=150)
+            img_np = np.array(page_image.original)
+            strings = reader.readtext(img_np, detail=0)
+            
+            if strings:
+                return "\n".join(strings) + "\n"
+        return ""
 
     def extract_clean_text(self) -> str:
         text_content = []
@@ -92,6 +125,7 @@ class DynamicPDFExtractor:
         # 1. Attempt digital text layer parsing first
         print(f"[🔍] Evaluating digital text layer via pdfplumber: {self.file_path}")
         with pdfplumber.open(self.file_path) as pdf:
+            total_pages = len(pdf.pages)
             for page in pdf.pages:
                 text = page.extract_text()
                 if text:
@@ -100,26 +134,29 @@ class DynamicPDFExtractor:
         raw_digital_text = "".join(text_content).strip()
         
         if len(raw_digital_text) > 50:
-            print(f"[✔] Native text layer detected ({len(raw_digital_text)} chars). Skipping OCR.")
+            print(f"[✔] Native text layer detected ({len(raw_digital_text)} chars). Skipping Parallel OCR.")
             return raw_digital_text
 
-        # 2. Fallback to local OCR if font layer returns empty shapes
-        print("[⚡] Scanned PDF / Canvas shapes detected. Initializing EasyOCR Engine Fallback...")
-        ocr_text_content = []
-        reader = easyocr.Reader(['en'], gpu=False)
+        # 2. Fallback to High-Performance Parallel OCR if native text layer is missing
+        print(f"[⚡] Scanned PDF Canvas detected. Initializing Parallel OCR Thread Pool across {total_pages} pages...")
         
-        with pdfplumber.open(self.file_path) as pdf:
-            total_pages = len(pdf.pages)
-            for idx, page in enumerate(pdf.pages):
-                print(f"    ↳ Fallback OCR: Scanning page {idx+1}/{total_pages}...")
-                page_image = page.to_image(resolution=150)
-                img_np = np.array(page_image.original)
-                strings = reader.readtext(img_np, detail=0)
-                if strings:
-                    ocr_text_content.append("\n".join(strings) + "\n")
-                    
-        return "\n\n".join(ocr_text_content)
+        ocr_results = [None] * total_pages
+        
+        # Maximize context workers using safe computing thresholds (e.g., up to 4 parallel tracks)
+        max_workers = min(4, os.cpu_count() or 2)
+        
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Bind the processing matrix mapping tracking boundaries
+            page_indices = list(range(total_pages))
+            results = executor.map(self._ocr_single_page, page_indices)
+            
+            for idx, text_result in enumerate(results):
+                ocr_results[idx] = text_result
 
+        # Final assembly combining chronological fragments into full document
+        print("[✔] Concurrent page execution segments complete. Compiling final core layout document...")
+        return "\n\n".join(filter(None, ocr_results))
+    
 class HLDAuditChunker:
     """Splits structural components into context-aware chunks for LLM security analysis."""
     def __init__(self, target_chunk_size=1200, overlap=200):
@@ -241,7 +278,7 @@ async def generate_verified_matrix(file: UploadFile = File(...)):
     target_cache_path = get_file_cache_path(file.filename)
 
     # 🟢 CHECK FILENAME CACHE FIRST: Instant load if this specific file was processed earlier
-    if os.path.exists(target_cache_path):
+    if SERVER_CONFIG.enable_persistence and os.path.exists(target_cache_path):
         print(f"[CACHE HIT] Serving pre-existing matrix for file: {file.filename}")
         with open(target_cache_path, "r", encoding="utf-8") as f:
             matrix_chunks = json.load(f)
@@ -270,9 +307,16 @@ async def generate_verified_matrix(file: UploadFile = File(...)):
         chunker = HLDAuditChunker(target_chunk_size=1000, overlap=150)
         matrix_chunks = chunker.create_audit_chunks(raw_text_extracted)
 
-        # Save to disk using the specific filename key
-        with open(target_cache_path, "w", encoding="utf-8") as f:
-            json.dump(matrix_chunks, f, indent=2)
+        # 🟢 UPGRADE: CONDITIONAL DISK SERIALIZATION
+        # Only dump the tracking matrix array out to a hard cache file if persistence is true
+        if SERVER_CONFIG.enable_persistence:
+            # Save to disk using the specific filename key
+            with open(target_cache_path, "w", encoding="utf-8") as f:
+                json.dump(matrix_chunks, f, indent=2)
+            print(f"[PERSISTENCE] Matrix successfully serialized to disk for: {file.filename}")
+        else:
+            print(f"[DEVELOPMENT MODE] Skipping local disk serialization files cache dump.")
+
 
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
@@ -466,6 +510,16 @@ GLOBAL_ASYNC_LOCK = asyncio.Lock()
 # ==============================================================================
 @app.post("/api/diagram/generate")
 async def generate_cached_diagram(payload: DiagramGenerationRequest):
+
+    # --- 🟢 UPGRADE: CHECK CONFIGURATION SIMULATION SWAP TOGGLE ---
+    if SERVER_CONFIG.enable_simulation_mode:
+        print("[⚙ MOCK SIMULATION MODE] Intercepting execution pipeline and dispatching dummy text.")
+        return {
+            "mermaid_string": "sequenceDiagram\n    autonumber\n    Participant->>MockServer: Simulation Active\n    MockServer-->>Participant: Mock Data Returned",
+            "cached": False,
+            "simulated": True
+        }
+    
     # Capture original size properties before minification
     orig_chars = len(payload.file_content) if payload.file_content else 0
     orig_lines = len(payload.file_content.splitlines()) if payload.file_content else 0
@@ -498,12 +552,16 @@ async def generate_cached_diagram(payload: DiagramGenerationRequest):
     if cache_key in BACKEND_DIAGRAM_CACHE:
         return {"mermaid_string": BACKEND_DIAGRAM_CACHE[cache_key], "cached": True}
 
+    # --- 🟢 UPGRADE: CONDITIONAL DIAGRAM CACHING EVALUATION ---
+    if SERVER_CONFIG.enable_diagram_caching and cache_key in BACKEND_DIAGRAM_CACHE:
+        return {"mermaid_string": BACKEND_DIAGRAM_CACHE[cache_key], "cached": True}
+
     # 2. Acquire async lock before hitting the background pipe to block concurrent threads
     # Using `async with` yields execution back to the loop instead of blocking the thread
     async with GLOBAL_ASYNC_LOCK:
         # Double-check inside lock context. The second duplicate call waits at the lock gate,
         # then hits this block immediately once the first thread finishes compiling.
-        if cache_key in BACKEND_DIAGRAM_CACHE:
+        if SERVER_CONFIG.enable_diagram_caching and cache_key in BACKEND_DIAGRAM_CACHE:
             print(f"[CONCURRENT ROUTE BLOCKED] Secondary port request intercepted and served from Cache.")
             return {"mermaid_string": BACKEND_DIAGRAM_CACHE[cache_key], "cached": True}
 
@@ -729,3 +787,16 @@ def review_lambda_file(path: str):
             detail=str(e)
         )
 
+
+# 2. Endpoint to fetch active application state flags
+@app.get("/api/settings")
+def get_application_settings():
+    return SERVER_CONFIG
+
+# 3. Endpoint to modify active application state flags dynamically
+@app.put("/api/settings")
+def update_application_settings(payload: SystemSettingsProfile):
+    global SERVER_CONFIG
+    SERVER_CONFIG = payload
+    print(f"[⚙ SYSTEM CONFIG UPDATE] Toggles adjusted -> Caching: {SERVER_CONFIG.enable_diagram_caching}, Simulation: {SERVER_CONFIG.enable_simulation_mode}, Persistence: {SERVER_CONFIG.enable_persistence}")
+    return {"success": True, "current_settings": SERVER_CONFIG}

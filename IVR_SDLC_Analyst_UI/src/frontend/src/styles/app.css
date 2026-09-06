@@ -536,3 +536,62 @@ thead th { position: sticky; top: 0; z-index: 10; background: white; }
         grid-template-columns: 1fr; 
     }
 }
+
+/* ==============================================================================
+ * ⚙️ HEADER LEVEL SETTINGS NAVIGATION CONTROLS
+ * ============================================================================== */
+.settings-header-icon {
+    background: transparent;
+    border: none;
+    color: #e2e8f0;
+    font-size: 20px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 50%;
+    margin-left: 20px;
+    transition: all 0.2s ease;
+}
+
+.settings-header-icon:hover,
+.settings-header-icon.active {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+.settings-container {
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    border: 1px solid #e2e8f0;
+    max-width: 650px;
+    margin: 20px auto 0 auto;
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.settings-row:last-of-type {
+    border-bottom: none;
+}
+
+.settings-info h4 {
+    margin: 0 0 4px 0;
+    color: #1e293b;
+    font-size: 15px;
+}
+
+.settings-info p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+}
+

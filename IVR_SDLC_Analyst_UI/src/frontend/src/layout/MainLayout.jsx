@@ -1,6 +1,8 @@
 import { useState } from "react";
 import RepoExplorer from "../components/RepoExplorer";
 import TabContainer from "../components/TabContainer";
+// 🟢 IMPORT: Bring in your global server configuration controller panel
+import { SystemSettingsPanel } from './SystemSettingsPanel';
 import PromptBar from "../components/PromptBar";
 
 export default function MainLayout() {

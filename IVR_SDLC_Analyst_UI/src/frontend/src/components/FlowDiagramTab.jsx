@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import MermaidDiagram from "./MermaidDiagram";
 import { requestDiagramGeneration } from "../services/api";
 import { contactFlowToSequenceDiagram } from "../utils/contactFlowToSequence";
+// 🟢 IMPORT: Bring in your graphic export download snapshot element
+import { ExportPNGButton } from './SystemSettingsPanel';
 
 export default function FlowDiagramTab({ selectedFile, content, loading, error }) {
     const [lambdaDiagramType, setLambdaDiagramType] = useState("dependency");
@@ -120,17 +122,73 @@ export default function FlowDiagramTab({ selectedFile, content, loading, error }
     };
     const meta = getMetadata();
 
+    const safeBaseName =
+        selectedFile?.split("/").pop()?.replace(/\.[^/.]+$/, "") ||
+        "diagram";
+
+    const downloadFilename = `${safeBaseName}_${
+        isContactFlow ? "contactflow" : lambdaDiagramType
+    }.png`;
+
     return (
         <section className="flow-diagram-tab">
             <div className="diagram-page-header">
-                <div><h2>Diagram</h2><div className="selected-path">{selectedFile}</div></div>
-                {isLambda && !loading && (
-                    <div className="diagram-tabs">
-                        <button className={lambdaDiagramType === "dependency" ? "diagram-tab active" : "diagram-tab"} onClick={() => setLambdaDiagramType("dependency")}>Dependency Graph</button>
-                        <button className={lambdaDiagramType === "flowchart" ? "diagram-tab active" : "diagram-tab"} onClick={() => setLambdaDiagramType("flowchart")}>Execution Flow</button>
-                        <button className={lambdaDiagramType === "sequence" ? "diagram-tab active" : "diagram-tab"} onClick={() => setLambdaDiagramType("sequence")}>Sequence Diagram</button>
-                    </div>
-                )}
+                <div>
+                    <h2>Diagram</h2>
+                    <div className="selected-path">{selectedFile}</div>
+                </div>
+
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px"
+                    }}
+                >
+                    {chartData && (
+                        <ExportPNGButton
+                            canvasSelectorId="active-mermaid-rendering-scroll-viewport"
+                            filename={downloadFilename}
+                        />
+                    )}
+
+                    {isLambda && !loading && (
+                        <div className="diagram-tabs">
+                            <button
+                                className={
+                                    lambdaDiagramType === "dependency"
+                                        ? "diagram-tab active"
+                                        : "diagram-tab"
+                                }
+                                onClick={() => setLambdaDiagramType("dependency")}
+                            >
+                                Dependency Graph
+                            </button>
+
+                            <button
+                                className={
+                                    lambdaDiagramType === "flowchart"
+                                        ? "diagram-tab active"
+                                        : "diagram-tab"
+                                }
+                                onClick={() => setLambdaDiagramType("flowchart")}
+                            >
+                                Execution Flow
+                            </button>
+
+                            <button
+                                className={
+                                    lambdaDiagramType === "sequence"
+                                        ? "diagram-tab active"
+                                        : "diagram-tab"
+                                }
+                                onClick={() => setLambdaDiagramType("sequence")}
+                            >
+                                Sequence Diagram
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {(loading || generationLoading) && (
@@ -147,12 +205,21 @@ export default function FlowDiagramTab({ selectedFile, content, loading, error }
             )}
 
             {!loading && !generationLoading && chartData && (
-                <MermaidDiagram
-                    chart={chartData}
-                    title={isContactFlow ? "Contact Flow Sequence" : meta.title}
-                    diagramType={isContactFlow ? "Sequence Diagram" : meta.type}
-                    description={isContactFlow ? "Runtime view derived from selected contact flow." : meta.desc}
-                />
+                <div
+                    id="active-mermaid-rendering-scroll-viewport"
+                    className="mermaid-scroll-container"
+                >
+                    <MermaidDiagram
+                        chart={chartData}
+                        title={isContactFlow ? "Contact Flow Sequence" : meta.title}
+                        diagramType={isContactFlow ? "Sequence Diagram" : meta.type}
+                        description={
+                            isContactFlow
+                                ? "Runtime view derived from selected contact flow."
+                                : meta.desc
+                        }
+                    />
+                </div>
             )}
         </section>
     );
