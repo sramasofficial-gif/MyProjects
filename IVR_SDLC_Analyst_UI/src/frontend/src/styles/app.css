@@ -4,7 +4,7 @@
 body {
     margin: 0;
     font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #f8fafc;
+    background: #f1f5f9; /* 🟢 Differentiated layout baseline canvas color */
 }
 
 #root {
@@ -15,35 +15,40 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;   /*New*/
 }
 
+/* Master Top Navigation Header Bar Row */
 .header {
     height: 60px;
-    background: #1d3557;
-    color: white;
+    background: #111827; /* 🟢 Sleek dark slate/charcoal color to contrast with the workspace content */
+    color: #ffffff;
     display: flex;
     align-items: center;
-    padding-left: 24px;
-    font-size: 22px;
-    font-weight: 600;
+    padding: 0 24px; /* Locked alignment padding matching main panels below */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    z-index: 20;
 }
 
 .content {
     flex: 1;
     display: flex;
     overflow: hidden;
+    background: #f8fafc; /* Professional neutral canvas layout area background */
 }
 
 /* ==============================================================================
  * 📁 REPOSITORY TREE & PANEL SEGMENTS
  * ============================================================================== */
+
+/* Sidebar File Explorer Control Panel */
 .repo-panel {
-    width: 300px;
-    min-width: 300px;
-    border-right: 1px solid #dee2e6;
+    width: 280px;
+    min-width: 280px;
+    border-right: 1px solid #e2e8f0;
     overflow-y: auto;
-    padding: 12px;
-    background: #f8f9fa;
+    padding: 20px 16px;
+    background: #ffffff; /* Contrast sidebar cleanly against the canvas backdrop */
 }
 
 .main-panel {
@@ -51,6 +56,7 @@ body {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    background: #f8fafc; /* Inherits clean layout background */
 }
 
 .file {
@@ -116,36 +122,34 @@ body {
     cursor: pointer;
     border-radius: 4px 4px 0 0;
     transition: all 0.15s ease;
+    border-bottom: 3px solid transparent;
 }
 
 .tab:hover {
-    background: #e6edf8;
-    color: #1d5fbf;
+    color: #0f6cbd;
+    background: #f8fafc;
 }
 
 .tab.active {
-    background: #ffffff;
-    color: #0969da;
-    border-color: #cbd5e1;
-    border-top-color: #0969da;
-    border-bottom-color: #ffffff;
-    margin-bottom: -1px;
+    color: #0f6cbd;
+    border-bottom: 3px solid #0f6cbd;
+    font-weight: 700;
 }
 
 /* ==============================================================================
  * 📄 MAIN FUNCTIONAL VIEWPORT CONTROLLERS
  * ============================================================================== */
+/* 🟢 FIX: Isolate nested workspace contents cleanly with breathing padding rules */
 .tab-content {
     flex: 1;
     width: 100%;
     min-width: 0;
     overflow-y: auto;
-    overflow-x: visible;
-    background: #ffffff;
+    background: transparent; /* Allows section cards to float on the gray canvas */
 }
 
 .tab-content > section {
-    padding: 24px 32px;
+    padding: 24px; /* Uniform grid breathing space formatting */
 }
 
 .content-heading {

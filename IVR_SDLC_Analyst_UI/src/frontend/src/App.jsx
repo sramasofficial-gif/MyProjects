@@ -2,48 +2,107 @@
 import React, { useState } from 'react';
 import MainLayout from './layout/MainLayout';
 import HLDAnalyzer from './components/HLDAnalyzer';
-// 🟢 IMPORT: Bring in your dedicated setup workspace file view
 import { SystemSettingsPage } from './components/SystemSettingsPage';
 
 export default function App() {
-    // Elevate active tracking hooks to support settings routes maps seamlessly
     const [activeSection, setActiveSection] = useState('repository');
     const [selectedFile, setSelectedFile] = useState(null);
 
+    // 🟢 SAFE DESKTOP ROUTER: Moves logic outside of JSX return block to prevent page blanking
+    const renderActiveSection = () => {
+        try {
+            switch (activeSection) {
+                case 'repository':
+                    return (
+                        <MainLayout 
+                            selectedFile={selectedFile} 
+                            setSelectedFile={setSelectedFile} 
+                        />
+                    );
+                case 'hld-analyzer':
+                    // Make sure HLDAnalyzer handles internal states gracefully
+                    return <HLDAnalyzer /> || <div style={{ padding: '20px' }}>HLD Analyzer View offline.</div>;
+                case 'settings':
+                    return <SystemSettingsPage />;
+                default:
+                    return (
+                        <MainLayout 
+                            selectedFile={selectedFile} 
+                            setSelectedFile={setSelectedFile} 
+                        />
+                    );
+            }
+        } catch (renderError) {
+            console.error("Critical routing UI crash inside section:", activeSection, renderError);
+            return (
+                <div style={{ padding: '40px', color: '#991b1b', background: '#fef2f2', margin: '20px', borderRadius: '8px', border: '1px solid #fecaca' }}>
+                    <h3>⚠️ Component Execution Error</h3>
+                    <p>Failed to render active section panel view layer context properties safely.</p>
+                    <button className="refresh-review-button" onClick={() => setActiveSection('repository')}>
+                        Return to Dev Workspace
+                    </button>
+                </div>
+            );
+        }
+    };
+
     return (
         <div className="app-layout">
-            {/* Top Level Master Corporate Application Header Header */}
+            {/* Top Level Master Corporate Application Header Bar */}
             <header className="header">
-                <div style={{ display: 'flex', width: '100%', alignItems: 'center', paddingRight: '20px' }}>
+                <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
                     
-                    {/* Left Title Workspace Block with new Header corner option button linked inside */}
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <span style={{ fontSize: '20px', fontWeight: '700', letterSpacing: '-0.02em' }}>
+                    {/* Left Title Workspace Block with gear icon corner button */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '18px', fontWeight: '700', letterSpacing: '-0.02em', color: '#ffffff' }}>
                             🎙️ IVR SDLC Automated Analyst Platform
                         </span>
                         
-                        {/* 🟢 ENHANCEMENT: Clickable Settings Icon corner button explicitly aligned on the right side of the title string */}
                         <button 
                             className={`settings-header-icon ${activeSection === 'settings' ? 'active' : ''}`}
                             title="Open Platform Administration System Config"
+                            style={{ 
+                                fontSize: '16px', 
+                                padding: '6px',
+                                background: activeSection === 'settings' ? 'rgba(255,255,255,0.2)' : 'transparent',
+                                border: 'none',
+                                cursor: 'pointer',
+                                borderRadius: '50%'
+                            }}
                             onClick={() => setActiveSection('settings')}
                         >
                             ⚙️
                         </button>
                     </div>
                     
-                    {/* Shell Top-Level Functional Navigation Switch Panel Tabs */}
-                    <nav style={{ marginLeft: 'auto', display: 'flex', gap: '12px' }}>
+                    {/* Top-Level Navigation Tabs */}
+                    <nav style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
                         <button 
-                            className={`tab ${activeSection === 'repository' ? 'active' : ''}`}
-                            style={{ minWidth: '130px', padding: '6px 14px', fontSize: '13px', borderRadius: '4px' }}
+                            className="diagram-tab"
+                            style={{ 
+                                background: activeSection === 'repository' ? '#0f6cbd' : 'rgba(255,255,255,0.1)', 
+                                color: '#ffffff',
+                                border: 'none',
+                                padding: '8px 16px',
+                                borderRadius: '6px',
+                                fontWeight: '600',
+                                cursor: 'pointer'
+                            }}
                             onClick={() => setActiveSection('repository')}
                         >
                             📦 Dev Workspace
                         </button>
                         <button 
-                            className={`tab ${activeSection === 'hld-analyzer' ? 'active' : ''}`}
-                            style={{ minWidth: '130px', padding: '6px 14px', fontSize: '13px', borderRadius: '4px' }}
+                            className="diagram-tab"
+                            style={{ 
+                                background: activeSection === 'hld-analyzer' ? '#0f6cbd' : 'rgba(255,255,255,0.1)', 
+                                color: '#ffffff',
+                                border: 'none',
+                                padding: '8px 16px',
+                                borderRadius: '6px',
+                                fontWeight: '600',
+                                cursor: 'pointer'
+                            }}
                             onClick={() => setActiveSection('hld-analyzer')}
                         >
                             📋 HLD Analyzer
@@ -52,33 +111,9 @@ export default function App() {
                 </div>
             </header>
 
-            {/* Old inline panel placeholder text clean space removed completely from here */}
-
-            {/* Dynamic Core Screen Router Container Workspace Viewport */}
+            {/* Main view container where sections dynamically render */}
             <main style={{ flex: 1, display: 'flex', overflow: 'hidden', background: '#f8fafc' }}>
-                {(() => {
-                    switch (activeSection) {
-                        case 'repository':
-                            return (
-                                <MainLayout 
-                                    selectedFile={selectedFile} 
-                                    setSelectedFile={setSelectedFile} 
-                                />
-                            );
-                        case 'hld-analyzer':
-                            return <HLDAnalyzer />;
-                        case 'settings':
-                            // 🟢 RENDER TARGET: Direct isolates form parameters out to a dedicated clean configuration dashboard view
-                            return <SystemSettingsPage />;
-                        default:
-                            return (
-                                <MainLayout 
-                                    selectedFile={selectedFile} 
-                                    setSelectedFile={setSelectedFile} 
-                                />
-                            );
-                    }
-                })()}
+                {renderActiveSection()}
             </main>
         </div>
     );
