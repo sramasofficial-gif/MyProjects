@@ -374,7 +374,11 @@ thead th { position: sticky; top: 0; z-index: 10; background: white; }
     flex-wrap: wrap;
 }
 
-.diagram-tabs { display: flex; gap: 8px; }
+.diagram-tabs { 
+    display: flex; 
+    gap: 8px; 
+}
+
 .diagram-tab {
     background: #ffffff;
     border: 1px solid #cbd5e1;
