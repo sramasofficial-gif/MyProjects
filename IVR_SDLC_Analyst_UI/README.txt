@@ -262,3 +262,13 @@ pip install poppler-utils
 pip install pymupdf
 
 pip install python-multipart
+
+-----------------------------------------
+
+- diagram-tabs
+	- diagram-tab
+		- mermaid-scroll-container
+			- mermaid-panel
+				- mermaid-panel-header
+
+-----------------------------------------

@@ -51,56 +51,79 @@ export function SystemSettingsPanel() {
     );
 }
 
-// 🟢 EXPORT FUNCTION: Renders a high-fidelity image download trigger button
+// ==============================================================================
+// 🟢 FIXED EXPORT TRIGGER: Bypasses HTML Canvas completely to prevent Tainted Canvas errors
+// ==============================================================================
 export function ExportPNGButton({ canvasSelectorId, filename = "diagram.png" }) {
-    const exportToPng = () => {
-        // Target the parent container element containing the inner dynamic node SVG
+    const exportToSvg = () => {
+        // Target the parent workplane container holding your active graph elements
         const container = document.getElementById(canvasSelectorId);
         const svgElement = container?.querySelector('svg');
         
         if (!svgElement) {
-            alert("No display canvas element generated found to render snapshot extraction.");
+            alert("No display canvas element found to extract vector definitions.");
             return;
         }
 
         try {
-            const svgString = new XMLSerializer().serializeToString(svgElement);
-            const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-            const URL = window.URL || window.webkitURL || window;
-            const blobURL = URL.createObjectURL(svgBlob);
+            // Clone the active DOM element node to prevent messing up the visible graph layout
+            const clonedSvg = svgElement.cloneNode(true);
             
-            const image = new Image();
-            image.onload = () => {
-                const canvas = document.createElement('canvas');
-                // Capture bounding dimensions of the active SVG target element node canvas layout fields
-                const bbox = svgElement.getBBox();
-                canvas.width = bbox.width + 40;
-                canvas.height = bbox.height + 40;
-                
-                const context = canvas.getContext('2d');
-                if (context) {
-                    context.fillStyle = '#ffffff';
-                    context.fillRect(0, 0, canvas.width, canvas.height);
-                    context.drawImage(image, 20, 20);
-                    
-                    const pngURL = canvas.toDataURL('image/png');
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = pngURL;
-                    downloadLink.download = filename;
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                }
-            };
-            image.src = blobURL;
+            // Explicitly extract layout coordinates to preserve clear bounds
+            const viewBox = clonedSvg.getAttribute("viewBox");
+            if (viewBox) {
+                const [, , width, height] = viewBox.split(" ");
+                clonedSvg.setAttribute("width", width);
+                clonedSvg.setAttribute("height", height);
+            } else {
+                // Fallback layout bounding settings if viewBox attributes are absent
+                const rect = svgElement.getBoundingClientRect();
+                clonedSvg.setAttribute("width", rect.width || "100%");
+                clonedSvg.setAttribute("height", rect.height || "600");
+            }
+
+            // Ensure XML serialization metadata elements are safely attached
+            clonedSvg.setAttribute("xmlns", "http://w3.org");
+
+            // Convert the vector DOM nodes directly into an encoded text string stream
+            const svgSerializer = new XMLSerializer();
+            let svgString = svgSerializer.serializeToString(clonedSvg);
+
+            // Clean up any remaining HTML entity markers inside custom label tags
+            svgString = svgString.replace(/&nbsp;/g, " ");
+
+            // Create a clean data blob from the text stream
+            const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+            const downloadUrl = window.URL.createObjectURL(svgBlob);
+
+            // Force a native, client-side browser file download
+            const linkElement = document.createElement('a');
+            linkElement.href = downloadUrl;
+            
+            // Dynamically change file extension parameter configurations to safe .svg format
+            const safeSvgFilename = filename.replace(/\.png$/i, '.svg');
+            linkElement.download = safeSvgFilename;
+            
+            document.body.appendChild(linkElement);
+            linkElement.click();
+            
+            // Clean up resources to prevent memory leaks
+            document.body.removeChild(linkElement);
+            window.URL.revokeObjectURL(downloadUrl);
+
         } catch (err) {
-            console.error("Export to graphic matrix file generated failure", err);
+            console.error("Export module encountered a vector tracking error:", err);
+            alert(`Failed to save image: ${err.message}`);
         }
     };
 
     return (
-        <button className="diagram-source-button" onClick={exportToPng} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-            💾 Save PNG Image
+        <button 
+            className="diagram-source-button" 
+            onClick={exportToSvg} 
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+        >
+            💾 Save SVG Image
         </button>
     );
 }
