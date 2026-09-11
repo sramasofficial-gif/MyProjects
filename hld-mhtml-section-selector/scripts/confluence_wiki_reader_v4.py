@@ -29,7 +29,6 @@ import sys
 import json
 import re
 from pathlib import Path
-from html import escape as html_escape
 
 from playwright.sync_api import sync_playwright
 import requests
@@ -424,12 +423,11 @@ def _type_badge_class(t):
 
 
 def render_html_report(rows, source_url=""):
-    # Prevent data from terminating the surrounding script tag.
-    data_json = json.dumps(rows, ensure_ascii=True).replace("</", "<\/")
+    data_json = json.dumps(rows)
 
     body_rows_js = "/* rendered client-side from DATA */"
 
-    type_label_json = json.dumps(TYPE_LABELS, ensure_ascii=True).replace("</", "<\/")
+    type_label_json = json.dumps(TYPE_LABELS)
 
     html = """<!DOCTYPE html>
 <html lang="en">
@@ -703,10 +701,6 @@ const TYPE_LABELS = __TYPE_LABEL_JSON__;
 
 const selected = new Set();
 
-function escapeHtml(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#39;');
-}
-
 function badgeClass(t) {
   if (t === 'table') return 'badge-table';
   if (t === 'diagram' || t === 'diagram-iframe') return 'badge-diagram';
@@ -780,15 +774,15 @@ function renderRows() {
 
   tbody.innerHTML = filtered.map(r => {
     const badges = r.types.length
-      ? r.types.map(t => `<span class="badge ${badgeClass(t)}">${escapeHtml(typeLabel(t))}</span>`).join('')
+      ? r.types.map(t => `<span class="badge ${badgeClass(t)}">${typeLabel(t)}</span>`).join('')
       : `<span class="badge badge-text">None detected</span>`;
     const rowClass = r.status === 'issue' ? 'row-issue' : '';
     const isSel = selected.has(r.id) ? 'selected' : '';
     return `<tr class="${rowClass} ${isSel}" data-id="${r.id}">
       <td class="col-check"><input type="checkbox" class="rowCheck" data-id="${r.id}" ${selected.has(r.id) ? 'checked' : ''}></td>
       <td class="col-id">${r.id}</td>
-      <td class="col-num">${escapeHtml(r.numbering || '\u2014')}</td>
-      <td class="heading-cell lvl-${r.level}"><span class="heading-text">${escapeHtml(r.heading)}</span></td>
+      <td class="col-num">${r.numbering || '\u2014'}</td>
+      <td class="heading-cell lvl-${r.level}"><span class="heading-text">${r.heading}</span></td>
       <td><div class="badges">${badges}</div></td>
       <td class="col-status">${statusPill(r.status)}</td>
     </tr>`;
@@ -833,7 +827,7 @@ document.getElementById('clearSelBtn').addEventListener('click', () => {
 
 document.getElementById('copySelBtn').addEventListener('click', () => {
   const chosen = DATA.filter(r => selected.has(r.id));
-  const text = chosen.map(r => `${r.numbering ? r.numbering + ' ' : ''}${r.heading}`).join('\\n');
+  const text = chosen.map(r => `${r.numbering ? r.numbering + ' ' : ''}${r.heading}`).join('\n');
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('copySelBtn');
     const original = btn.textContent;
@@ -854,7 +848,7 @@ renderSelectionBar();
 </body>
 </html>
 """
-    html = html.replace("__SOURCE_URL__", html_escape(source_url))
+    html = html.replace("__SOURCE_URL__", source_url)
     html = html.replace("__DATA_JSON__", data_json)
     html = html.replace("__TYPE_LABEL_JSON__", type_label_json)
     return html

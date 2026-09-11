@@ -1,0 +1,1364 @@
+[
+  {
+    "id": 1,
+    "level": 2,
+    "heading": "Purpose of HLD",
+    "numbering": null,
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 2,
+    "level": 2,
+    "heading": "How to Complete this Document",
+    "numbering": null,
+    "types": [
+      "text",
+      "macro:details",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 3,
+    "level": 2,
+    "heading": "Document Version History",
+    "numbering": null,
+    "types": [
+      "table",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 4,
+    "level": 1,
+    "heading": "Table of Contents",
+    "numbering": null,
+    "types": [
+      "macro:toc",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 5,
+    "level": 1,
+    "heading": "1.0 Business Section",
+    "numbering": "1.0",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 6,
+    "level": 3,
+    "heading": "1.1 Business Solution Summary",
+    "numbering": "1.1",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 7,
+    "level": 3,
+    "heading": "1.2 Project Objectives",
+    "numbering": "1.2",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 8,
+    "level": 3,
+    "heading": "1.3 Solution Summary",
+    "numbering": "1.3",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 9,
+    "level": 3,
+    "heading": "1.4 Scope Statement",
+    "numbering": "1.4",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 10,
+    "level": 4,
+    "heading": "1.4.1 In Scope",
+    "numbering": "1.4.1",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 11,
+    "level": 4,
+    "heading": "1.4.2 Out of Scope",
+    "numbering": "1.4.2",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 12,
+    "level": 4,
+    "heading": "1.4.3 Uses Cases In Scope",
+    "numbering": "1.4.3",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 13,
+    "level": 4,
+    "heading": "1.4.4 Use Cases out of Scope",
+    "numbering": "1.4.4",
+    "types": [
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 14,
+    "level": 3,
+    "heading": "1.5 Assumptions, Risks and Constraints",
+    "numbering": "1.5",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 15,
+    "level": 4,
+    "heading": "1.5.1 Risks",
+    "numbering": "1.5.1",
+    "types": [
+      "table",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 16,
+    "level": 4,
+    "heading": "1.5.2 Constraints/Dependencies",
+    "numbering": "1.5.2",
+    "types": [
+      "table",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 17,
+    "level": 4,
+    "heading": "1.5.3 Limitations",
+    "numbering": "1.5.3",
+    "types": [
+      "table",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 18,
+    "level": 4,
+    "heading": "1.5.4 Assumptions",
+    "numbering": "1.5.4",
+    "types": [
+      "table",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 19,
+    "level": 3,
+    "heading": "1.6 Business Processes/Considerations",
+    "numbering": "1.6",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 20,
+    "level": 3,
+    "heading": "1.7 Deployment Approach",
+    "numbering": "1.7",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 21,
+    "level": 4,
+    "heading": "1.7.1 Deployment Units (Prod/UT/QA/Dev)",
+    "numbering": "1.7.1",
+    "types": [
+      "table",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 22,
+    "level": 4,
+    "heading": "1.7.2 Deployment Method",
+    "numbering": "1.7.2",
+    "types": [
+      "table",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 23,
+    "level": 4,
+    "heading": "1.7.3 Tagging",
+    "numbering": "1.7.3",
+    "types": [
+      "table",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 24,
+    "level": 3,
+    "heading": "2.0 Solution Architecture",
+    "numbering": "2.0",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 25,
+    "level": 3,
+    "heading": "2.1 Project Context",
+    "numbering": "2.1",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 26,
+    "level": 4,
+    "heading": "CDE AWS\u00a0Account\nTSYS\nFirewall\nOpen APIs\nTCS Portal\nPCI use cases:\n1. GetAccountByCard\n2. Set/Update PIN\n3. Verify PIN\nNon-PCI use cases\nCDE VPC\n\n\nX- PLATFORM\nCustomer\nAWS Control plane\nIT Admins,\nDevelopers\nAWS Control plane\nAWS Console\nAWS Console\nRBConnect Context Diagram\nPCI use cases:\u00a0\n4. GetAccountByANI\nCreate TSYS Interaction\nCNX, GS\nDynatrace\nRCI Egress + Firewall\nTech Support\nIT Admins,\nDevelopers\nNo Change\nNew Integration\nExisting\nNew Integration\u00a0\n(PCI)\nSeparate HLD\nOut of Scope\nNew\n\u00a0 Citrix Cloud\nRCI MPLS Switch & Firewall\nlFirewall\nVendors\n(CNX, GS)\n\nAgents\nRB\nCSR\nRB\nOps\u00a0Mgr\nUtility functions\n(Report, Routiing, HR-Feed)\nAmazon Connect\nRogers Bank Default\u00a0AWS Account\nHIYA Call branding\nHIYA\nCCReport+HRFeed\nHR-Feed\nLegends\nEmail\nOffice 365\nEmail\nVerification Lambda (Dob, OTC, Phone, PAN)\nLex\nAthena\nQuickSight\nDatalake\nRB\nOps\u00a0Mgr",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 27,
+    "level": 4,
+    "heading": "2.1.1 In-Scope Applications",
+    "numbering": "2.1.1",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 28,
+    "level": 3,
+    "heading": "2.2 Application Communication",
+    "numbering": "2.2",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 29,
+    "level": 4,
+    "heading": "Customer\nAmazon Connect\n1b: Send Email\n2b: Route\n4a: Receive Emails\nAWS CloudWatch\n3: Logs, Metrics\nAmazon Athena\n5a: Fresh / Reply Emails\n7a: Route\nX-Platform\nMiddleware\u00a0\nOps Manager\n8a: Receive email\nData Lake\nWFM Reports\nVendors (CNX, GS) Agent /\u00a0\nBusiness CSR\nOfice 365\n\u00a0 \u00a0 \u00a0 \u00a0 New Change\nSES\n2a: Redirect\n\u00a0 \u00a0 \u00a0 \u00a0 New Interaction\n1a: Call\nData Generation\nData Query & Visualiation\nAWS Glue Data Catelog\nQuickSight\nAWS LakeFormation\n2. GetMetadata\n3. Check Permission\n4. Get Cred\n5.Get Data (Connect Customer)\nOps Manager\ns3\n6.store\n1. fetch\ns3\nAWS Data Export\n\n\nAWS Data Export\n(acc-PCI)\nA. Export\n5a. GetData (AWS Cost)",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 30,
+    "level": 3,
+    "heading": "2.3 Enterprise Services",
+    "numbering": "2.3",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 31,
+    "level": 4,
+    "heading": "Service Name",
+    "numbering": null,
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 32,
+    "level": 4,
+    "heading": "Producing Application",
+    "numbering": null,
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 33,
+    "level": 4,
+    "heading": "New | Existing",
+    "numbering": null,
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 34,
+    "level": 3,
+    "heading": "2.4 Use Case Realization",
+    "numbering": "2.4",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 35,
+    "level": 6,
+    "heading": "RBCONNECT\nAWS\nAmazon Connect\nCustomer\nConfigure & Monitor System Health\nIT Admin\nDataLake\n(CUR + Amazon Connect Customer)\nTech Support\nBusiness Dashboard\n(Quick Sight)\nOperations",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 36,
+    "level": 4,
+    "heading": "2.4.1 Use cases",
+    "numbering": "2.4.1",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 37,
+    "level": 5,
+    "heading": "2.4.1.1 Amazon Quick Sight and Users",
+    "numbering": "2.4.1.1",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 38,
+    "level": 6,
+    "heading": "2.4.1.1.1 Amazon Quick Sight\u00a0License",
+    "numbering": "2.4.1.1.1",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 39,
+    "level": 6,
+    "heading": "2.4.1.1.2 Amazon Quick Sight and IdP (Azure Entra ID) federation (SAML 2.0)",
+    "numbering": "2.4.1.1.2",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 40,
+    "level": 6,
+    "heading": "2.4.1.1.2 Amazon Quick Sight User permissions",
+    "numbering": "2.4.1.1.2",
+    "types": [
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 41,
+    "level": 5,
+    "heading": "2.4.1.2 Integration of Quick Sight and Amazon Connect Datalake",
+    "numbering": "2.4.1.2",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 42,
+    "level": 6,
+    "heading": "2.4.1.2.1 Enabling Quick sight for Amazon Connect (TBD)",
+    "numbering": "2.4.1.2.1",
+    "types": [
+      "table",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 43,
+    "level": 6,
+    "heading": "2.4.1.1.2.2 Data table to be shared by Connect to Athena+Amazon Quick Sight",
+    "numbering": "2.4.1.1.2.2",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 44,
+    "level": 5,
+    "heading": "2.4.1.3 Integration of Quick Sight and Cost Data Export",
+    "numbering": "2.4.1.3",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 45,
+    "level": 6,
+    "heading": "2.4.1.2.1 Enabling Quick sight for Cost Export (TBD)",
+    "numbering": "2.4.1.2.1",
+    "types": [
+      "table",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 46,
+    "level": 6,
+    "heading": "2.4.1.3.1 For Amazon Connect Contact Tagging",
+    "numbering": "2.4.1.3.1",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 47,
+    "level": 6,
+    "heading": "The Amazon Connect allows a contact to be tagged (max 6). Once can use a this to get granular reporting. This is out of scope and does not impact the implementation.\u00a0 (covered for completeness)",
+    "numbering": null,
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 48,
+    "level": 5,
+    "heading": "2.4.1.10 Amazon Connect configuration changes",
+    "numbering": "2.4.1.10",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 49,
+    "level": 3,
+    "heading": "2.5 Data Architecture",
+    "numbering": "2.5",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 50,
+    "level": 4,
+    "heading": "2.5.1 Information Model",
+    "numbering": "2.5.1",
+    "types": [
+      "text",
+      "diagram",
+      "image",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 51,
+    "level": 4,
+    "heading": "2.5.2 Data Flow - High Level Solution View",
+    "numbering": "2.5.2",
+    "types": [
+      "text",
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 52,
+    "level": 4,
+    "heading": "2.5.3 Data Flow Diagram",
+    "numbering": "2.5.3",
+    "types": [
+      "text",
+      "diagram",
+      "image",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 53,
+    "level": 4,
+    "heading": "2.5.3 Data Integration Details",
+    "numbering": "2.5.3",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 54,
+    "level": 4,
+    "heading": "2.5.4 Data Container Details",
+    "numbering": "2.5.4",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 55,
+    "level": 4,
+    "heading": "2.5.5 Information Objectives Utilize",
+    "numbering": "2.5.5",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 56,
+    "level": 3,
+    "heading": "2.6 *Data Governance (Mandatory)*",
+    "numbering": "2.6",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 57,
+    "level": 4,
+    "heading": "2.6.2 Data Lifecycle and Retention",
+    "numbering": "2.6.2",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 58,
+    "level": 4,
+    "heading": "2.6.3 Metadata Management",
+    "numbering": "2.6.3",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 59,
+    "level": 4,
+    "heading": "2.6.4 Data Classification & Privacy",
+    "numbering": "2.6.4",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 60,
+    "level": 4,
+    "heading": "2.6.5 Data Quality",
+    "numbering": "2.6.5",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 61,
+    "level": 4,
+    "heading": "2.6.6 Data Access and Use",
+    "numbering": "2.6.6",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 62,
+    "level": 4,
+    "heading": "2.6.7 Use of Third Parties and Third-Party Data",
+    "numbering": "2.6.7",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 63,
+    "level": 4,
+    "heading": "2.6.8 Data Residency",
+    "numbering": "2.6.8",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 64,
+    "level": 3,
+    "heading": "2.7 Security Architecture",
+    "numbering": "2.7",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 65,
+    "level": 3,
+    "heading": "2.7.1 Security Solution View",
+    "numbering": "2.7.1",
+    "types": [
+      "text",
+      "diagram",
+      "image",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 66,
+    "level": 4,
+    "heading": "2.7.2 Encryption - Data at Rest",
+    "numbering": "2.7.2",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 67,
+    "level": 4,
+    "heading": "2.7.3 Encryption \u2013 Data in Transit",
+    "numbering": "2.7.3",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 68,
+    "level": 4,
+    "heading": "2.7.4 Identity and Access Management",
+    "numbering": "2.7.4",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 69,
+    "level": 5,
+    "heading": "2.7.4.2 AWS Applications IAM authorization and access control details",
+    "numbering": "2.7.4.2",
+    "types": [
+      "table",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 70,
+    "level": 4,
+    "heading": "2.7.5 Audit Logging and Monitoring",
+    "numbering": "2.7.5",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 71,
+    "level": 3,
+    "heading": "2.8 Other Architectural Characteristics",
+    "numbering": "2.8",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 72,
+    "level": 4,
+    "heading": "2.8.1 Availability, Scalability, Reliability and Maintainability",
+    "numbering": "2.8.1",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 73,
+    "level": 4,
+    "heading": "2.8.2 Disaster Recovery",
+    "numbering": "2.8.2",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 74,
+    "level": 4,
+    "heading": "2.8.3 Response Time",
+    "numbering": "2.8.3",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 75,
+    "level": 4,
+    "heading": "2.8.4 Industry Compliance",
+    "numbering": "2.8.4",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 76,
+    "level": 4,
+    "heading": "2.8.5 Volumetric & Service Level Agreement - High Level Impact Analysis",
+    "numbering": "2.8.5",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 77,
+    "level": 4,
+    "heading": "2.8.6 Enterprise Application Monitoring",
+    "numbering": "2.8.6",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 78,
+    "level": 1,
+    "heading": "Technical Solution",
+    "numbering": null,
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 79,
+    "level": 2,
+    "heading": "3.0 Technical Solution Overview",
+    "numbering": "3.0",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 80,
+    "level": 3,
+    "heading": "3.1 Deployment Diagram",
+    "numbering": "3.1",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 81,
+    "level": 3,
+    "heading": "3.2 Sequence Diagram",
+    "numbering": "3.2",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 82,
+    "level": 3,
+    "heading": "3.3 Application 1",
+    "numbering": "3.3",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 83,
+    "level": 4,
+    "heading": "3.3.1 Application Overview:",
+    "numbering": "3.3.1",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 84,
+    "level": 4,
+    "heading": "3.3.2 Application architecture/design",
+    "numbering": "3.3.2",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 85,
+    "level": 4,
+    "heading": "3.3.3 Application Security Specifications",
+    "numbering": "3.3.3",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 86,
+    "level": 3,
+    "heading": "3.4 Application 2",
+    "numbering": "3.4",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 87,
+    "level": 4,
+    "heading": "3.4.1 Application table changes",
+    "numbering": "3.4.1",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 88,
+    "level": 4,
+    "heading": "3.4.2 Application Architecture/Design",
+    "numbering": "3.4.2",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 89,
+    "level": 4,
+    "heading": "3.4.3 Application Security Specifications",
+    "numbering": "3.4.3",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 90,
+    "level": 3,
+    "heading": "3.5 Infrastructure Solution",
+    "numbering": "3.5",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 91,
+    "level": 4,
+    "heading": "3.5.1 Solution Deployment Diagram",
+    "numbering": "3.5.1",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 92,
+    "level": 4,
+    "heading": "3.5.2 High Level Technical Solution",
+    "numbering": "3.5.2",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 93,
+    "level": 5,
+    "heading": "3.5.2.1 Key Concepts",
+    "numbering": "3.5.2.1",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 94,
+    "level": 5,
+    "heading": "3.5.2.2 Environments",
+    "numbering": "3.5.2.2",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 95,
+    "level": 5,
+    "heading": "3.5.2.3 Locations",
+    "numbering": "3.5.2.3",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 96,
+    "level": 5,
+    "heading": "3.5.2.4 Network Security Zones",
+    "numbering": "3.5.2.4",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 97,
+    "level": 5,
+    "heading": "3.5.2.5 Availability",
+    "numbering": "3.5.2.5",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 98,
+    "level": 5,
+    "heading": "3.5.2.6 Recoverability",
+    "numbering": "3.5.2.6",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 99,
+    "level": 5,
+    "heading": "3.5.2.7 Capacity Management",
+    "numbering": "3.5.2.7",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 100,
+    "level": 3,
+    "heading": "3.6 Infrastructure Design",
+    "numbering": "3.6",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 101,
+    "level": 4,
+    "heading": "3.6.1 Current State",
+    "numbering": "3.6.1",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 102,
+    "level": 4,
+    "heading": "3.6.2 Future State",
+    "numbering": "3.6.2",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 103,
+    "level": 4,
+    "heading": "3.6.3 Deployment Approach",
+    "numbering": "3.6.3",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 104,
+    "level": 5,
+    "heading": "3.6.3.1 Deployment Units",
+    "numbering": "3.6.3.1",
+    "types": [
+      "table",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 105,
+    "level": 5,
+    "heading": "3.6.3.2 Third Party Infra Software Applications",
+    "numbering": "3.6.3.2",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 106,
+    "level": 5,
+    "heading": "3.6.3.3 Infra Software Worksheets",
+    "numbering": "3.6.3.3",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 107,
+    "level": 5,
+    "heading": "3.6.3.4 Enterprise Systems Management and Monitoring",
+    "numbering": "3.6.3.4",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 108,
+    "level": 5,
+    "heading": "3.6.3.5 Server Worksheets",
+    "numbering": "3.6.3.5",
+    "types": [
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 109,
+    "level": 5,
+    "heading": "3.6.3.6 Network and Storage Host Port Allocation",
+    "numbering": "3.6.3.6",
+    "types": [
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 110,
+    "level": 5,
+    "heading": "3.6.3.7 Recovery Details",
+    "numbering": "3.6.3.7",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 111,
+    "level": 5,
+    "heading": "3.6.3.8 Infra Support and Warranty",
+    "numbering": "3.6.3.8",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 112,
+    "level": 3,
+    "heading": "3.7 Hardware and Software to Decommission/Repatriate",
+    "numbering": "3.7",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 113,
+    "level": 3,
+    "heading": "3.8 Physical Architecture (where applicable)",
+    "numbering": "3.8",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 114,
+    "level": 4,
+    "heading": "3.8.1 Physical Diagram",
+    "numbering": "3.8.1",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 115,
+    "level": 4,
+    "heading": "3.8.2 Resource Unit Summary",
+    "numbering": "3.8.2",
+    "types": [
+      "table",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 116,
+    "level": 1,
+    "heading": "",
+    "numbering": null,
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 117,
+    "level": 1,
+    "heading": "4.0 Approvals",
+    "numbering": "4.0",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 118,
+    "level": 1,
+    "heading": "5.0 Appendix",
+    "numbering": "5.0",
+    "types": [],
+    "placeholderCount": 0,
+    "status": "empty"
+  },
+  {
+    "id": 119,
+    "level": 3,
+    "heading": "5.1 List of Contributors",
+    "numbering": "5.1",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 120,
+    "level": 3,
+    "heading": "5.2 Sign-Off Definitions",
+    "numbering": "5.2",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 121,
+    "level": 3,
+    "heading": "5.3 Document Abbreviations",
+    "numbering": "5.3",
+    "types": [
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  },
+  {
+    "id": 122,
+    "level": 3,
+    "heading": "5.4 Template Version",
+    "numbering": "5.4",
+    "types": [
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok"
+  }
+]
