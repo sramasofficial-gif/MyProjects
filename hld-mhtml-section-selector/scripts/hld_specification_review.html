@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Enterprise SDLC Blueprint Analyst Matrix</title>
+    <style>
+        body { font-family: 'Segoe UI', -apple-system, sans-serif; background-color: #f1f5f9; color: #0f172a; padding: 40px; margin: 0; }
+        .dashboard-card { background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 1200px; margin: 0 auto; overflow: hidden; }
+        .card-header { background-color: #111827; color: #ffffff; padding: 24px 32px; }
+        .card-header h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+        .card-header p { margin: 6px 0 0 0; color: #94a3b8; font-size: 13px; font-family: monospace; }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+        .stats-bar { font-size: 13px; font-weight: 600; color: #475569; }
+        .btn-group { display: flex; gap: 8px; }
+        button { background-color: #ffffff; border: 1px solid #cbd5e1; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; color: #334155; transition: all 0.15s ease; }
+        button:hover { background-color: #f8fafc; border-color: #0f6cbd; color: #0f6cbd; }
+        .table-viewport { max-height: 550px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        thead th { background-color: #f8fafc; position: sticky; top: 0; z-index: 10; padding: 14px 16px; color: #475569; font-weight: 700; border-bottom: 2px solid #e2e8f0; }
+        tbody tr { border-bottom: 1px solid #f1f5f9; }
+        tbody tr:hover { background-color: #f8fafc; }
+        tbody tr.numbered-row { background-color: #ffffff; }
+        tbody tr.appendix-row { background-color: #f8fafc; opacity: 0.85; }
+        td { padding: 12px 16px; vertical-align: middle; }
+        .id-cell { font-family: monospace; font-weight: 700; color: #0f6cbd; }
+        .badge-level { background-color: #f1f5f9; color: #475569; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; border: 1px solid #cbd5e1; }
+        .title-cell { font-weight: 600; color: #1e293b; }
+        .pill-container { display: flex; gap: 6px; flex-wrap: wrap; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; }
+        .badge-table { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .badge-diagram { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+        .badge-code { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .badge-text { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .badge-empty { background-color: #f1f5f9; color: #64748b; font-style: italic; font-size: 11px; }
+        .section-checkbox { width: 16px; height: 16px; cursor: pointer; accent-color: #0f6cbd; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-card">
+        <div class="card-header">
+            <h2>🎙️ Enterprise SDLC Blueprint Analyst Matrix</h2>
+            <p>Target URI: https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention</p>
+        </div>
+        <div class="toolbar">
+            <div class="stats-bar">📋 Total Parsed Sections: 118</div>
+            <div class="btn-group">
+                <button onclick="toggleAll(true)">Select All</button>
+                <button onclick="toggleAll(false)">Clear All</button>
+            </div>
+        </div>
+        <div class="table-viewport">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align: center; width: 60px;">Review</th>
+                        <th style="width: 70px;">ID</th>
+                        <th style="width: 70px;">Level</th>
+                        <th>Section Heading Title Descriptor</th>
+                        <th>Detected Content Types Inventory</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+        <tr class="appendix-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" ></td>
+            <td class="id-cell">1</td>
+            <td><span class="badge-level">H2</span></td>
+            <td class="title-cell">Purpose of HLD</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="appendix-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" ></td>
+            <td class="id-cell">2</td>
+            <td><span class="badge-level">H2</span></td>
+            <td class="title-cell">How to Complete this Document</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="appendix-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" ></td>
+            <td class="id-cell">3</td>
+            <td><span class="badge-level">H2</span></td>
+            <td class="title-cell">Document Version History</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="appendix-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" ></td>
+            <td class="id-cell">4</td>
+            <td><span class="badge-level">H1</span></td>
+            <td class="title-cell">Table of Contents</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">5</td>
+            <td><span class="badge-level">H1</span></td>
+            <td class="title-cell">1.0 Business Section</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">6</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">1.1 Business Solution Summary</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">7</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">1.2 Project Objectives</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">8</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">1.3 Solution Summary</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">9</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">1.4 Scope Statement</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">10</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">1.4.1 In Scope</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">11</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">1.4.2 Out of Scope</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">12</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">1.4.3 Uses Cases In Scope</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">13</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">1.4.4 Use Cases out of Scope</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">14</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">1.5 Assumptions, Risks and Constraints</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">15</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">1.5.1 Risks</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">16</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">1.5.2 Constraints/Dependencies</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">17</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">1.5.3 Limitations</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">18</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">1.5.4 Assumptions</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">19</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">1.6 Business Processes/Considerations</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">20</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">1.7 Deployment Approach</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">21</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">1.7.1 Deployment Units (Prod/UT/QA/Dev)</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">22</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">1.7.2 Deployment Method</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">23</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">1.7.3 Tagging</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">24</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">2.0 Solution Architecture</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">25</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">2.1 Project Context</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="appendix-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" ></td>
+            <td class="id-cell">26</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">RBConnectContextDiagram</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">27</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.1.1 In-Scope Applications</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">28</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">2.2 Application Communication</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">29</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">1991 – RBCONNECT – ACD</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">30</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">2.3 Enterprise Services</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">31</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">2.4 Use Case Realization</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">32</td>
+            <td><span class="badge-level">H6</span></td>
+            <td class="title-cell">1991 – RBCONNECT – UC</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">33</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.4.1 Use cases</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">34</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">2.4.1.1 Amazon Quick Sight and Users</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">35</td>
+            <td><span class="badge-level">H6</span></td>
+            <td class="title-cell">2.4.1.1.1 Amazon Quick Sight License</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">36</td>
+            <td><span class="badge-level">H6</span></td>
+            <td class="title-cell">2.4.1.1.2 Amazon Quick Sight and IdP (Azure Entra ID) federation (SAML 2.0)</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">37</td>
+            <td><span class="badge-level">H6</span></td>
+            <td class="title-cell">2.4.1.1.2 Amazon Quick Sight User permissions</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">38</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">2.4.1.2 Integration of Quick Sight and Amazon Connect Datalake</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">39</td>
+            <td><span class="badge-level">H6</span></td>
+            <td class="title-cell">2.4.1.2.1 Enabling Quick sight for Amazon Connect (TBD)</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">40</td>
+            <td><span class="badge-level">H6</span></td>
+            <td class="title-cell">2.4.1.1.2.2 Data table to be shared by Connect to Athena+Amazon Quick Sight</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">41</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">2.4.1.3 Integration of Quick Sight and Cost Data Export</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">42</td>
+            <td><span class="badge-level">H6</span></td>
+            <td class="title-cell">2.4.1.2.1 Enabling Quick sight for Cost Export (TBD)</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">43</td>
+            <td><span class="badge-level">H6</span></td>
+            <td class="title-cell">2.4.1.3.1 For Amazon Connect Contact Tagging</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="appendix-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" ></td>
+            <td class="id-cell">44</td>
+            <td><span class="badge-level">H6</span></td>
+            <td class="title-cell">The Amazon Connect allows a contact to be tagged (max 6). Once can use a this to get granular reporting. This is out of scope and does not impact the implementation.  (covered for completeness)</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">45</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">2.4.1.10 Amazon Connect configuration changes</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">46</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">2.5 Data Architecture</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">47</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.5.1 Information Model</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-diagram">🖼️ Diagram/Image (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">48</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.5.2 Data Flow - High Level Solution View</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">49</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.5.3 Data Flow Diagram</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">50</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.5.3 Data Integration Details</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">51</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.5.4 Data Container Details</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">52</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.5.5 Information Objectives Utilize</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">53</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">2.6 *Data Governance (Mandatory)*</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (2x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">54</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.6.2 Data Lifecycle and Retention</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">55</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.6.3 Metadata Management</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">56</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.6.4 Data Classification & Privacy</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (2x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">57</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.6.5 Data Quality</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">58</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.6.6 Data Access and Use</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">59</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.6.7 Use of Third Parties and Third-Party Data</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">60</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.6.8 Data Residency</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">61</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">2.7 Security Architecture</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">62</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">2.7.1 Security Solution View</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">63</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.7.2 Encryption - Data at Rest</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">64</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.7.3 Encryption – Data in Transit</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">65</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.7.4 Identity and Access Management</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">66</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">2.7.4.2 AWS Applications IAM authorization and access control details</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">67</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.7.5 Audit Logging and Monitoring</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">68</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">2.8 Other Architectural Characteristics</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">69</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.8.1 Availability, Scalability, Reliability and Maintainability</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">70</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.8.2 Disaster Recovery</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">71</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.8.3 Response Time</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">72</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.8.4 Industry Compliance</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">73</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.8.5 Volumetric & Service Level Agreement - High Level Impact Analysis</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">74</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">2.8.6 Enterprise Application Monitoring</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="appendix-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" ></td>
+            <td class="id-cell">75</td>
+            <td><span class="badge-level">H1</span></td>
+            <td class="title-cell">Technical Solution</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">76</td>
+            <td><span class="badge-level">H2</span></td>
+            <td class="title-cell">3.0 Technical Solution Overview</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">77</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">3.1 Deployment Diagram</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">78</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">3.2 Sequence Diagram</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">79</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">3.3 Application 1</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">80</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">3.3.1 Application Overview:</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">81</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">3.3.2 Application architecture/design</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">82</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">3.3.3 Application Security Specifications</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">83</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">3.4 Application 2</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">84</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">3.4.1 Application table changes</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">85</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">3.4.2 Application Architecture/Design</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">86</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">3.4.3 Application Security Specifications</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">87</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">3.5 Infrastructure Solution</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">88</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">3.5.1 Solution Deployment Diagram</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">89</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">3.5.2 High Level Technical Solution</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">90</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.5.2.1 Key Concepts</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">91</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.5.2.2 Environments</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">92</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.5.2.3 Locations</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">93</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.5.2.4 Network Security Zones</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">94</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.5.2.5 Availability</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">95</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.5.2.6 Recoverability</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">96</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.5.2.7 Capacity Management</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">97</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">3.6 Infrastructure Design</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">98</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">3.6.1 Current State</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">99</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">3.6.2 Future State</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">100</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">3.6.3 Deployment Approach</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">101</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.6.3.1 Deployment Units</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">102</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.6.3.2 Third Party Infra Software Applications</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">103</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.6.3.3 Infra Software Worksheets</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">104</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.6.3.4 Enterprise Systems Management and Monitoring</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">105</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.6.3.5 Server Worksheets</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">106</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.6.3.6 Network and Storage Host Port Allocation</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">107</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.6.3.7 Recovery Details</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">108</td>
+            <td><span class="badge-level">H5</span></td>
+            <td class="title-cell">3.6.3.8 Infra Support and Warranty</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">109</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">3.7 Hardware and Software to Decommission/Repatriate</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">110</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">3.8 Physical Architecture (where applicable)</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">111</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">3.8.1 Physical Diagram</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">112</td>
+            <td><span class="badge-level">H4</span></td>
+            <td class="title-cell">3.8.2 Resource Unit Summary</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">113</td>
+            <td><span class="badge-level">H1</span></td>
+            <td class="title-cell">4.0 Approvals</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">114</td>
+            <td><span class="badge-level">H1</span></td>
+            <td class="title-cell">5.0 Appendix</td>
+            <td><div class="pill-container"><span class="badge badge-empty">📂 Empty Placeholder</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">115</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">5.1 List of Contributors</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">116</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">5.2 Sign-Off Definitions</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">117</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">5.3 Document Abbreviations</td>
+            <td><div class="pill-container"><span class="badge badge-table">📋 Table (1x)</span><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+        <tr class="numbered-row">
+            <td style="text-align: center; padding: 12px;"><input type="checkbox" class="section-checkbox" checked></td>
+            <td class="id-cell">118</td>
+            <td><span class="badge-level">H3</span></td>
+            <td class="title-cell">5.4 Template Version</td>
+            <td><div class="pill-container"><span class="badge badge-text">📝 Text Content</span></div></td>
+        </tr>
+        
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        function toggleAll(status) {
+            const checkboxes = document.querySelectorAll('.section-checkbox');
+            checkboxes.forEach(cb => cb.checked = status);
+        }
+    </script>
+</body>
+</html>
