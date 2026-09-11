@@ -1,0 +1,138 @@
+﻿[≡ƒöì] Loading remote target Confluence wiki canvas link...
+[ΓÜá∩╕Å] Known content main selector absent. Snapping full body DOM tree layout instead.
+
+===============================================================================================
+≡ƒÄÖ∩╕Å  ENTERPRISE SDLC BLUEPRINT ANALYST MATRIX - SPECIFICATION REVIEW SHEET
+===============================================================================================
+Target URL: https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention
+Total Structural Sections Parsed: 124
+-----------------------------------------------------------------------------------------------
+
+| Sel | ID  | Lvl | Section Heading Title Descriptor   | Detected Content Types Inventory 
+|-------|------|-------|-----------------------------------------------------|----------------------------------
+| [ ]   | 1    | H2    | Page tree                                           | ≡ƒôé Empty Placeholder
+| [ ]   | 2    | H1    | High Level Design Document - Contact Center -...    | ≡ƒôé Empty Placeholder
+| [ ]   | 3    | H2    | Purpose of HLD                                      | ≡ƒô¥ Text Content
+| [ ]   | 4    | H2    | How to Complete this Document                       | ≡ƒô¥ Text Content
+| [ ]   | 5    | H2    | Document Version History                            | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [ ]   | 6    | H1    | Table of Contents                                   | ≡ƒôé Empty Placeholder
+| [X]   | 7    | H1    | 1.0 Business Section                                | ≡ƒôé Empty Placeholder
+| [X]   | 8    | H3    | 1.1 Business Solution Summary                       | ≡ƒô¥ Text Content
+| [X]   | 9    | H3    | 1.2 Project Objectives                              | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 10   | H3    | 1.3 Solution Summary                                | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 11   | H3    | 1.4 Scope Statement                                 | ≡ƒôé Empty Placeholder
+| [X]   | 12   | H4    | 1.4.1 In Scope                                      | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 13   | H4    | 1.4.2 Out of Scope                                  | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 14   | H4    | 1.4.3 Uses Cases In Scope                           | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 15   | H4    | 1.4.4 Use Cases out of Scope                        | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 16   | H3    | 1.5 Assumptions, Risks and Constraints              | ≡ƒô¥ Text Content
+| [X]   | 17   | H4    | 1.5.1 Risks                                         | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 18   | H4    | 1.5.2 Constraints/Dependencies                      | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 19   | H4    | 1.5.3 Limitations                                   | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 20   | H4    | 1.5.4 Assumptions                                   | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 21   | H3    | 1.6 Business Processes/Considerations               | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 22   | H3    | 1.7 Deployment Approach                             | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 23   | H4    | 1.7.1 Deployment Units (Prod/UT/QA/Dev)             | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 24   | H4    | 1.7.2 Deployment Method                             | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 25   | H4    | 1.7.3 Tagging                                       | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 26   | H3    | 2.0 Solution Architecture                           | ≡ƒôé Empty Placeholder
+| [X]   | 27   | H3    | 2.1 Project Context                                 | ≡ƒô¥ Text Content
+| [ ]   | 28   | H4    | RBConnectContextDiagram                             | ≡ƒôé Empty Placeholder
+| [X]   | 29   | H4    | 2.1.1 In-Scope Applications                         | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 30   | H3    | 2.2 Application Communication                       | ≡ƒô¥ Text Content
+| [X]   | 31   | H4    | 1991 ΓÇô RBCONNECT ΓÇô ACD                              | ≡ƒôé Empty Placeholder
+| [X]   | 32   | H3    | 2.3 Enterprise Services                             | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [ ]   | 33   | H4    | Service Name                                        | ≡ƒôé Empty Placeholder
+| [ ]   | 34   | H4    | Producing Application                               | ≡ƒôé Empty Placeholder
+| [ ]   | 35   | H4    | New | Existing                                      | ≡ƒôé Empty Placeholder
+| [X]   | 36   | H3    | 2.4 Use Case Realization                            | ≡ƒô¥ Text Content
+| [X]   | 37   | H6    | 1991 ΓÇô RBCONNECT ΓÇô UC                               | ≡ƒôé Empty Placeholder
+| [X]   | 38   | H4    | 2.4.1 Use cases                                     | ≡ƒôé Empty Placeholder
+| [X]   | 39   | H5    | 2.4.1.1 Amazon Quick Sight and Users                | ≡ƒôé Empty Placeholder
+| [X]   | 40   | H6    | 2.4.1.1.1 Amazon Quick Sight┬áLicense                | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 41   | H6    | 2.4.1.1.2 Amazon Quick Sight and IdP (Azure E...    | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 42   | H6    | 2.4.1.1.2 Amazon Quick Sight User permissions       | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 43   | H5    | 2.4.1.2 Integration of Quick Sight and Amazon...    | ≡ƒôé Empty Placeholder
+| [X]   | 44   | H6    | 2.4.1.2.1 Enabling Quick sight for Amazon Con...    | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 45   | H6    | 2.4.1.1.2.2 Data table to be shared by Connec...    | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 46   | H5    | 2.4.1.3 Integration of Quick Sight and Cost D...    | ≡ƒô¥ Text Content
+| [X]   | 47   | H6    | 2.4.1.2.1 Enabling Quick sight for Cost Expor...    | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 48   | H6    | 2.4.1.3.1 For Amazon Connect Contact Tagging        | ≡ƒôé Empty Placeholder
+| [ ]   | 49   | H6    | The Amazon Connect allows a contact to be tag...    | ≡ƒôé Empty Placeholder
+| [X]   | 50   | H5    | 2.4.1.10 Amazon Connect configuration changes       | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 51   | H3    | 2.5 Data Architecture                               | ≡ƒôé Empty Placeholder
+| [X]   | 52   | H4    | 2.5.1 Information Model                             | ≡ƒôï Table (1x), ≡ƒû╝ Diagram/Image (1x), ≡ƒô¥ Text Content
+| [X]   | 53   | H4    | 2.5.2 Data Flow - High Level Solution View          | ≡ƒô¥ Text Content
+| [X]   | 54   | H4    | 2.5.3 Data Flow Diagram                             | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 55   | H4    | 2.5.3 Data Integration Details                      | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 56   | H4    | 2.5.4 Data Container Details                        | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 57   | H4    | 2.5.5 Information Objectives Utilize                | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 58   | H3    | 2.6 *Data Governance (Mandatory)*                   | ≡ƒôï Table (2x), ≡ƒô¥ Text Content
+| [X]   | 59   | H4    | 2.6.2 Data Lifecycle and Retention                  | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 60   | H4    | 2.6.3 Metadata Management                           | ≡ƒô¥ Text Content
+| [X]   | 61   | H4    | 2.6.4 Data Classification & Privacy                 | ≡ƒôï Table (2x), ≡ƒô¥ Text Content
+| [X]   | 62   | H4    | 2.6.5 Data Quality                                  | ≡ƒô¥ Text Content
+| [X]   | 63   | H4    | 2.6.6 Data Access and Use                           | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 64   | H4    | 2.6.7 Use of Third Parties and Third-Party Data     | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 65   | H4    | 2.6.8 Data Residency                                | ≡ƒô¥ Text Content
+| [X]   | 66   | H3    | 2.7 Security Architecture                           | ≡ƒô¥ Text Content
+| [X]   | 67   | H3    | 2.7.1 Security Solution View                        | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 68   | H4    | 2.7.2 Encryption - Data at Rest                     | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 69   | H4    | 2.7.3 Encryption ΓÇô Data in Transit                  | ≡ƒô¥ Text Content
+| [X]   | 70   | H4    | 2.7.4 Identity and Access Management                | ≡ƒô¥ Text Content
+| [X]   | 71   | H5    | 2.7.4.2 AWS Applications IAM authorization an...    | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 72   | H4    | 2.7.5 Audit Logging and Monitoring                  | ≡ƒô¥ Text Content
+| [X]   | 73   | H3    | 2.8 Other Architectural Characteristics             | ≡ƒô¥ Text Content
+| [X]   | 74   | H4    | 2.8.1 Availability, Scalability, Reliability ...    | ≡ƒô¥ Text Content
+| [X]   | 75   | H4    | 2.8.2 Disaster Recovery                             | ≡ƒô¥ Text Content
+| [X]   | 76   | H4    | 2.8.3 Response Time                                 | ≡ƒô¥ Text Content
+| [X]   | 77   | H4    | 2.8.4 Industry Compliance                           | ≡ƒô¥ Text Content
+| [X]   | 78   | H4    | 2.8.5 Volumetric & Service Level Agreement - ...    | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 79   | H4    | 2.8.6 Enterprise Application Monitoring             | ≡ƒô¥ Text Content
+| [ ]   | 80   | H1    | Technical Solution                                  | ≡ƒô¥ Text Content
+| [X]   | 81   | H2    | 3.0 Technical Solution Overview                     | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 82   | H3    | 3.1 Deployment Diagram                              | ≡ƒôé Empty Placeholder
+| [X]   | 83   | H3    | 3.2 Sequence Diagram                                | ≡ƒôé Empty Placeholder
+| [X]   | 84   | H3    | 3.3 Application 1                                   | ≡ƒô¥ Text Content
+| [X]   | 85   | H4    | 3.3.1 Application Overview:                         | ≡ƒô¥ Text Content
+| [X]   | 86   | H4    | 3.3.2 Application architecture/design               | ≡ƒô¥ Text Content
+| [X]   | 87   | H4    | 3.3.3 Application Security Specifications           | ≡ƒô¥ Text Content
+| [X]   | 88   | H3    | 3.4 Application 2                                   | ≡ƒôé Empty Placeholder
+| [X]   | 89   | H4    | 3.4.1 Application table changes                     | ≡ƒô¥ Text Content
+| [X]   | 90   | H4    | 3.4.2 Application Architecture/Design               | ≡ƒô¥ Text Content
+| [X]   | 91   | H4    | 3.4.3 Application Security Specifications           | ≡ƒô¥ Text Content
+| [X]   | 92   | H3    | 3.5 Infrastructure Solution                         | ≡ƒô¥ Text Content
+| [X]   | 93   | H4    | 3.5.1 Solution Deployment Diagram                   | ≡ƒô¥ Text Content
+| [X]   | 94   | H4    | 3.5.2 High Level Technical Solution                 | ≡ƒô¥ Text Content
+| [X]   | 95   | H5    | 3.5.2.1 Key Concepts                                | ≡ƒô¥ Text Content
+| [X]   | 96   | H5    | 3.5.2.2 Environments                                | ≡ƒô¥ Text Content
+| [X]   | 97   | H5    | 3.5.2.3 Locations                                   | ≡ƒô¥ Text Content
+| [X]   | 98   | H5    | 3.5.2.4 Network Security Zones                      | ≡ƒô¥ Text Content
+| [X]   | 99   | H5    | 3.5.2.5 Availability                                | ≡ƒô¥ Text Content
+| [X]   | 100  | H5    | 3.5.2.6 Recoverability                              | ≡ƒô¥ Text Content
+| [X]   | 101  | H5    | 3.5.2.7 Capacity Management                         | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 102  | H3    | 3.6 Infrastructure Design                           | ≡ƒôé Empty Placeholder
+| [X]   | 103  | H4    | 3.6.1 Current State                                 | ≡ƒôé Empty Placeholder
+| [X]   | 104  | H4    | 3.6.2 Future State                                  | ≡ƒô¥ Text Content
+| [X]   | 105  | H4    | 3.6.3 Deployment Approach                           | ≡ƒôé Empty Placeholder
+| [X]   | 106  | H5    | 3.6.3.1 Deployment Units                            | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 107  | H5    | 3.6.3.2 Third Party Infra Software Applications     | ≡ƒô¥ Text Content
+| [X]   | 108  | H5    | 3.6.3.3 Infra Software Worksheets                   | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 109  | H5    | 3.6.3.4 Enterprise Systems Management and Mon...    | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 110  | H5    | 3.6.3.5 Server Worksheets                           | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 111  | H5    | 3.6.3.6 Network and Storage Host Port Allocation    | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 112  | H5    | 3.6.3.7 Recovery Details                            | ≡ƒô¥ Text Content
+| [X]   | 113  | H5    | 3.6.3.8 Infra Support and Warranty                  | ≡ƒôé Empty Placeholder
+| [X]   | 114  | H3    | 3.7 Hardware and Software to Decommission/Rep...    | ≡ƒô¥ Text Content
+| [X]   | 115  | H3    | 3.8 Physical Architecture (where applicable)        | ≡ƒô¥ Text Content
+| [X]   | 116  | H4    | 3.8.1 Physical Diagram                              | ≡ƒô¥ Text Content
+| [X]   | 117  | H4    | 3.8.2 Resource Unit Summary                         | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [ ]   | 118  | H1    |                                                     | ≡ƒôé Empty Placeholder
+| [X]   | 119  | H1    | 4.0 Approvals                                       | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 120  | H1    | 5.0 Appendix                                        | ≡ƒôé Empty Placeholder
+| [X]   | 121  | H3    | 5.1 List of Contributors                            | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 122  | H3    | 5.2 Sign-Off Definitions                            | ≡ƒô¥ Text Content
+| [X]   | 123  | H3    | 5.3 Document Abbreviations                          | ≡ƒôï Table (1x), ≡ƒô¥ Text Content
+| [X]   | 124  | H3    | 5.4 Template Version                                | ≡ƒô¥ Text Content
+===============================================================================================
+

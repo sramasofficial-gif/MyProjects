@@ -1,0 +1,1 @@
+export async function extractSections(file){const data=new FormData();data.append("file",file);const r=await fetch("/api/v1/documents/extract-sections",{method:"POST",body:data});if(!r.ok){let b={};try{b=await r.json()}catch{}throw new Error(b.detail||"Unable to process file")}return r.json()}
