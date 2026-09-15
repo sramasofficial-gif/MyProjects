@@ -106,17 +106,22 @@ export async function requestDiagramGeneration(path, content, diagramType) {
 /**
  * Phase 1: Ingests an HLD file to generate or load the verification matrix chunk array.
  */
-export async function generateHLDMatrix(fileObject) {
-    const formData = new FormData();
-    formData.append("file", fileObject);
-
+/**
+ * Phase 1 Updated: Ingests a Confluence Wiki URL string parameters object 
+ * to generate or load the verification matrix chunk array.
+ */
+export async function generateHLDMatrix(pageUrl) {
     const response = await fetch(`${API_URL}/hld/generate-matrix`, {
         method: "POST",
-        body: formData // Form data handles stream multi-part payloads implicitly
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ page_url: pageUrl })
     });
 
     return parseResponse(response);
 }
+
 
 /**
  * Clear the saved server cache for a specific document filename.

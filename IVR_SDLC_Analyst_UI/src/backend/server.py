@@ -1,5 +1,6 @@
 # MyProjects/IVR_SDLC_Analyst_UI/src/backend/server.py
 import shutil
+import sys
 import json
 import os
 import re
@@ -23,6 +24,8 @@ from services.repo_tools import read_file  # Import your existing file reader
 
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from playwright.async_api import async_playwright
+from contextlib import asynccontextmanager
 
 import concurrent.futures
 from functools import partial
@@ -49,7 +52,21 @@ from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
     
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if sys.platform == "win32":
+        try:
+            loop = asyncio.get_running_loop()
+            print(
+                f"[SYSTEM] Active operational loop: {type(loop).__name__}"
+            )
+        except RuntimeError:
+            pass
+
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -75,8 +92,22 @@ GLOBAL_THREAD_LOCK = threading.RLock()
 
 # Binds paths to local config sheets safely
 CONFIG_DIR = Path(__file__).resolve().parent / "conf"
+TOOLS_DIR = Path(__file__).resolve().parent / "tools"
 SETTINGS_FILE_PATH = os.path.join(CONFIG_DIR, "server_settings.json")
 SIMULATION_FILE_PATH = os.path.join(CONFIG_DIR, "simulation_graphs.json")
+
+# --- Confluence Integration Configuration ---
+CONFLUENCE_BASE_URL = "https://reqcentral.com" # no trailing slash
+AUTH_STATE_FILE = os.path.join(TOOLS_DIR, "entra_auth_state.json")
+
+CONTENT_SELECTORS = [
+    "[data-testid='content-body']",  # Confluence Cloud (newer UI)
+    "#main-content",                  # Confluence Server/Data Center
+    ".ak-renderer-document",          # Confluence Cloud editor renderer
+]
+
+class ConfluenceURLRequest(BaseModel):
+    page_url: str
 
 # 1. Map Schema models for the Wiki extraction payload boundaries
 class HLDIngestionRequest(BaseModel):
@@ -95,6 +126,43 @@ class SystemSettingsProfile(BaseModel):
     enable_simulation_mode: bool = True
     enable_persistence: bool = True
 
+async def _find_content_selector_async(page):
+    for selector in CONTENT_SELECTORS:
+        # 🟢 FIX: Await locator count verification steps
+        if await page.locator(selector).count() > 0:
+            return selector
+    return "body"
+
+async def ensure_full_content_loaded_async(page, max_scroll_passes=40, settle_ms=600):
+    try:
+        await page.wait_for_load_state("networkidle", timeout=15000)
+    except Exception:
+        pass
+        
+    prev_height = -1
+    for _ in range(max_scroll_passes):
+        curr_height = await page.evaluate("document.body.scrollHeight")
+        if curr_height == prev_height:
+            break
+        await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+        await page.wait_for_timeout(settle_ms)
+        prev_height = curr_height
+        
+    await page.evaluate("window.scrollTo(0, 0)")
+    await page.wait_for_timeout(settle_ms)
+    
+    try:
+        await page.wait_for_load_state("networkidle", timeout=15000)
+    except Exception:
+        pass
+        
+    for frame in page.frames:
+        try:
+            await frame.wait_for_load_state("load", timeout=5000)
+        except Exception:
+            pass
+            
+    await page.wait_for_timeout(500)
 
 # ==============================================================================
 # 🟢 ENHANCEMENT: FILE PERSISTENCE LIFECYCLE CONTROLLERS
@@ -330,72 +398,71 @@ def get_file_cache_path(filename: str) -> str:
 
 
 @app.post("/api/hld/generate-matrix")
-async def generate_verified_matrix(file: UploadFile = File(...)):
+async def generate_verified_matrix(payload: ConfluenceURLRequest):
     """
-    Phase 1: Ingests an HLD, checks if a cache file exists for this specific filename,
-    and returns it instantly. Otherwise, runs the full OCR/Parsing pipeline.
+    Phase 1 Replacement: Ingests an HLD directly from a Confluence Wiki URL
+    using saved session states and structural async chunking arrays.
     """
-    _, file_ext = os.path.splitext(file.filename)
-    file_ext = file_ext.lower()
+    # Generate clean cache identifier from URL text structures
+    url_hash = hashlib.sha256(payload.page_url.encode("utf-8")).hexdigest()
+    target_cache_path = f"matrix_cache_wiki_{url_hash[:16]}.json"
 
-    target_cache_path = get_file_cache_path(file.filename)
-
-    # 🟢 CHECK FILENAME CACHE FIRST: Instant load if this specific file was processed earlier
     if SERVER_CONFIG.enable_persistence and os.path.exists(target_cache_path):
-        print(f"[CACHE HIT] Serving pre-existing matrix for file: {file.filename}")
+        print(f"[CACHE HIT] Serving pre-existing matrix for wiki URL hash: {url_hash[:16]}")
         with open(target_cache_path, "r", encoding="utf-8") as f:
             matrix_chunks = json.load(f)
         return {
             "success": True,
-            "filename": file.filename,
+            "filename": payload.page_url,
             "matrix": matrix_chunks,
             "loaded_from_cache": True
         }
 
-    # Cache Miss: Run your standard local extraction steps
-    temp_file_path = f"temp_upload_{file.filename}"
-    with open(temp_file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    if not os.path.exists(AUTH_STATE_FILE):
+        raise HTTPException(
+            status_code=401, 
+            detail=f"No saved Confluence session found ({AUTH_STATE_FILE}). Run login locally first."
+        )
 
     try:
-        raw_text_extracted = ""
-        if file_ext == ".pdf":
-            extractor = DynamicPDFExtractor(temp_file_path)
-            raw_text_extracted = extractor.extract_clean_text()
-        elif file_ext in [".txt", ".html", ".htm"]:
-            with open(temp_file_path, "r", encoding="utf-8", errors="ignore") as f:
-                raw_text_extracted = f.read()
+        # 🟢 FIX: Initialize and orchestrate via async context managers and explicit keyword awaits
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            context = await browser.new_context(storage_state=AUTH_STATE_FILE)
+            page = await context.new_page()
 
-        # Build chunks structure array matrix
+            await page.goto(payload.page_url)
+            
+            # 🟢 FIX: Invoke updated async helper sequence 
+            await ensure_full_content_loaded_async(page)
+
+            # Determine structural locator node wrapper
+            selector = await _find_content_selector_async(page)
+            raw_text_extracted = await page.inner_text(selector)
+            
+            await browser.close()
+
+        if not raw_text_extracted.strip():
+            raise HTTPException(status_code=422, detail="Failed to extract text from target wiki content wrapper.")
+
+        # Pass live document stream into your existing chunker matrix (remains synchronous computational logic)
         chunker = HLDAuditChunker(target_chunk_size=1000, overlap=150)
         matrix_chunks = chunker.create_audit_chunks(raw_text_extracted)
 
-        # 🟢 UPGRADE: CONDITIONAL DISK SERIALIZATION
-        # Only dump the tracking matrix array out to a hard cache file if persistence is true
         if SERVER_CONFIG.enable_persistence:
-            # Save to disk using the specific filename key
             with open(target_cache_path, "w", encoding="utf-8") as f:
                 json.dump(matrix_chunks, f, indent=2)
-            print(f"[PERSISTENCE] Matrix successfully serialized to disk for: {file.filename}")
-        else:
-            print(f"[DEVELOPMENT MODE] Skipping local disk serialization files cache dump.")
-
-
-        if os.path.exists(temp_file_path):
-            os.remove(temp_file_path)
+            print(f"[PERSISTENCE] Wiki matrix successfully serialized to disk.")
 
         return {
             "success": True,
-            "filename": file.filename,
+            "filename": payload.page_url,
             "matrix": matrix_chunks,
             "loaded_from_cache": False
         }
 
     except Exception as e:
-        if os.path.exists(temp_file_path):
-            os.remove(temp_file_path)
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @app.post("/api/hld/clear-matrix-cache")
 def clear_matrix_cache(payload: dict):
