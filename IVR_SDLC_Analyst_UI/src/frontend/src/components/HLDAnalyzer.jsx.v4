@@ -6,12 +6,8 @@ import {
 } from "../services/api";
 
 const TYPE_LABELS = {
-    table: "Table",
-    image: "Image",
-    diagram: "Diagram",
-    "diagram-iframe": "Diagram (iframe)",
-    text: "Text",
-    "unresolved-macro": "Unresolved macro",
+    SECURITY: "Security",
+    INTEGRATION: "Integration",
 };
 
 const REPORT = {
@@ -38,29 +34,35 @@ const REPORT = {
     sans: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif",
 };
 
-function typeLabel(type = "") {
-    return TYPE_LABELS[type] || (String(type).startsWith("macro:") ? String(type).slice(6) : type);
+function extractNumbering(title = "") {
+    const match = String(title).trim().match(/^([0-9]+(?:\.[0-9]+)*)\b/);
+    return match ? match[1] : "—";
 }
 
-function typeBadgeStyle(type) {
-    if (type === "table") return { background: REPORT.accentSoft, color: REPORT.accent };
-    if (type === "diagram" || type === "diagram-iframe") return { background: REPORT.purpleBg, color: REPORT.purple };
-    if (type === "image") return { background: REPORT.greenBg, color: REPORT.green };
-    if (type === "unresolved-macro") return { background: REPORT.issueBg, color: REPORT.issue };
-    if (String(type).startsWith("macro:")) return { background: REPORT.yellowBg, color: REPORT.yellow };
-    return { background: REPORT.emptyBg, color: REPORT.inkSoft };
+function statusForChunk(chunk) {
+    const tags = Array.isArray(chunk?.metadata?.audit_tags)
+        ? chunk.metadata.audit_tags
+        : [];
+    return tags.length > 0 ? "focus" : "info";
 }
 
 function statusPill(status) {
     const map = {
-        ok: ["status-ok", "OK", REPORT.okBg, REPORT.ok],
-        issue: ["status-issue", "Check", REPORT.issueBg, REPORT.issue],
-        empty: ["status-empty", "Empty", REPORT.emptyBg, REPORT.empty],
+        focus: {
+            background: REPORT.issueBg,
+            color: REPORT.issue,
+            label: "Review",
+        },
+        info: {
+            background: REPORT.emptyBg,
+            color: REPORT.empty,
+            label: "General",
+        },
     };
-    const [cls, label, background, color] = map[status] || map.empty;
+    const style = map[status] || map.info;
+
     return (
         <span
-            className={`status-pill ${cls}`}
             style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -69,20 +71,45 @@ function statusPill(status) {
                 fontWeight: 600,
                 padding: "3px 9px",
                 borderRadius: 100,
-                background,
-                color,
+                background: style.background,
+                color: style.color,
                 whiteSpace: "nowrap",
             }}
         >
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "currentColor" }} />
-            {label}
+            <span
+                style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: "50%",
+                    background: "currentColor",
+                }}
+            />
+            {style.label}
         </span>
     );
 }
 
-function extractNumbering(title = "") {
-    const match = String(title).trim().match(/^([0-9]+(?:\.[0-9]+)*)\b/);
-    return match ? match[1] : "—";
+function auditBadgeStyle(tag) {
+    const normalized = String(tag || "").toUpperCase();
+    if (normalized === "SECURITY") {
+        return {
+            background: REPORT.issueBg,
+            color: REPORT.issue,
+            border: `1px solid #edc59f`,
+        };
+    }
+    if (normalized === "INTEGRATION") {
+        return {
+            background: REPORT.accentSoft,
+            color: REPORT.accent,
+            border: `1px solid #c7d9ea`,
+        };
+    }
+    return {
+        background: REPORT.yellowBg,
+        color: REPORT.yellow,
+        border: `1px solid #f0dda0`,
+    };
 }
 
 export default function HLDAnalyzer() {
@@ -93,7 +120,7 @@ export default function HLDAnalyzer() {
     const [analysisResult, setAnalysisResult] = useState(null);
     const [isLoadedFromCache, setIsLoadedFromCache] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [typeFilter, setTypeFilter] = useState("");
+    const [tagFilter, setTagFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
     const [selectedIds, setSelectedIds] = useState(new Set());
     const [expandedId, setExpandedId] = useState(null);
@@ -105,7 +132,7 @@ export default function HLDAnalyzer() {
         setAnalysisResult(null);
         setIsLoadedFromCache(false);
         setSearchQuery("");
-        setTypeFilter("");
+        setTagFilter("");
         setStatusFilter("");
         setSelectedIds(new Set());
         setExpandedId(null);
@@ -174,20 +201,15 @@ export default function HLDAnalyzer() {
         return rows
             .map((chunk, index) => {
                 const metadata = chunk?.metadata || {};
-                const types = Array.isArray(metadata.types) ? metadata.types : (Array.isArray(chunk?.types) ? chunk.types : []);
-                const status = metadata.status || chunk?.status || (metadata.placeholderCount ? "issue" : (types.length ? "ok" : "empty"));
-                const level = Number(metadata.level || chunk?.level || 1);
-                const heading = metadata.parent_section || chunk?.heading || "Unclassified section";
+                const tags = Array.isArray(metadata.audit_tags) ? metadata.audit_tags : [];
                 return {
                     ...chunk,
-                    id: Number(chunk?.id || index + 1),
-                    parentSection: heading,
-                    numbering: metadata.numbering || chunk?.numbering || extractNumbering(heading),
-                    level,
-                    types,
-                    status,
-                    placeholderCount: Number(metadata.placeholderCount || chunk?.placeholderCount || 0),
-                    auditTags: Array.isArray(metadata.audit_tags) ? metadata.audit_tags : (Array.isArray(chunk?.audit_tags) ? chunk.audit_tags : []),
+                    id: index + 1,
+                    parentSection: metadata.parent_section || "Unclassified section",
+                    numbering: extractNumbering(metadata.parent_section || ""),
+                    tags,
+                    status: statusForChunk(chunk),
+                    splitBlock: Boolean(metadata.split_block),
                     wordCount: String(chunk?.content || "").trim()
                         ? String(chunk.content).trim().split(/\s+/).length
                         : 0,
@@ -195,29 +217,26 @@ export default function HLDAnalyzer() {
             })
             .filter((row) => {
                 if (q && !row.parentSection.toLowerCase().includes(q)) return false;
-                if (typeFilter && !row.types.includes(typeFilter)) return false;
+                if (tagFilter && !row.tags.includes(tagFilter)) return false;
                 if (statusFilter && row.status !== statusFilter) return false;
                 return true;
             });
-    }, [verificationMatrix, searchQuery, typeFilter, statusFilter]);
+    }, [verificationMatrix, searchQuery, tagFilter, statusFilter]);
 
     const stats = useMemo(() => {
         const rows = Array.isArray(verificationMatrix) ? verificationMatrix : [];
-        const withTables = rows.filter((r) => (r?.metadata?.types || r?.types || []).includes("table")).length;
-        const withDiagrams = rows.filter((r) => {
-            const types = r?.metadata?.types || r?.types || [];
-            return types.includes("diagram") || types.includes("diagram-iframe");
-        }).length;
-        const issues = rows.filter((r) => {
-            const types = r?.metadata?.types || r?.types || [];
-            const status = r?.metadata?.status || r?.status || (r?.metadata?.placeholderCount ? "issue" : (types.length ? "ok" : "empty"));
-            return status === "issue";
-        }).length;
+        const security = rows.filter((r) =>
+            (r?.metadata?.audit_tags || []).includes("SECURITY")
+        ).length;
+        const integration = rows.filter((r) =>
+            (r?.metadata?.audit_tags || []).includes("INTEGRATION")
+        ).length;
+        const focus = rows.filter((r) => statusForChunk(r) === "focus").length;
         return {
             total: rows.length,
-            withTables,
-            withDiagrams,
-            issues,
+            focus,
+            security,
+            integration,
         };
     }, [verificationMatrix]);
 
@@ -269,7 +288,7 @@ export default function HLDAnalyzer() {
 
     function resetFilters() {
         setSearchQuery("");
-        setTypeFilter("");
+        setTagFilter("");
         setStatusFilter("");
     }
 
@@ -525,9 +544,9 @@ export default function HLDAnalyzer() {
                         >
                             {[
                                 ["Total sections", stats.total, ""],
-                                ["With tables", stats.withTables, ""],
-                                ["With diagrams", stats.withDiagrams, ""],
-                                ["Possible issues", stats.issues, stats.issues ? "issue" : "ok"],
+                                ["Audit focus", stats.focus, stats.focus ? "issue" : "ok"],
+                                ["Security", stats.security, ""],
+                                ["Integration", stats.integration, ""],
                             ].map(([label, value, tone]) => (
                                 <div
                                     key={label}
@@ -593,8 +612,8 @@ export default function HLDAnalyzer() {
                                 }}
                             />
                             <select
-                                value={typeFilter}
-                                onChange={(e) => setTypeFilter(e.target.value)}
+                                value={tagFilter}
+                                onChange={(e) => setTagFilter(e.target.value)}
                                 style={{
                                     padding: "8px 10px",
                                     border: `1px solid ${REPORT.line}`,
@@ -603,10 +622,9 @@ export default function HLDAnalyzer() {
                                     background: REPORT.panel,
                                 }}
                             >
-                                <option value="">All content types</option>
-                                {Object.entries(TYPE_LABELS).map(([value, label]) => (
-                                    <option key={value} value={value}>{label}</option>
-                                ))}
+                                <option value="">All audit focus</option>
+                                <option value="SECURITY">Security</option>
+                                <option value="INTEGRATION">Integration</option>
                             </select>
                             <select
                                 value={statusFilter}
@@ -620,11 +638,10 @@ export default function HLDAnalyzer() {
                                 }}
                             >
                                 <option value="">All statuses</option>
-                                <option value="ok">OK</option>
-                                <option value="issue">Possible issue</option>
-                                <option value="empty">Empty</option>
+                                <option value="focus">Audit focus</option>
+                                <option value="info">General</option>
                             </select>
-                            {(searchQuery || typeFilter || statusFilter) && (
+                            {(searchQuery || tagFilter || statusFilter) && (
                                 <button
                                     onClick={resetFilters}
                                     style={{
@@ -687,7 +704,7 @@ export default function HLDAnalyzer() {
                                                     <th style={{ width: 42, padding: "10px 12px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "left", color: REPORT.inkSoft, fontSize: 11.5 }}>#</th>
                                                     <th style={{ width: 76, padding: "10px 12px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "left", color: REPORT.inkSoft, fontSize: 11.5 }}>No.</th>
                                                     <th style={{ padding: "10px 12px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "left", color: REPORT.inkSoft, fontSize: 11.5 }}>Section Heading</th>
-                                                    <th style={{ width: 220, padding: "10px 12px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "left", color: REPORT.inkSoft, fontSize: 11.5 }}>Content Type(s)</th>
+                                                    <th style={{ width: 220, padding: "10px 12px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "left", color: REPORT.inkSoft, fontSize: 11.5 }}>Audit Focus</th>
                                                     <th style={{ width: 110, padding: "10px 12px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "left", color: REPORT.inkSoft, fontSize: 11.5 }}>Status</th>
                                                 </tr>
                                             </thead>
@@ -695,7 +712,7 @@ export default function HLDAnalyzer() {
                                                 {matrixRows.map((row) => {
                                                     const selected = selectedIds.has(row.id);
                                                     const expanded = expandedId === row.id;
-                                                    const rowBackground = row.status === "issue" ? REPORT.issueBg : REPORT.panel;
+                                                    const rowBackground = row.status === "focus" ? REPORT.issueBg : REPORT.panel;
 
                                                     return (
                                                         <React.Fragment key={row.id}>
@@ -720,15 +737,8 @@ export default function HLDAnalyzer() {
                                                                     {row.numbering}
                                                                 </td>
                                                                 <td style={{ padding: "10px 12px", borderBottom: `1px solid ${REPORT.line}`, verticalAlign: "top" }}>
-                                                                    <div
-                                                                        style={{
-                                                                            display: "flex",
-                                                                            alignItems: "baseline",
-                                                                            gap: 6,
-                                                                            paddingLeft: Math.max(0, row.level - 1) * 14,
-                                                                        }}
-                                                                    >
-                                                                        <span style={{ fontWeight: row.level === 1 ? 650 : 500 }}>
+                                                                    <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                                                                        <span style={{ fontWeight: row.numbering !== "—" && row.numbering.split(".").length === 1 ? 650 : 500 }}>
                                                                             {row.parentSection}
                                                                         </span>
                                                                     </div>
@@ -750,22 +760,24 @@ export default function HLDAnalyzer() {
                                                                 </td>
                                                                 <td style={{ padding: "10px 12px", borderBottom: `1px solid ${REPORT.line}`, verticalAlign: "top" }}>
                                                                     <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                                                                        {row.types.length > 0 ? row.types.map((type) => (
-                                                                            <span
-                                                                                key={type}
-                                                                                style={{
-                                                                                    display: "inline-block",
-                                                                                    fontSize: 11,
-                                                                                    fontWeight: 600,
-                                                                                    padding: "2px 8px",
-                                                                                    borderRadius: 100,
-                                                                                    whiteSpace: "nowrap",
-                                                                                    ...typeBadgeStyle(type),
-                                                                                }}
-                                                                            >
-                                                                                {typeLabel(type)}
-                                                                            </span>
-                                                                        )) : (
+                                                                        {row.tags.length > 0 ? (
+                                                                            row.tags.map((tag) => (
+                                                                                <span
+                                                                                    key={tag}
+                                                                                    style={{
+                                                                                        display: "inline-block",
+                                                                                        fontSize: 11,
+                                                                                        fontWeight: 600,
+                                                                                        padding: "2px 8px",
+                                                                                        borderRadius: 100,
+                                                                                        whiteSpace: "nowrap",
+                                                                                        ...auditBadgeStyle(tag),
+                                                                                    }}
+                                                                                >
+                                                                                    {TYPE_LABELS[tag] || tag}
+                                                                                </span>
+                                                                            ))
+                                                                        ) : (
                                                                             <span
                                                                                 style={{
                                                                                     display: "inline-block",
@@ -781,6 +793,22 @@ export default function HLDAnalyzer() {
                                                                                 None detected
                                                                             </span>
                                                                         )}
+                                                                        {row.splitBlock && (
+                                                                            <span
+                                                                                style={{
+                                                                                    display: "inline-block",
+                                                                                    fontSize: 11,
+                                                                                    fontWeight: 600,
+                                                                                    padding: "2px 8px",
+                                                                                    borderRadius: 100,
+                                                                                    background: REPORT.yellowBg,
+                                                                                    color: REPORT.yellow,
+                                                                                    whiteSpace: "nowrap",
+                                                                                }}
+                                                                            >
+                                                                                Split partition
+                                                                            </span>
+                                                                        )}
                                                                     </div>
                                                                 </td>
                                                                 <td style={{ padding: "10px 12px", borderBottom: `1px solid ${REPORT.line}`, verticalAlign: "top" }}>
@@ -794,7 +822,7 @@ export default function HLDAnalyzer() {
                                                                         style={{
                                                                             padding: "0 12px 12px 50px",
                                                                             borderBottom: `1px solid ${REPORT.line}`,
-                                                                            background: row.status === "issue" ? "#fcf4eb" : "#fafbfc",
+                                                                            background: row.status === "focus" ? "#fcf4eb" : "#fafbfc",
                                                                         }}
                                                                     >
                                                                         <pre

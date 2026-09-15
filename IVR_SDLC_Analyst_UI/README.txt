@@ -277,4 +277,4 @@ pip install playwright requests beautifulsoup4
 
 https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention
 
-uvicorn server:app --reload --port 8000 --loop asyncio
+python -m uvicorn server:app --port 8000 --loop asyncio

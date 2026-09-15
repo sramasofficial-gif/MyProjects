@@ -389,163 +389,12 @@ def minimize_source_code(source_code: str) -> str:
     
     return "\n".join(compact_lines)
 
-# ---------------------------------------------------------------------------
-# Confluence section inventory extraction (ported from confluence_wiki_reader.py)
-# ---------------------------------------------------------------------------
-# This intentionally mirrors the original rendered-DOM identification logic:
-# headings are walked in DOM order and each section is classified by the
-# rendered elements found until the next heading.
-SECTION_EXTRACT_JS = r"""
-(containerSelector) => {
-    const container = document.querySelector(containerSelector) || document.body;
-
-    const relevant = container.querySelectorAll(
-        'h1,h2,h3,h4,h5,h6,table,.table-wrap,img,svg,canvas,iframe,' +
-        '.confluence-embedded-image,.image-wrap,.confluence-embedded-file-wrapper,' +
-        '[class*="drawio" i],[class*="gliffy" i],[class*="diagram" i],' +
-        '[data-macro-name],.macro-placeholder,p,ul,ol'
-    );
-
-    const headings = Array.from(container.querySelectorAll('h1,h2,h3,h4,h5,h6'));
-    const sections = [];
-    let current = null;
-    const preHeadingContent = { types: new Set(), placeholders: 0 };
-
-    const isEmptyShell = (el) => {
-        const txt = (el.innerText || '').trim();
-        const hasMedia = el.querySelector('img,svg,canvas,iframe');
-        return txt.length === 0 && !hasMedia;
-    };
-
-    for (const el of relevant) {
-        const tag = el.tagName.toLowerCase();
-
-        if (/^h[1-6]$/.test(tag)) {
-            if (current) sections.push(current);
-            const raw = (el.innerText || '').trim();
-            const numMatch = raw.match(/^([0-9]+(\.[0-9]+)*)/);
-            current = {
-                level: parseInt(tag.slice(1), 10),
-                heading: raw,
-                numbering: numMatch ? numMatch[1] : null,
-                types: new Set(),
-                placeholderCount: 0,
-                domId: el.id || null
-            };
-            continue;
-        }
-
-        const bucket = current || preHeadingContent;
-
-        if (tag === 'table' || el.classList.contains('table-wrap')) {
-            bucket.types.add('table');
-        } else if (tag === 'iframe') {
-            bucket.types.add('diagram-iframe');
-            if (isEmptyShell(el)) bucket.placeholderCount = (bucket.placeholderCount || 0) + 1;
-        } else if (
-            tag === 'img' || tag === 'svg' || tag === 'canvas' ||
-            el.classList.contains('confluence-embedded-image') ||
-            el.classList.contains('image-wrap')
-        ) {
-            bucket.types.add('image');
-        } else if ([...el.classList].some(c => /drawio|gliffy|visio|diagram/i.test(c))) {
-            bucket.types.add('diagram');
-            if (isEmptyShell(el)) bucket.placeholderCount = (bucket.placeholderCount || 0) + 1;
-        } else if (el.classList.contains('macro-placeholder')) {
-            bucket.types.add('unresolved-macro');
-            bucket.placeholderCount = (bucket.placeholderCount || 0) + 1;
-        } else if (el.hasAttribute('data-macro-name')) {
-            const macroName = el.getAttribute('data-macro-name') || '';
-            if (/gliffy|drawio|visio|diagram/i.test(macroName)) {
-                bucket.types.add('diagram');
-            } else {
-                bucket.types.add('macro:' + macroName);
-            }
-        } else if (tag === 'p' || tag === 'ul' || tag === 'ol') {
-            if ((el.innerText || '').trim().length > 0) bucket.types.add('text');
-        }
-    }
-    if (current) sections.push(current);
-
-    // Capture the rendered text belonging to each heading using DOM ranges.
-    sections.forEach((section, index) => {
-        const headingEl = headings[index];
-        const nextHeadingEl = headings[index + 1] || null;
-        if (!headingEl) {
-            section.content = '';
-            return;
-        }
-
-        const range = document.createRange();
-        range.setStartBefore(headingEl);
-        if (nextHeadingEl) range.setEndBefore(nextHeadingEl);
-        else range.setEndAfter(container.lastChild || headingEl);
-
-        const wrapper = document.createElement('div');
-        wrapper.appendChild(range.cloneContents());
-        section.content = (wrapper.innerText || '').trim();
-    });
-
-    return {
-        preHeadingTypes: Array.from(preHeadingContent.types),
-        sections: sections.map(s => ({
-            level: s.level,
-            heading: s.heading,
-            numbering: s.numbering,
-            types: Array.from(s.types),
-            placeholderCount: s.placeholderCount,
-            domId: s.domId,
-            content: s.content || ''
-        }))
-    };
-}
-"""
-
-TYPE_LABELS = {
-    "table": "Table",
-    "image": "Image",
-    "diagram": "Diagram",
-    "diagram-iframe": "Diagram (iframe)",
-    "text": "Text",
-    "unresolved-macro": "Unresolved macro",
-}
-
-MATRIX_SCHEMA_VERSION = 2
-
-async def extract_confluence_section_inventory_async(page, selector):
-    """Run the same rendered-DOM content type detection as confluence_wiki_reader.py."""
-    result = await page.evaluate(SECTION_EXTRACT_JS, selector)
-    rows = []
-    for index, section in enumerate(result.get("sections", []), start=1):
-        types = section.get("types") or []
-        placeholder_count = int(section.get("placeholderCount") or 0)
-        status = "issue" if placeholder_count > 0 else ("empty" if not types else "ok")
-        content = (section.get("content") or "").strip()
-        rows.append({
-            "id": index,
-            "level": section.get("level", 1),
-            "heading": section.get("heading", "").strip(),
-            "numbering": section.get("numbering"),
-            "types": types,
-            "placeholderCount": placeholder_count,
-            "status": status,
-            "domId": section.get("domId"),
-            "content": content,
-        })
-    return rows
-
 # --- Phase 1: Ingestion & Matrix Compiling Endpoint ---
 def get_file_cache_path(filename: str) -> str:
     """Generates an isolated storage filename based on the document name."""
     # Sanitize filename to prevent directory traversal issues
     safe_name = "".join([c for c in filename if c.isalpha() or c.isdigit() or c in ['.', '_', '-']]).strip()
     return f"matrix_cache_{safe_name}.json"
-
-
-def get_wiki_cache_path(page_url: str) -> str:
-    """Returns the Phase-1 cache path used by the Confluence URL workflow."""
-    url_hash = hashlib.sha256(page_url.encode("utf-8")).hexdigest()
-    return f"matrix_cache_wiki_v{MATRIX_SCHEMA_VERSION}_{url_hash[:16]}.json"
 
 
 @app.post("/api/hld/generate-matrix")
@@ -556,7 +405,7 @@ async def generate_verified_matrix(payload: ConfluenceURLRequest):
     """
     # Generate clean cache identifier from URL text structures
     url_hash = hashlib.sha256(payload.page_url.encode("utf-8")).hexdigest()
-    target_cache_path = get_wiki_cache_path(payload.page_url)
+    target_cache_path = f"matrix_cache_wiki_{url_hash[:16]}.json"
 
     if SERVER_CONFIG.enable_persistence and os.path.exists(target_cache_path):
         print(f"[CACHE HIT] Serving pre-existing matrix for wiki URL hash: {url_hash[:16]}")
@@ -589,34 +438,16 @@ async def generate_verified_matrix(payload: ConfluenceURLRequest):
 
             # Determine structural locator node wrapper
             selector = await _find_content_selector_async(page)
-
-            # IMPORTANT: classify the ACTUAL rendered DOM, not inner_text alone.
-            matrix_rows = await extract_confluence_section_inventory_async(page, selector)
-
-            if not matrix_rows:
-                raise HTTPException(status_code=422, detail="No HLD sections were detected in the rendered wiki content.")
-
-            # Add the existing audit-focus classification without changing the
-            # section inventory model used by the UI.
-            matrix_chunks = []
-            for row in matrix_rows:
-                content = row.get("content", "")
-                audit_tags = HLDAuditChunker()._tag_chunk_focus(content)
-                row["audit_tags"] = audit_tags
-                row["metadata"] = {
-                    "parent_section": row["heading"],
-                    "audit_tags": audit_tags,
-                    "types": row["types"],
-                    "status": row["status"],
-                    "level": row["level"],
-                    "numbering": row["numbering"],
-                    "placeholderCount": row["placeholderCount"],
-                    "domId": row["domId"],
-                }
-                # Keep content at the top level so the React inventory can show it.
-                matrix_chunks.append(row)
-
+            raw_text_extracted = await page.inner_text(selector)
+            
             await browser.close()
+
+        if not raw_text_extracted.strip():
+            raise HTTPException(status_code=422, detail="Failed to extract text from target wiki content wrapper.")
+
+        # Pass live document stream into your existing chunker matrix (remains synchronous computational logic)
+        chunker = HLDAuditChunker(target_chunk_size=1000, overlap=150)
+        matrix_chunks = chunker.create_audit_chunks(raw_text_extracted)
 
         if SERVER_CONFIG.enable_persistence:
             with open(target_cache_path, "w", encoding="utf-8") as f:
@@ -642,13 +473,12 @@ def clear_matrix_cache(payload: dict):
     if not filename:
         raise HTTPException(status_code=400, detail="Missing target filename identifier.")
         
-    # Wiki Phase-1 caches are keyed by URL hash; clear the same cache created by generate-matrix.
-    target_cache_path = get_wiki_cache_path(filename)
+    target_cache_path = get_file_cache_path(filename)
     if os.path.exists(target_cache_path):
         os.remove(target_cache_path)
-        print(f"[CACHE RESET] Cleared wiki matrix cache: {target_cache_path}")
-        return {"success": True, "message": "Wiki cache successfully cleared."}
-    return {"success": True, "message": "No wiki cache found for this URL."}
+        print(f"[CACHE RESET] Cleared cached matrix for: {filename}")
+        return {"success": True, "message": "Cache successfully cleared."}
+    return {"success": True, "message": "No cache found for this file."}
 
 @app.post("/api/hld/ingest")
 def ingest_and_segment_hld(payload: HLDIngestionRequest):
@@ -656,11 +486,7 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
     Phase 2: Reads the validated local matrix from disk, filters targets,
     and runs them sequentially through the long-lived Copilot Daemon.
     """
-    document_id = (payload.document_title or "").strip()
-    if document_id.startswith("http://") or document_id.startswith("https://"):
-        target_cache_path = get_wiki_cache_path(document_id)
-    else:
-        target_cache_path = get_file_cache_path(document_id)
+    target_cache_path = get_file_cache_path(payload.document_title)
 
     if not os.path.exists(target_cache_path):
         raise HTTPException(status_code=404, detail="No verification matrix found. Please run Phase-1 first.")
