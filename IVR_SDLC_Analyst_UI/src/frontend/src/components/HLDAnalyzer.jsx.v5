@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import {
     generateHLDMatrix,
     clearHLDMatrixCache,
+    runCopilotHLDAudit,
 } from "../services/api";
 
 const TYPE_LABELS = {
@@ -36,23 +37,6 @@ const REPORT = {
     mono: "SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace",
     sans: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif",
 };
-
-const REVIEW_SCOPE_OPTIONS = [
-    { id: "functional", label: "Functional Completeness", description: "Requirements, business rules and workflows" },
-    { id: "architecture", label: "Architecture", description: "Components, topology, design and data flow" },
-    { id: "security", label: "Security", description: "Authentication, authorization, IAM and data protection" },
-    { id: "vulnerability", label: "Vulnerability", description: "Threats, attack surface and exploitable weaknesses" },
-    { id: "performance", label: "Performance", description: "Latency, throughput, capacity and scalability" },
-    { id: "reliability", label: "Reliability & Availability", description: "Failover, recovery, retries and resilience" },
-    { id: "integration", label: "Integration", description: "APIs, events, Lambda and external interfaces" },
-    { id: "compliance", label: "Compliance", description: "Policies, retention and regulatory controls" },
-    { id: "documentation", label: "Documentation Quality", description: "Completeness, clarity and terminology" },
-    { id: "testability", label: "Testability", description: "Validation, QA, automation and test coverage" },
-    { id: "cost", label: "Cost Optimization", description: "Sizing, consumption, licensing and cost" },
-    { id: "ivr", label: "IVR / Contact Center", description: "Amazon Connect, IVR, queues, prompts and flows" },
-];
-
-const DEFAULT_REVIEW_SCOPES = ["architecture", "security", "integration", "ivr"];
 
 function typeLabel(type = "") {
     return TYPE_LABELS[type] || (String(type).startsWith("macro:") ? String(type).slice(6) : type);
@@ -113,8 +97,6 @@ export default function HLDAnalyzer() {
     const [statusFilter, setStatusFilter] = useState("");
     const [selectedIds, setSelectedIds] = useState(new Set());
     const [expandedId, setExpandedId] = useState(null);
-    const [selectedReviewScopes, setSelectedReviewScopes] = useState(DEFAULT_REVIEW_SCOPES);
-    const [reviewPlan, setReviewPlan] = useState(null);
 
     function handleURLChange(e) {
         setWikiURL(e.target.value);
@@ -127,7 +109,6 @@ export default function HLDAnalyzer() {
         setStatusFilter("");
         setSelectedIds(new Set());
         setExpandedId(null);
-        setReviewPlan(null);
     }
 
     async function triggerPhase1MatrixIngestion() {
@@ -139,7 +120,6 @@ export default function HLDAnalyzer() {
         setAnalysisResult(null);
         setSelectedIds(new Set());
         setExpandedId(null);
-        setReviewPlan(null);
 
         try {
             const data = await generateHLDMatrix(wikiURL.trim());
@@ -164,7 +144,6 @@ export default function HLDAnalyzer() {
             setIsLoadedFromCache(false);
             setSelectedIds(new Set());
             setExpandedId(null);
-            setReviewPlan(null);
             await triggerPhase1MatrixIngestion();
         } catch (err) {
             setError(err.message || "Failed to reset backend cache matrix correctly.");
@@ -172,78 +151,17 @@ export default function HLDAnalyzer() {
         }
     }
 
-    function toggleReviewScope(scopeId) {
-        setSelectedReviewScopes((previous) => {
-            const next = new Set(previous);
-            if (next.has(scopeId)) next.delete(scopeId);
-            else next.add(scopeId);
-            return Array.from(next);
-        });
-        setReviewPlan(null);
-    }
-
-    async function postHLDJson(path, body) {
-        const response = await fetch(path, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-        });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) {
-            throw new Error(data.detail || `Request failed (${response.status})`);
-        }
-        return data;
-    }
-
-    async function buildReviewPlan() {
-        if (!wikiURL.trim()) return;
-        if (selectedReviewScopes.length === 0) {
-            setError("Select at least one review scope before building the review plan.");
-            return;
-        }
-
-        setLoading(true);
-        setError("");
-        setReviewPlan(null);
-        try {
-            const data = await postHLDJson("/api/hld/review-plan", {
-                document_title: wikiURL.trim(),
-                review_scopes: selectedReviewScopes,
-                selected_section_ids: Array.from(selectedIds),
-            });
-            setReviewPlan(data);
-        } catch (err) {
-            setError(err.message || "Failed to build the HLD review plan.");
-        } finally {
-            setLoading(false);
-        }
-    }
-
     async function confirmAndTriggerLLMReview() {
         if (!wikiURL.trim()) return;
-        if (!reviewPlan) {
-            await buildReviewPlan();
-            return;
-        }
-        if (!reviewPlan.eligible_section_ids?.length) {
-            setError("The current review scope and section selection produced no reviewable HLD sections.");
-            return;
-        }
 
         setLoading(true);
         setError("");
 
         try {
-            const data = await postHLDJson("/api/hld/ingest", {
-                document_title: wikiURL.trim(),
-                raw_content: "",
-                project_scope: "IVR Context Validation",
-                review_scopes: selectedReviewScopes,
-                selected_section_ids: reviewPlan.eligible_section_ids,
-            });
+            const data = await runCopilotHLDAudit(wikiURL.trim());
             setAnalysisResult(data.segmented_blueprint);
         } catch (err) {
-            setError(err.message || "Failed running the scoped architectural audit.");
+            setError(err.message || "Failed running architectural audit analysis.");
         } finally {
             setLoading(false);
         }
@@ -313,7 +231,6 @@ export default function HLDAnalyzer() {
             else next.add(id);
             return next;
         });
-        setReviewPlan(null);
     }
 
     function toggleSelectAllVisible() {
@@ -326,7 +243,6 @@ export default function HLDAnalyzer() {
             }
             return next;
         });
-        setReviewPlan(null);
     }
 
     async function copySelectedHeadings() {
@@ -366,14 +282,10 @@ export default function HLDAnalyzer() {
                 padding: 20,
                 fontFamily: REPORT.sans,
                 display: "grid",
-                gridTemplateColumns: "300px minmax(0, 1fr)",
-                gridTemplateRows: "minmax(0, 1fr)",
+                gridTemplateColumns: "280px minmax(0, 1fr)",
                 gap: 18,
                 background: REPORT.bg,
-                height: "calc(100vh - 80px)",
-                minHeight: 0,
-                overflow: "hidden",
-                boxSizing: "border-box",
+                minHeight: "100%",
                 color: REPORT.ink,
             }}
         >
@@ -384,13 +296,9 @@ export default function HLDAnalyzer() {
                     border: `1px solid ${REPORT.line}`,
                     borderRadius: 8,
                     padding: 18,
-                    height: "100%",
-                    minHeight: 0,
-                    overflowY: "auto",
-                    overflowX: "hidden",
-                    alignSelf: "stretch",
-                    position: "relative",
-                    boxSizing: "border-box",
+                    alignSelf: "start",
+                    position: "sticky",
+                    top: 20,
                 }}
             >
                 <div style={{ marginBottom: 18 }}>
@@ -527,82 +435,6 @@ export default function HLDAnalyzer() {
                     </div>
                 )}
 
-                {verificationMatrix && (
-                    <div
-                        style={{
-                            marginTop: 14,
-                            background: "#f6f8fa",
-                            border: `1px solid ${REPORT.line}`,
-                            borderRadius: 6,
-                            padding: 12,
-                        }}
-                    >
-                        <div style={{ fontSize: 12.5, fontWeight: 650, color: REPORT.ink, marginBottom: 4 }}>
-                            Review Scope
-                        </div>
-                        <div style={{ fontSize: 11, color: REPORT.inkSoft, lineHeight: 1.4, marginBottom: 10 }}>
-                            Choose the HLD review lenses. Only matching sections are sent to the AI review stage.
-                        </div>
-
-                        <div style={{ display: "grid", gap: 6, maxHeight: "none", overflow: "visible", paddingRight: 2 }}>
-                            {REVIEW_SCOPE_OPTIONS.map((scope) => {
-                                const checked = selectedReviewScopes.includes(scope.id);
-                                return (
-                                    <label
-                                        key={scope.id}
-                                        title={scope.description}
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "flex-start",
-                                            gap: 8,
-                                            padding: "7px 8px",
-                                            background: checked ? REPORT.accentSoft : REPORT.panel,
-                                            border: `1px solid ${checked ? "#b9cfe3" : REPORT.line}`,
-                                            borderRadius: 5,
-                                            cursor: "pointer",
-                                        }}
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={checked}
-                                            onChange={() => toggleReviewScope(scope.id)}
-                                            style={{ marginTop: 2 }}
-                                        />
-                                        <span>
-                                            <span style={{ display: "block", fontSize: 11.5, fontWeight: 650, color: REPORT.ink }}>
-                                                {scope.label}
-                                            </span>
-                                            <span style={{ display: "block", fontSize: 10.5, color: REPORT.inkSoft, marginTop: 1 }}>
-                                                {scope.description}
-                                            </span>
-                                        </span>
-                                    </label>
-                                );
-                            })}
-                        </div>
-
-                        <button
-                            onClick={buildReviewPlan}
-                            disabled={loading || selectedReviewScopes.length === 0}
-                            style={{
-                                width: "100%",
-                                marginTop: 10,
-                                background: REPORT.accent,
-                                color: "#fff",
-                                padding: "9px 10px",
-                                border: "none",
-                                borderRadius: 5,
-                                fontSize: 12,
-                                fontWeight: 650,
-                                cursor: loading || selectedReviewScopes.length === 0 ? "not-allowed" : "pointer",
-                                opacity: loading || selectedReviewScopes.length === 0 ? 0.6 : 1,
-                            }}
-                        >
-                            {loading ? "Building Review Plan..." : "Build Review Plan"}
-                        </button>
-                    </div>
-                )}
-
                 {error && (
                     <div
                         style={{
@@ -622,7 +454,7 @@ export default function HLDAnalyzer() {
             </aside>
 
             {/* Report viewport */}
-            <main style={{ minWidth: 0, minHeight: 0, height: "100%", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+            <main style={{ minWidth: 0 }}>
                 {loading && (
                     <div
                         style={{
@@ -662,13 +494,8 @@ export default function HLDAnalyzer() {
                 {showReport && (
                     <div
                         style={{
-                            width: "100%",
-                            maxWidth: "none",
-                            height: "100%",
-                            minHeight: 0,
-                            margin: 0,
-                            display: "flex",
-                            flexDirection: "column",
+                            maxWidth: 1080,
+                            margin: "0 auto",
                         }}
                     >
                         <header style={{ marginBottom: 12 }}>
@@ -686,73 +513,6 @@ export default function HLDAnalyzer() {
                                 {wikiURL}
                             </div>
                         </header>
-
-                        {reviewPlan && (
-                            <div
-                                style={{
-                                    background: REPORT.panel,
-                                    border: `1px solid ${REPORT.line}`,
-                                    borderRadius: 8,
-                                    padding: "12px 14px",
-                                    marginBottom: 14,
-                                }}
-                            >
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
-                                    <div>
-                                        <div style={{ fontSize: 13, fontWeight: 650, color: REPORT.ink }}>
-                                            Review Plan
-                                        </div>
-                                        <div style={{ fontSize: 11.5, color: REPORT.inkSoft, marginTop: 3 }}>
-                                            {selectedIds.size > 0
-                                                ? `${selectedIds.size} manually selected section(s), then filtered by the chosen review scopes.`
-                                                : "All sections matching the selected review scopes are included; empty sections are skipped."}
-                                        </div>
-                                    </div>
-                                    <span
-                                        style={{
-                                            padding: "3px 8px",
-                                            borderRadius: 100,
-                                            background: REPORT.accentSoft,
-                                            color: REPORT.accent,
-                                            fontSize: 10.5,
-                                            fontWeight: 650,
-                                            whiteSpace: "nowrap",
-                                        }}
-                                    >
-                                        Planning estimate
-                                    </span>
-                                </div>
-
-                                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
-                                    {[
-                                        ["Sections", reviewPlan.eligible_section_count],
-                                        ["Skipped", reviewPlan.skipped_section_count],
-                                        ["Words", reviewPlan.total_words],
-                                        ["Est. prompt tokens", reviewPlan.estimated_prompt_tokens],
-                                        ["Est. completion tokens", reviewPlan.estimated_completion_tokens],
-                                        ["Est. total tokens", reviewPlan.estimated_total_tokens],
-                                    ].map(([label, value]) => (
-                                        <div
-                                            key={label}
-                                            style={{
-                                                background: "#f6f8fa",
-                                                border: `1px solid ${REPORT.line}`,
-                                                borderRadius: 5,
-                                                padding: "7px 10px",
-                                                minWidth: 100,
-                                            }}
-                                        >
-                                            <div style={{ fontWeight: 650, fontSize: 14, color: REPORT.ink }}>{Number(value).toLocaleString()}</div>
-                                            <div style={{ fontSize: 9.5, color: REPORT.inkSoft, marginTop: 1 }}>{label}</div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div style={{ marginTop: 8, fontSize: 10.5, color: REPORT.inkSoft }}>
-                                    Scopes: {reviewPlan.review_scopes?.map((s) => s.label).join(" · ") || "—"}
-                                </div>
-                            </div>
-                        )}
 
                         {/* Stats exactly in the spirit of render_html_report */}
                         <div
@@ -904,13 +664,9 @@ export default function HLDAnalyzer() {
                                         border: `1px solid ${REPORT.line}`,
                                         borderRadius: 8,
                                         overflow: "hidden",
-                                        minHeight: 0,
-                                        flex: 1,
-                                        display: "flex",
-                                        flexDirection: "column",
                                     }}
                                 >
-                                    <div style={{ overflow: "auto", minHeight: 0, flex: 1 }}>
+                                    <div style={{ overflowX: "auto", maxHeight: "calc(100vh - 265px)" }}>
                                         <table
                                             style={{
                                                 width: "100%",
@@ -1088,7 +844,7 @@ export default function HLDAnalyzer() {
                                     >
                                         <span style={{ fontWeight: 650 }}>{selectedIds.size} selected</span>
                                         <button
-                                            onClick={() => { setSelectedIds(new Set()); setReviewPlan(null); }}
+                                            onClick={() => setSelectedIds(new Set())}
                                             style={{
                                                 background: "transparent",
                                                 color: "#cfd8e0",
@@ -1129,24 +885,7 @@ export default function HLDAnalyzer() {
                                     }}
                                 >
                                     <button
-                                        onClick={buildReviewPlan}
-                                        disabled={loading || selectedReviewScopes.length === 0}
-                                        style={{
-                                            background: REPORT.panel,
-                                            color: REPORT.ink,
-                                            padding: "10px 14px",
-                                            border: `1px solid ${REPORT.line}`,
-                                            borderRadius: 6,
-                                            fontWeight: 650,
-                                            cursor: loading || selectedReviewScopes.length === 0 ? "not-allowed" : "pointer",
-                                            opacity: loading || selectedReviewScopes.length === 0 ? 0.6 : 1,
-                                        }}
-                                    >
-                                        Refresh Review Plan
-                                    </button>
-                                    <button
                                         onClick={confirmAndTriggerLLMReview}
-                                        disabled={loading || !reviewPlan?.eligible_section_ids?.length}
                                         style={{
                                             background: REPORT.ok,
                                             color: "#fff",
@@ -1154,11 +893,10 @@ export default function HLDAnalyzer() {
                                             border: "none",
                                             borderRadius: 6,
                                             fontWeight: 650,
-                                            cursor: loading || !reviewPlan?.eligible_section_ids?.length ? "not-allowed" : "pointer",
-                                            opacity: loading || !reviewPlan?.eligible_section_ids?.length ? 0.6 : 1,
+                                            cursor: "pointer",
                                         }}
                                     >
-                                        Run AI Review →
+                                        Confirm Matrix & Run Copilot Audit →
                                     </button>
                                 </div>
                             </>
@@ -1193,13 +931,8 @@ export default function HLDAnalyzer() {
                                     Architectural Findings
                                 </div>
                                 <div style={{ marginTop: 4, fontSize: 12, color: REPORT.inkSoft }}>
-                                    Findings generated from the scoped Confluence HLD review.
+                                    Findings generated from the verified Confluence HLD matrix.
                                 </div>
-                                {analysisResult.document_metadata && (
-                                    <div style={{ marginTop: 5, fontSize: 11, color: REPORT.accent }}>
-                                        {analysisResult.document_metadata.sections_reviewed ?? 0} sections reviewed · {analysisResult.document_metadata.review_scopes?.join(" · ") || "ALL"}
-                                    </div>
-                                )}
                             </div>
                             <button
                                 onClick={() => setAnalysisResult(null)}

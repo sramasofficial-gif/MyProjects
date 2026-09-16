@@ -366,14 +366,10 @@ export default function HLDAnalyzer() {
                 padding: 20,
                 fontFamily: REPORT.sans,
                 display: "grid",
-                gridTemplateColumns: "300px minmax(0, 1fr)",
-                gridTemplateRows: "minmax(0, 1fr)",
+                gridTemplateColumns: "280px minmax(0, 1fr)",
                 gap: 18,
                 background: REPORT.bg,
-                height: "calc(100vh - 80px)",
-                minHeight: 0,
-                overflow: "hidden",
-                boxSizing: "border-box",
+                minHeight: "100%",
                 color: REPORT.ink,
             }}
         >
@@ -384,13 +380,9 @@ export default function HLDAnalyzer() {
                     border: `1px solid ${REPORT.line}`,
                     borderRadius: 8,
                     padding: 18,
-                    height: "100%",
-                    minHeight: 0,
-                    overflowY: "auto",
-                    overflowX: "hidden",
-                    alignSelf: "stretch",
-                    position: "relative",
-                    boxSizing: "border-box",
+                    alignSelf: "start",
+                    position: "sticky",
+                    top: 20,
                 }}
             >
                 <div style={{ marginBottom: 18 }}>
@@ -544,7 +536,7 @@ export default function HLDAnalyzer() {
                             Choose the HLD review lenses. Only matching sections are sent to the AI review stage.
                         </div>
 
-                        <div style={{ display: "grid", gap: 6, maxHeight: "none", overflow: "visible", paddingRight: 2 }}>
+                        <div style={{ display: "grid", gap: 6, maxHeight: 330, overflowY: "auto", paddingRight: 2 }}>
                             {REVIEW_SCOPE_OPTIONS.map((scope) => {
                                 const checked = selectedReviewScopes.includes(scope.id);
                                 return (
@@ -622,7 +614,7 @@ export default function HLDAnalyzer() {
             </aside>
 
             {/* Report viewport */}
-            <main style={{ minWidth: 0, minHeight: 0, height: "100%", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+            <main style={{ minWidth: 0 }}>
                 {loading && (
                     <div
                         style={{
@@ -662,13 +654,8 @@ export default function HLDAnalyzer() {
                 {showReport && (
                     <div
                         style={{
-                            width: "100%",
-                            maxWidth: "none",
-                            height: "100%",
-                            minHeight: 0,
-                            margin: 0,
-                            display: "flex",
-                            flexDirection: "column",
+                            maxWidth: 1080,
+                            margin: "0 auto",
                         }}
                     >
                         <header style={{ marginBottom: 12 }}>
@@ -904,13 +891,9 @@ export default function HLDAnalyzer() {
                                         border: `1px solid ${REPORT.line}`,
                                         borderRadius: 8,
                                         overflow: "hidden",
-                                        minHeight: 0,
-                                        flex: 1,
-                                        display: "flex",
-                                        flexDirection: "column",
                                     }}
                                 >
-                                    <div style={{ overflow: "auto", minHeight: 0, flex: 1 }}>
+                                    <div style={{ overflowX: "auto", maxHeight: "calc(100vh - 265px)" }}>
                                         <table
                                             style={{
                                                 width: "100%",

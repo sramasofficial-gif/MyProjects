@@ -278,3 +278,32 @@ pip install playwright requests beautifulsoup4
 https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention
 
 python -m uvicorn server:app --port 8000 --loop asyncio
+
+python confluence_wiki_reader.py login
+
+---------------------------------------
+
+Use --reload for developing the HLD/Confluence functionality.
+
+                    Windows + Uvicorn
+                           |
+             +-------------+-------------+
+             |                           |
+        --reload                    no --reload
+             |                           |
+       Selector loop             Proactor loop
+             |                           |
+       ❌ Playwright              ✅ Playwright
+
+
+This creates a genuine tradeoff in your current architecture, but there is a 
+second option
+
+You can retain Uvicorn's --reload and move the Playwright operation into a dedicated worker 
+thread/process that owns a Proactor-compatible event loop. Playwright also notes that 
+its API is not thread-safe and recommends creating a Playwright instance per 
+thread.
+
+That is a more substantial change to your /api/hld/generate-matrix implementation, 
+though, and I would not introduce it yet because your immediate issue can be 
+solved simply by removing --reload.

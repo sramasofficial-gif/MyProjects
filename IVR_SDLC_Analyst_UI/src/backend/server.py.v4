@@ -112,10 +112,8 @@ class ConfluenceURLRequest(BaseModel):
 # 1. Map Schema models for the Wiki extraction payload boundaries
 class HLDIngestionRequest(BaseModel):
     document_title: str
-    raw_content: str = ""
+    raw_content: str
     project_scope: Optional[str] = "IVR Context Validation"
-    review_scopes: list[str] = []
-    selected_section_ids: list[int] = []
 
 class DiagramGenerationRequest(BaseModel):
     file_path: str
@@ -512,78 +510,7 @@ TYPE_LABELS = {
     "unresolved-macro": "Unresolved macro",
 }
 
-MATRIX_SCHEMA_VERSION = 3
-
-# Review scopes used to route HLD sections to an appropriate AI review strategy.
-REVIEW_SCOPE_DEFINITIONS = {
-    "functional": {
-        "label": "Functional Completeness",
-        "types": {"text", "table"},
-        "keywords": ["requirement", "business", "objective", "scope", "use case", "functional", "workflow", "acceptance"],
-    },
-    "architecture": {
-        "label": "Architecture",
-        "types": {"text", "table", "diagram", "diagram-iframe", "image"},
-        "keywords": ["architecture", "solution", "component", "logical", "physical", "deployment", "data flow", "information model", "topology", "design"],
-        "diagram_always": True,
-    },
-    "security": {
-        "label": "Security",
-        "types": {"text", "table", "diagram", "diagram-iframe"},
-        "keywords": ["security", "authentication", "authorization", "iam", "permission", "encryption", "secret", "tls", "rbac", "credential", "pci", "pii", "access control"],
-    },
-    "vulnerability": {
-        "label": "Vulnerability",
-        "types": {"text", "table", "diagram", "diagram-iframe"},
-        "keywords": ["vulnerability", "threat", "attack", "injection", "cve", "penetration", "exploit", "risk"],
-    },
-    "performance": {
-        "label": "Performance",
-        "types": {"text", "table", "diagram", "diagram-iframe"},
-        "keywords": ["performance", "latency", "throughput", "capacity", "load", "concurrency", "response time", "sla", "scalability"],
-    },
-    "reliability": {
-        "label": "Reliability & Availability",
-        "types": {"text", "table", "diagram", "diagram-iframe"},
-        "keywords": ["availability", "resilience", "failover", "retry", "timeout", "disaster recovery", "backup", "recovery", "fault", "redundancy", "high availability"],
-    },
-    "integration": {
-        "label": "Integration",
-        "types": {"text", "table", "diagram", "diagram-iframe"},
-        "keywords": ["integration", "api", "webhook", "lambda", "kinesis", "s3", "dynamodb", "lex", "amazon connect", "endpoint", "interface", "payload", "queue", "event", "middleware"],
-    },
-    "compliance": {
-        "label": "Compliance",
-        "types": {"text", "table"},
-        "keywords": ["compliance", "pci", "gdpr", "hipaa", "retention", "audit", "regulatory", "standard", "policy", "record keeping"],
-    },
-    "documentation": {
-        "label": "Documentation Quality",
-        "types": {"text", "table", "diagram", "diagram-iframe", "image"},
-        "keywords": ["overview", "purpose", "scope", "definition", "glossary", "reference", "document", "appendix", "assumption", "terminology"],
-    },
-    "testability": {
-        "label": "Testability",
-        "types": {"text", "table", "diagram", "diagram-iframe"},
-        "keywords": ["test", "testing", "validation", "qa", "acceptance", "mock", "automation", "test case", "quality"],
-    },
-    "cost": {
-        "label": "Cost Optimization",
-        "types": {"text", "table"},
-        "keywords": ["cost", "pricing", "budget", "finops", "sizing", "resource", "consumption", "license"],
-    },
-    "ivr": {
-        "label": "IVR / Contact Center",
-        "types": {"text", "table", "diagram", "diagram-iframe"},
-        "keywords": ["ivr", "contact flow", "amazon connect", "lambda", "lex", "queue", "caller", "prompt", "dtmf", "transfer", "disconnect", "contact center", "agent"],
-    },
-}
-
-class HLDReviewPlanRequest(BaseModel):
-    document_title: str
-    review_scopes: list[str] = []
-    selected_section_ids: list[int] = []
-
+MATRIX_SCHEMA_VERSION = 2
 
 async def extract_confluence_section_inventory_async(page, selector):
     """Run the same rendered-DOM content type detection as confluence_wiki_reader.py."""
@@ -723,8 +650,13 @@ def clear_matrix_cache(payload: dict):
         return {"success": True, "message": "Wiki cache successfully cleared."}
     return {"success": True, "message": "No wiki cache found for this URL."}
 
-def _load_cached_hld_matrix(document_title: str):
-    document_id = (document_title or "").strip()
+@app.post("/api/hld/ingest")
+def ingest_and_segment_hld(payload: HLDIngestionRequest):
+    """
+    Phase 2: Reads the validated local matrix from disk, filters targets,
+    and runs them sequentially through the long-lived Copilot Daemon.
+    """
+    document_id = (payload.document_title or "").strip()
     if document_id.startswith("http://") or document_id.startswith("https://"):
         target_cache_path = get_wiki_cache_path(document_id)
     else:
@@ -733,121 +665,14 @@ def _load_cached_hld_matrix(document_title: str):
     if not os.path.exists(target_cache_path):
         raise HTTPException(status_code=404, detail="No verification matrix found. Please run Phase-1 first.")
 
-    with open(target_cache_path, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def _section_word_count(chunk: dict) -> int:
-    return len(str(chunk.get("content") or "").split())
-
-
-def _section_matches_scopes(chunk: dict, review_scopes: list[str]) -> bool:
-    if not review_scopes:
-        return True
-
-    metadata = chunk.get("metadata") or {}
-    types = set(metadata.get("types") or chunk.get("types") or [])
-    heading = str(metadata.get("parent_section") or chunk.get("heading") or "").lower()
-    content = str(chunk.get("content") or "").lower()
-
-    for scope in review_scopes:
-        definition = REVIEW_SCOPE_DEFINITIONS.get(scope)
-        if not definition:
-            continue
-        combined = heading + " " + content
-        if definition.get("diagram_always") and types.intersection({"diagram", "diagram-iframe", "image"}):
-            return True
-        if any(keyword in combined for keyword in definition.get("keywords", [])):
-            return True
-    return False
-
-
-@app.get("/api/hld/review-scopes")
-def get_hld_review_scopes():
-    return {
-        "success": True,
-        "scopes": [
-            {"id": key, "label": value["label"]}
-            for key, value in REVIEW_SCOPE_DEFINITIONS.items()
-        ],
-    }
-
-
-@app.post("/api/hld/review-plan")
-def build_hld_review_plan(payload: HLDReviewPlanRequest):
-    matrix_chunks = _load_cached_hld_matrix(payload.document_title)
-    scopes = [s for s in payload.review_scopes if s in REVIEW_SCOPE_DEFINITIONS]
-    selected_ids = {int(x) for x in payload.selected_section_ids}
-
-    eligible = []
-    for chunk in matrix_chunks:
-        section_id = int(chunk.get("id", 0))
-        status = (chunk.get("metadata") or {}).get("status") or chunk.get("status") or "ok"
-
-        if selected_ids and section_id not in selected_ids:
-            continue
-        if status == "empty":
-            continue
-        if not _section_matches_scopes(chunk, scopes):
-            continue
-        eligible.append(chunk)
-
-    total_words = sum(_section_word_count(c) for c in eligible)
-    section_count = len(eligible)
-    estimated_prompt_tokens = int(round(total_words * 1.35 + section_count * (220 + 35 * len(scopes))))
-    estimated_completion_tokens = section_count * max(300, 160 + 70 * max(1, len(scopes)))
-
-    return {
-        "success": True,
-        "document_title": payload.document_title,
-        "review_scopes": [
-            {"id": s, "label": REVIEW_SCOPE_DEFINITIONS[s]["label"]}
-            for s in scopes
-        ],
-        "eligible_section_ids": [int(c.get("id")) for c in eligible],
-        "eligible_section_count": section_count,
-        "skipped_section_count": len(matrix_chunks) - section_count,
-        "total_words": total_words,
-        "estimated_prompt_tokens": estimated_prompt_tokens,
-        "estimated_completion_tokens": estimated_completion_tokens,
-        "estimated_total_tokens": estimated_prompt_tokens + estimated_completion_tokens,
-        "estimate_note": "Planning estimate only. Actual model/SDK usage should be captured during execution.",
-    }
-
-
-@app.post("/api/hld/ingest")
-def ingest_and_segment_hld(payload: HLDIngestionRequest):
-    """
-    Phase 2: Reads the validated local matrix from disk, filters targets,
-    and runs them sequentially through the long-lived Copilot Daemon.
-    """
     print(f"[HLD AUDIT] Loading cached matrix for: {payload.document_title}")
-    matrix_chunks = _load_cached_hld_matrix(payload.document_title)
-
-    review_scopes = [s for s in payload.review_scopes if s in REVIEW_SCOPE_DEFINITIONS]
-    selected_ids = {int(x) for x in payload.selected_section_ids}
-
-    filtered_chunks = []
-    for chunk in matrix_chunks:
-        section_id = int(chunk.get("id", 0))
-        if selected_ids and section_id not in selected_ids:
-            continue
-        if not _section_matches_scopes(chunk, review_scopes):
-            continue
-        if ((chunk.get("metadata") or {}).get("status") or chunk.get("status")) == "empty":
-            continue
-        filtered_chunks.append(chunk)
-
-    matrix_chunks = filtered_chunks
-    print(f"[HLD AUDIT] Review scopes={review_scopes or ['ALL']} sections={len(matrix_chunks)}")
-
+    
+    # 1. Load the locally saved matrix chunks
+    with open(target_cache_path, "r", encoding="utf-8") as f:
+        matrix_chunks = json.load(f)
+        
     aggregated_blueprint = {
-        "document_metadata": {
-            "title": payload.document_title,
-            "segments_found": 0,
-            "review_scopes": review_scopes or ["ALL"],
-            "sections_reviewed": len(matrix_chunks),
-        },
+        "document_metadata": { "title": payload.document_title, "segments_found": 0 },
         "review_required_sections": [],
         "ivr_flow_requirements": []
     }
@@ -869,8 +694,7 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
             script_payload = {
                 "relativePath": f"{payload.document_title} -> {header_context}",
                 "source": chunk["content"],
-                "diagramType": "HLD_SEGMENTATION_MODE",
-                "reviewScopes": review_scopes or ["ALL"],
+                "diagramType": "HLD_SEGMENTATION_MODE"
             }
 
             proc.stdin.write(json.dumps(script_payload) + "\n")
