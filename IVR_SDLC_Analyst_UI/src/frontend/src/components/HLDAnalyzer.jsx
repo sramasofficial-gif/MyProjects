@@ -54,6 +54,10 @@ const REVIEW_SCOPE_OPTIONS = [
 
 const DEFAULT_REVIEW_SCOPES = ["architecture", "security", "integration", "ivr"];
 
+// FastAPI backend base URL. The Vite dev server is running on :5173,
+// while the HLD APIs are served by Uvicorn on :8000.
+const BACKEND_API_BASE = "http://127.0.0.1:8000";
+
 function typeLabel(type = "") {
     return TYPE_LABELS[type] || (String(type).startsWith("macro:") ? String(type).slice(6) : type);
 }
@@ -183,14 +187,16 @@ export default function HLDAnalyzer() {
     }
 
     async function postHLDJson(path, body) {
-        const response = await fetch(path, {
+        const url = path.startsWith("http") ? path : `${BACKEND_API_BASE}${path}`;
+        console.log("[HLD API] POST", url);
+        const response = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body),
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) {
-            throw new Error(data.detail || `Request failed (${response.status})`);
+            throw new Error(data.detail || `Request failed (${response.status}) for ${url}`);
         }
         return data;
     }
@@ -212,6 +218,7 @@ export default function HLDAnalyzer() {
                 selected_section_ids: Array.from(selectedIds),
             });
             setReviewPlan(data);
+            return data;
         } catch (err) {
             setError(err.message || "Failed to build the HLD review plan.");
         } finally {
@@ -221,12 +228,12 @@ export default function HLDAnalyzer() {
 
     async function confirmAndTriggerLLMReview() {
         if (!wikiURL.trim()) return;
-        if (!reviewPlan) {
-            await buildReviewPlan();
+        if (selectedReviewScopes.length === 0) {
+            setError("Select at least one review scope before starting the AI review.");
             return;
         }
-        if (!reviewPlan.eligible_section_ids?.length) {
-            setError("The current review scope and section selection produced no reviewable HLD sections.");
+        if (!verificationMatrix) {
+            setError("Build the HLD section inventory before starting the AI review.");
             return;
         }
 
@@ -234,12 +241,25 @@ export default function HLDAnalyzer() {
         setError("");
 
         try {
+            // Always rebuild the plan at execution time so the AI review uses
+            // the current scope and section selection, never a stale plan.
+            const plan = await postHLDJson("/api/hld/review-plan", {
+                document_title: wikiURL.trim(),
+                review_scopes: selectedReviewScopes,
+                selected_section_ids: Array.from(selectedIds),
+            });
+            setReviewPlan(plan);
+
+            if (!plan.eligible_section_ids?.length) {
+                throw new Error("The current review scope and section selection produced no reviewable HLD sections.");
+            }
+
             const data = await postHLDJson("/api/hld/ingest", {
                 document_title: wikiURL.trim(),
                 raw_content: "",
                 project_scope: "IVR Context Validation",
                 review_scopes: selectedReviewScopes,
-                selected_section_ids: reviewPlan.eligible_section_ids,
+                selected_section_ids: plan.eligible_section_ids,
             });
             setAnalysisResult(data.segmented_blueprint);
         } catch (err) {
@@ -1099,7 +1119,7 @@ export default function HLDAnalyzer() {
                                                 fontWeight: 600,
                                             }}
                                         >
-                                            Clear
+                                            Clear selection
                                         </button>
                                         <button
                                             onClick={copySelectedHeadings}
@@ -1142,23 +1162,23 @@ export default function HLDAnalyzer() {
                                             opacity: loading || selectedReviewScopes.length === 0 ? 0.6 : 1,
                                         }}
                                     >
-                                        Refresh Review Plan
+                                        {loading ? "Building Review Plan..." : "Preview Review Plan"}
                                     </button>
                                     <button
                                         onClick={confirmAndTriggerLLMReview}
-                                        disabled={loading || !reviewPlan?.eligible_section_ids?.length}
+                                        disabled={loading || selectedReviewScopes.length === 0 || !verificationMatrix}
                                         style={{
-                                            background: REPORT.ok,
+                                            background: !loading && selectedReviewScopes.length > 0 && verificationMatrix ? REPORT.ok : "#cbd5e1",
                                             color: "#fff",
                                             padding: "10px 15px",
                                             border: "none",
                                             borderRadius: 6,
                                             fontWeight: 650,
-                                            cursor: loading || !reviewPlan?.eligible_section_ids?.length ? "not-allowed" : "pointer",
-                                            opacity: loading || !reviewPlan?.eligible_section_ids?.length ? 0.6 : 1,
+                                            cursor: loading || selectedReviewScopes.length === 0 || !verificationMatrix ? "not-allowed" : "pointer",
+                                            opacity: loading || selectedReviewScopes.length === 0 || !verificationMatrix ? 0.7 : 1,
                                         }}
                                     >
-                                        Run AI Review →
+                                        {loading ? "Running AI Review..." : "Run AI Review →"}
                                     </button>
                                 </div>
                             </>
