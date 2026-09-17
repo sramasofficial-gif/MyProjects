@@ -733,87 +733,8 @@ async def _download_original_asset_async(request_context, candidates, output_pat
     return False, None, None
 
 
-async def _capture_interactive_viewer_export_async(page, context, element, output_path: Path, section_id: int, visual_idx: int) -> tuple[bool, str | None]:
-    """
-    Try to export an interactive Confluence diagram viewer before falling back to a screenshot.
-
-    Many Confluence diagram macros render an iframe/viewer with a toolbar that exposes an
-    Export/Download/Camera control. We prefer that export because it can preserve the
-    diagram's original resolution instead of capturing the viewer thumbnail.
-
-    Returns (success, method_name).
-    """
-    tag = await element.evaluate("el => el.tagName.toLowerCase()")
-    if tag != "iframe":
-        return False, None
-
-    try:
-        frame = await element.content_frame()
-    except Exception:
-        frame = None
-
-    if frame is None:
-        print(f"[VISUAL EXPORT] Section {section_id} visual {visual_idx}: iframe frame unavailable.")
-        return False, None
-
-    # Prefer explicit export/download controls, then the Camera control shown by many
-    # interactive viewers. We intentionally do not click arbitrary buttons.
-    selectors = [
-        "[aria-label*='export' i]",
-        "[title*='export' i]",
-        "[aria-label*='download' i]",
-        "[title*='download' i]",
-        "[aria-label*='camera' i]",
-        "[title*='camera' i]",
-        "button:has-text('Export')",
-        "button:has-text('Download')",
-    ]
-
-    for selector in selectors:
-        try:
-            controls = frame.locator(selector)
-            count = await controls.count()
-            for idx in range(count):
-                control = controls.nth(idx)
-                try:
-                    if not await control.is_visible():
-                        continue
-
-                    async with page.expect_download(timeout=10000) as download_info:
-                        await control.click(timeout=5000)
-
-                    download = await download_info.value
-                    suggested = download.suggested_filename or f"section_{section_id:03d}_visual_{visual_idx:02d}.png"
-                    print(f"[VISUAL EXPORT] Section {section_id} visual {visual_idx}: viewer export triggered via {selector} ({suggested}).")
-
-                    temp_path = output_path.with_suffix(".viewer_download")
-                    await download.save_as(str(temp_path))
-
-                    try:
-                        from PIL import Image
-                        with Image.open(temp_path) as img:
-                            if img.mode not in ("RGB", "RGBA"):
-                                img = img.convert("RGBA" if "transparency" in img.info else "RGB")
-                            img.save(output_path, format="PNG", optimize=True)
-                    finally:
-                        try:
-                            temp_path.unlink()
-                        except OSError:
-                            pass
-
-                    return True, "interactive-viewer-export"
-                except Exception as click_error:
-                    # Continue trying other controls. A viewer may expose multiple
-                    # toolbar buttons, only one of which actually creates a download.
-                    continue
-        except Exception:
-            continue
-
-    return False, None
-
-
 async def capture_section_visuals_async(page, context, page_hash: str, rows: list[dict]) -> None:
-    """Prefer viewer exports/original Confluence assets; fall back to high-DPI screenshots."""
+    """Prefer original Confluence image assets; fall back to high-DPI rendered screenshots."""
     visual_root = HLD_VISUAL_CACHE_DIR / page_hash
     visual_root.mkdir(parents=True, exist_ok=True)
 
@@ -868,31 +789,6 @@ async def capture_section_visuals_async(page, context, page_hash: str, rows: lis
                 output_dir = visual_root / str(section_id)
                 output_dir.mkdir(parents=True, exist_ok=True)
                 image_path = output_dir / f"visual_{idx + 1:02d}.png"
-
-                # Interactive diagram viewers (commonly iframe-backed) should be exported
-                # through their own toolbar first. This preserves much more detail than
-                # screenshotting the scaled viewer.
-                interactive_exported, export_method = await _capture_interactive_viewer_export_async(
-                    page,
-                    context,
-                    element,
-                    image_path,
-                    section_id,
-                    idx + 1,
-                )
-
-                if interactive_exported:
-                    total_original += 1
-                    evidence.append({
-                        "path": str(image_path.resolve()),
-                        "url": f"/api/hld/visual/{page_hash}/{section_id}/{idx + 1:02d}",
-                        "mimeType": "image/png",
-                        "displayName": f"section_{section_id:03d}_visual_{idx + 1:02d}.png",
-                        "sourceTag": metadata.get("tag"),
-                        "captureMethod": export_method,
-                        "viewerExport": True,
-                    })
-                    continue
 
                 downloaded, source_kind, source_mime = await _download_original_asset_async(
                     context.request,
