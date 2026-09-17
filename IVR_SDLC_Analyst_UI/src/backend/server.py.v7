@@ -1095,16 +1095,6 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
             "review_scopes": review_scopes or ["ALL"],
             "sections_reviewed": len(matrix_chunks),
         },
-        "review_summary": {
-            "overall_status": "PASS",
-            "finding_count": 0,
-            "pass_count": 0,
-            "manual_review_count": 0,
-            "visual_sections_reviewed": 0,
-        },
-        "findings": [],
-        "passed_checks": [],
-        "manual_review": [],
         "review_required_sections": [],
         "ivr_flow_requirements": []
     }
@@ -1112,14 +1102,16 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
     try:
         proc = get_live_copilot_process()
         
-        # 2. Review every section selected by the review plan. The review-plan
-        # endpoint has already filtered empty sections, scope mismatches, and any
-        # explicit section selection. Do not discard a valid section just because
-        # its legacy audit_tags array is empty.
+        # 2. Filter and loop through chunks with identified risks
         for idx, chunk in enumerate(matrix_chunks):
-            metadata = chunk.get("metadata") or {}
-            header_context = metadata.get("parent_section") or chunk.get("heading") or f"Section {chunk.get('id', idx + 1)}"
-            print(f"   ↳ Reviewing section {idx+1}/{len(matrix_chunks)}: [{header_context}]")
+            tags = chunk["metadata"]["audit_tags"]
+            header_context = chunk["metadata"]["parent_section"]
+            
+            # Skip filler pages to optimize tokens
+            if not tags:
+                continue
+                
+            print(f"   ↳ Auditing block {idx+1}/{len(matrix_chunks)}: [{header_context}]")
             
             visual_evidence = chunk.get("visual_evidence") or (chunk.get("metadata") or {}).get("visual_evidence") or []
             visual_scopes = {"architecture", "security", "vulnerability", "integration", "ivr", "documentation", "reliability", "performance"}
@@ -1128,15 +1120,11 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
             # Copilot SDK image attachments use absolute file paths. We pass the
             # attachment metadata to the Node reviewer; it should attach these files
             # to session.send()/sendAndWait() when visual review is enabled.
-            content_types = metadata.get("types") or chunk.get("types") or []
             script_payload = {
                 "relativePath": f"{payload.document_title} -> {header_context}",
-                "source": chunk.get("content", ""),
+                "source": chunk["content"],
                 "diagramType": "HLD_SEGMENTATION_MODE",
                 "reviewScopes": review_scopes or ["ALL"],
-                "contentTypes": content_types,
-                "sectionId": int(chunk.get("id", idx + 1)),
-                "sectionHeading": header_context,
                 "visualReviewRequired": should_attach_visuals,
                 "visualEvidence": visual_evidence if should_attach_visuals else [],
             }
@@ -1149,109 +1137,24 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
                 raise Exception("Copilot background daemon disconnected.")
                 
             response_data = json.loads(stdout_line.strip())
-
-            print(
-                f"[HLD REVIEW DEBUG] Node response keys: "
-                f"{list(response_data.keys())}"
-            )
-
             if not response_data.get("success"):
-                print(
-                    f"[HLD REVIEW ERROR] Node reviewer returned failure: "
-                    f"{response_data.get('error')}"
-                )
                 continue
 
-            raw_payload = response_data.get("mermaid_string")
+            raw_json_str = response_data.get("mermaid_string", "").strip()
+            raw_json_str = re.sub(r'^```(?:json)?\s*', '', raw_json_str, flags=re.IGNORECASE)
+            raw_json_str = re.sub(r'\s*```$', '', raw_json_str).strip()
 
-            print(
-                f"[HLD REVIEW DEBUG] mermaid_string type="
-                f"{type(raw_payload).__name__}"
-            )
-
-            if isinstance(raw_payload, dict):
-                chunk_blueprint = raw_payload
-
-            elif isinstance(raw_payload, str):
-                raw_json_str = raw_payload.strip()
-
-                raw_json_str = re.sub(
-                    r'^```(?:json)?\s*',
-                    '',
-                    raw_json_str,
-                    flags=re.IGNORECASE
-                )
-
-                raw_json_str = re.sub(
-                    r'\s*```$',
-                    '',
-                    raw_json_str
-                ).strip()
-
-                try:
-                    chunk_blueprint = json.loads(raw_json_str)
-                except json.JSONDecodeError as parse_error:
-                    print(
-                        f"[HLD REVIEW ERROR] JSON parse failed for "
-                        f"[{header_context}]: {parse_error}"
-                    )
-                    print(
-                        f"[HLD REVIEW DEBUG] Raw payload preview: "
-                        f"{raw_json_str[:2000]}"
-                    )
-                    continue
-
-            else:
-                print(
-                    f"[HLD REVIEW ERROR] Unexpected mermaid_string type: "
-                    f"{type(raw_payload).__name__}"
-                )
+            try:
+                chunk_blueprint = json.loads(raw_json_str)
+                if "review_required_sections" in chunk_blueprint:
+                    aggregated_blueprint["review_required_sections"].extend(chunk_blueprint["review_required_sections"])
+                if "ivr_flow_requirements" in chunk_blueprint:
+                    aggregated_blueprint["ivr_flow_requirements"].extend(chunk_blueprint["ivr_flow_requirements"])
+            except json.JSONDecodeError:
                 continue
 
-            print(
-                f"[HLD REVIEW DEBUG] Parsed section "
-                f"[{header_context}] -> "
-                f"findings={len(chunk_blueprint.get('findings', []))}, "
-                f"passes={len(chunk_blueprint.get('passed_checks', []))}, "
-                f"manual={len(chunk_blueprint.get('manual_review', []))}"
-            )
-
-            for key in (
-                "findings",
-                "passed_checks",
-                "manual_review",
-                "review_required_sections",
-                "ivr_flow_requirements",
-            ):
-                values = chunk_blueprint.get(key)
-                if isinstance(values, list):
-                    aggregated_blueprint[key].extend(values)
-
-            if should_attach_visuals:
-                aggregated_blueprint["review_summary"]["visual_sections_reviewed"] += 1
-
-        finding_count = len(aggregated_blueprint["findings"])
-        pass_count = len(aggregated_blueprint["passed_checks"])
-        manual_count = len(aggregated_blueprint["manual_review"])
-        overall_status = "FINDINGS" if finding_count else ("MANUAL_REVIEW" if manual_count else "PASS")
-
-        aggregated_blueprint["review_summary"].update({
-            "overall_status": overall_status,
-            "finding_count": finding_count,
-            "pass_count": pass_count,
-            "manual_review_count": manual_count,
-        })
-
-        total_segments = finding_count + pass_count + manual_count
+        total_segments = len(aggregated_blueprint["review_required_sections"]) + len(aggregated_blueprint["ivr_flow_requirements"])
         aggregated_blueprint["document_metadata"]["segments_found"] = total_segments
-
-        print(
-            "[HLD REVIEW FINAL] "
-            f"findings={finding_count}, "
-            f"passed={pass_count}, "
-            f"manual={manual_count}, "
-            f"status={overall_status}"
-        )
 
         return {
             "success": True,

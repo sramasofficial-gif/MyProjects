@@ -1251,6 +1251,8 @@ export default function HLDAnalyzer() {
                         <div
                             style={{
                                 width: "100%",
+                                maxWidth: "none",
+                                margin: 0,
                                 background: REPORT.panel,
                                 border: `1px solid ${REPORT.line}`,
                                 borderRadius: 8,
@@ -1259,200 +1261,134 @@ export default function HLDAnalyzer() {
                             }}
                         >
                             <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "flex-start",
+                                gap: 12,
+                                marginBottom: 16,
+                                paddingBottom: 12,
+                                borderBottom: `1px solid ${REPORT.line}`,
+                            }}
+                        >
+                            <div>
+                                <div style={{ fontSize: 20, fontWeight: 650, color: REPORT.ok }}>
+                                    Architectural Findings
+                                </div>
+                                <div style={{ marginTop: 4, fontSize: 12, color: REPORT.inkSoft }}>
+                                    Findings generated from the scoped Confluence HLD review.
+                                </div>
+                                {analysisResult.document_metadata && (
+                                    <div style={{ marginTop: 5, fontSize: 11, color: REPORT.accent }}>
+                                        {analysisResult.document_metadata.sections_reviewed ?? 0} sections reviewed · {analysisResult.document_metadata.review_scopes?.join(" · ") || "ALL"}
+                                    </div>
+                                )}
+                            </div>
+                            <button
+                                onClick={() => setAnalysisResult(null)}
                                 style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "flex-start",
-                                    gap: 12,
-                                    marginBottom: 16,
-                                    paddingBottom: 12,
-                                    borderBottom: `1px solid ${REPORT.line}`,
+                                    background: REPORT.emptyBg,
+                                    border: `1px solid ${REPORT.line}`,
+                                    color: REPORT.ink,
+                                    padding: "7px 11px",
+                                    borderRadius: 6,
+                                    cursor: "pointer",
+                                    fontSize: 12,
+                                    fontWeight: 650,
                                 }}
                             >
-                                <div>
-                                    <div style={{ fontSize: 22, fontWeight: 700, color: REPORT.accent }}>
-                                        AI HLD Review Results
-                                    </div>
-                                    <div style={{ marginTop: 4, fontSize: 12.5, color: REPORT.inkSoft }}>
-                                        Evidence-based findings, passed checks, and manual-review items from the selected HLD review scopes.
-                                    </div>
-                                    {analysisResult.document_metadata && (
-                                        <div style={{ marginTop: 6, fontSize: 11.5, color: REPORT.accent }}>
-                                            {analysisResult.document_metadata.sections_reviewed ?? 0} sections reviewed · {analysisResult.document_metadata.review_scopes?.join(" · ") || "ALL"}
-                                        </div>
-                                    )}
-                                </div>
-                                <button
-                                    onClick={() => setAnalysisResult(null)}
-                                    style={{
-                                        background: REPORT.emptyBg,
-                                        border: `1px solid ${REPORT.line}`,
-                                        color: REPORT.ink,
-                                        padding: "8px 12px",
-                                        borderRadius: 6,
-                                        cursor: "pointer",
-                                        fontSize: 12,
-                                        fontWeight: 650,
-                                        whiteSpace: "nowrap",
-                                    }}
-                                >
-                                    ← Back to Section Inventory
-                                </button>
-                            </div>
+                                ← Back to Section Inventory
+                            </button>
+                        </div>
 
-                            {(() => {
-                                const findings = Array.isArray(analysisResult.findings) ? analysisResult.findings : [];
-                                const passes = Array.isArray(analysisResult.passed_checks) ? analysisResult.passed_checks : [];
-                                const manual = Array.isArray(analysisResult.manual_review) ? analysisResult.manual_review : [];
-                                const summary = analysisResult.review_summary || {};
-
-                                const severityStyle = (severity) => {
-                                    const value = String(severity || "Informational").toLowerCase();
-                                    if (value === "critical") return { background: "#fee2e2", color: "#b91c1c" };
-                                    if (value === "high") return { background: "#ffedd5", color: "#c2410c" };
-                                    if (value === "medium") return { background: "#fef3c7", color: "#a16207" };
-                                    if (value === "low") return { background: "#e0f2fe", color: "#0369a1" };
-                                    return { background: REPORT.emptyBg, color: REPORT.inkSoft };
-                                };
-
-                                const status = summary.overall_status || (findings.length ? "FINDINGS" : manual.length ? "MANUAL_REVIEW" : "PASS");
-                                const statusStyle = status === "FINDINGS"
-                                    ? { background: "#fff7ed", color: "#c2410c" }
-                                    : status === "MANUAL_REVIEW"
-                                        ? { background: "#fef3c7", color: "#a16207" }
-                                        : { background: REPORT.okBg, color: REPORT.ok };
-
-                                return (
-                                    <>
+                        <div style={{ display: "grid", gap: 16 }}>
+                            <section>
+                                <h4 style={{ color: REPORT.accent, margin: "0 0 10px" }}>
+                                    Code Review Target Sections
+                                </h4>
+                                {analysisResult.review_required_sections?.length > 0 ? (
+                                    analysisResult.review_required_sections.map((sec, idx) => (
                                         <div
+                                            key={idx}
                                             style={{
-                                                display: "grid",
-                                                gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-                                                gap: 10,
-                                                marginBottom: 18,
+                                                border: `1px solid ${REPORT.line}`,
+                                                padding: 12,
+                                                borderRadius: 6,
+                                                marginBottom: 8,
+                                                background: REPORT.panel,
                                             }}
                                         >
-                                            {[
-                                                ["Status", status.replace("_", " "), statusStyle],
-                                                ["Findings", findings.length, findings.length ? { background: "#fff7ed", color: "#c2410c" } : { background: REPORT.okBg, color: REPORT.ok }],
-                                                ["Passed checks", passes.length, { background: REPORT.okBg, color: REPORT.ok }],
-                                                ["Manual review", manual.length, manual.length ? { background: "#fef3c7", color: "#a16207" } : { background: REPORT.emptyBg, color: REPORT.inkSoft }],
-                                            ].map(([label, value, style]) => (
-                                                <div
-                                                    key={label}
-                                                    style={{
-                                                        border: `1px solid ${REPORT.line}`,
-                                                        borderRadius: 6,
-                                                        padding: "10px 12px",
-                                                        background: REPORT.panel,
-                                                    }}
-                                                >
-                                                    <div style={{ fontSize: 18, fontWeight: 700, color: style.color }}>{value}</div>
-                                                    <div style={{ marginTop: 2, fontSize: 11.5, color: REPORT.inkSoft }}>{label}</div>
-                                                </div>
-                                            ))}
+                                            <strong style={{ display: "block", color: REPORT.ink, fontSize: 13 }}>
+                                                {sec.section_title}
+                                            </strong>
+                                            <p style={{ margin: "4px 0", color: REPORT.inkSoft, fontSize: 12.5 }}>
+                                                {sec.context_summary}
+                                            </p>
+                                            <pre
+                                                style={{
+                                                    margin: "6px 0 0",
+                                                    background: "#f6f8fa",
+                                                    padding: 8,
+                                                    fontSize: 11.5,
+                                                    whiteSpace: "pre-wrap",
+                                                    border: `1px solid ${REPORT.line}`,
+                                                    borderRadius: 4,
+                                                    fontFamily: REPORT.mono,
+                                                }}
+                                            >
+                                                {sec.raw_text_content}
+                                            </pre>
                                         </div>
+                                    ))
+                                ) : (
+                                    <div style={{ color: REPORT.empty, fontSize: 12.5, fontStyle: "italic" }}>
+                                        No critical text alignment violations flags raised.
+                                    </div>
+                                )}
+                            </section>
 
-                                        <section>
-                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                                                <h4 style={{ margin: 0, color: REPORT.accent, fontSize: 18 }}>Review Findings</h4>
-                                                <span
-                                                    style={{
-                                                        display: "inline-flex",
-                                                        alignItems: "center",
-                                                        padding: "4px 9px",
-                                                        borderRadius: 100,
-                                                        fontSize: 11.5,
-                                                        fontWeight: 650,
-                                                        ...statusStyle,
-                                                    }}
-                                                >
-                                                    {status.replace("_", " ")}
-                                                </span>
+                            <section>
+                                <h4 style={{ color: REPORT.ok, margin: "4px 0 10px" }}>
+                                    IVR Flow Requirements Profiles
+                                </h4>
+                                {analysisResult.ivr_flow_requirements?.length > 0 ? (
+                                    analysisResult.ivr_flow_requirements.map((flow, idx) => (
+                                        <div
+                                            key={idx}
+                                            style={{
+                                                border: `1px solid ${REPORT.line}`,
+                                                padding: 12,
+                                                borderRadius: 6,
+                                                marginBottom: 8,
+                                                background: REPORT.panel,
+                                            }}
+                                        >
+                                            <strong style={{ display: "block", color: REPORT.ink, fontSize: 13 }}>
+                                                {flow.flow_name}
+                                            </strong>
+                                            <div style={{ margin: "4px 0", color: REPORT.inkSoft, fontSize: 12 }}>
+                                                <strong>Trigger Parameter:</strong> {flow.trigger_condition}
                                             </div>
-
-                                            {findings.length > 0 ? findings.map((finding, idx) => {
-                                                const sev = severityStyle(finding.severity);
-                                                return (
-                                                    <article
-                                                        key={finding.finding_id || idx}
-                                                        style={{
-                                                            border: `1px solid ${REPORT.line}`,
-                                                            borderLeft: `4px solid ${sev.color}`,
-                                                            borderRadius: 7,
-                                                            padding: 14,
-                                                            marginBottom: 10,
-                                                            background: REPORT.panel,
-                                                        }}
-                                                    >
-                                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
-                                                            <div>
-                                                                <div style={{ fontSize: 13.5, fontWeight: 700, color: REPORT.ink }}>
-                                                                    {finding.finding_id ? `${finding.finding_id} · ` : ""}{finding.title || "Review finding"}
-                                                                </div>
-                                                                <div style={{ marginTop: 3, fontSize: 11.5, color: REPORT.accent }}>
-                                                                    {finding.scope || "General"}{finding.category ? ` · ${finding.category}` : ""}
-                                                                </div>
-                                                            </div>
-                                                            <span style={{ background: sev.background, color: sev.color, padding: "3px 9px", borderRadius: 100, fontSize: 11.5, fontWeight: 700, whiteSpace: "nowrap" }}>
-                                                                {finding.severity || "Informational"}
-                                                            </span>
-                                                        </div>
-
-                                                        <div style={{ marginTop: 10, fontSize: 12.5, lineHeight: 1.55, color: REPORT.ink }}>
-                                                            <strong>Finding:</strong> {finding.finding || ""}
-                                                        </div>
-
-                                                        {finding.evidence && (
-                                                            <div style={{ marginTop: 9, background: "#f6f8fa", border: `1px solid ${REPORT.line}`, borderRadius: 5, padding: 9 }}>
-                                                                <div style={{ fontSize: 11.5, fontWeight: 700, color: REPORT.inkSoft, marginBottom: 4 }}>Evidence</div>
-                                                                {finding.evidence.text && <div style={{ fontSize: 11.5, color: REPORT.inkSoft }}><strong>Text:</strong> {finding.evidence.text}</div>}
-                                                                {finding.evidence.visual_observation && <div style={{ marginTop: 4, fontSize: 11.5, color: REPORT.inkSoft }}><strong>Visual:</strong> {finding.evidence.visual_observation}</div>}
-                                                            </div>
-                                                        )}
-
-                                                        {finding.impact && <div style={{ marginTop: 9, fontSize: 12, color: REPORT.inkSoft }}><strong>Impact:</strong> {finding.impact}</div>}
-                                                        {finding.recommendation && <div style={{ marginTop: 6, fontSize: 12, color: REPORT.inkSoft }}><strong>Recommendation:</strong> {finding.recommendation}</div>}
-                                                        <div style={{ marginTop: 8, fontSize: 10.5, color: REPORT.empty }}>
-                                                            Confidence: {typeof finding.confidence === "number" ? finding.confidence.toFixed(2) : "—"} · Visual reviewed: {finding.visual_reviewed ? "Yes" : "No"}
-                                                        </div>
-                                                    </article>
-                                                );
-                                            }) : (
-                                                <div style={{ padding: 16, border: `1px solid ${REPORT.line}`, borderRadius: 6, background: REPORT.okBg, color: REPORT.ok, fontSize: 12.5 }}>
-                                                    No evidence-supported findings were identified for the selected review scopes.
+                                            {flow.intended_steps?.length > 0 ? (
+                                                <ul style={{ margin: "6px 0 0", paddingLeft: 18, fontSize: 12.5, color: REPORT.ink }}>
+                                                    {flow.intended_steps.map((step, sIdx) => (
+                                                        <li key={sIdx} style={{ marginBottom: 2 }}>{step}</li>
+                                                    ))}
+                                                </ul>
+                                            ) : (
+                                                <div style={{ color: REPORT.empty, fontSize: 11.5, fontStyle: "italic" }}>
+                                                    No operational instruction sub-steps defined for this route.
                                                 </div>
                                             )}
-                                        </section>
-
-                                        <section style={{ marginTop: 20 }}>
-                                            <h4 style={{ margin: "0 0 10px", color: REPORT.ok, fontSize: 18 }}>Passed Checks</h4>
-                                            {passes.length > 0 ? passes.map((check, idx) => (
-                                                <div key={idx} style={{ border: `1px solid ${REPORT.line}`, borderRadius: 6, padding: 11, marginBottom: 7, background: REPORT.panel }}>
-                                                    <div style={{ fontSize: 12.5, fontWeight: 700, color: REPORT.ink }}>{check.scope || "General"}{check.category ? ` · ${check.category}` : ""}</div>
-                                                    <div style={{ marginTop: 3, fontSize: 12, color: REPORT.inkSoft }}><strong>Check:</strong> {check.check || ""}</div>
-                                                    {check.evidence && <div style={{ marginTop: 3, fontSize: 11.5, color: REPORT.inkSoft }}><strong>Evidence:</strong> {check.evidence}</div>}
-                                                </div>
-                                            )) : (
-                                                <div style={{ color: REPORT.empty, fontSize: 12.5, fontStyle: "italic" }}>No positive checks were returned.</div>
-                                            )}
-                                        </section>
-
-                                        <section style={{ marginTop: 20 }}>
-                                            <h4 style={{ margin: "0 0 10px", color: REPORT.yellow, fontSize: 18 }}>Manual Review Required</h4>
-                                            {manual.length > 0 ? manual.map((item, idx) => (
-                                                <div key={idx} style={{ border: `1px solid ${REPORT.line}`, borderRadius: 6, padding: 11, marginBottom: 7, background: "#fffbeb" }}>
-                                                    <div style={{ fontSize: 12.5, fontWeight: 700, color: REPORT.ink }}>{item.scope || "General"}</div>
-                                                    <div style={{ marginTop: 3, fontSize: 12, color: REPORT.inkSoft }}><strong>Reason:</strong> {item.reason || ""}</div>
-                                                    {item.required_action && <div style={{ marginTop: 3, fontSize: 11.5, color: REPORT.inkSoft }}><strong>Required action:</strong> {item.required_action}</div>}
-                                                </div>
-                                            )) : (
-                                                <div style={{ color: REPORT.empty, fontSize: 12.5, fontStyle: "italic" }}>No manual validation items were identified.</div>
-                                            )}
-                                        </section>
-                                    </>
-                                );
-                            })()}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div style={{ color: REPORT.empty, fontSize: 12.5, fontStyle: "italic" }}>
+                                        No functional routing branches documented here.
+                                    </div>
+                                )}
+                            </section>
+                        </div>
                         </div>
                     </div>
                 )}
