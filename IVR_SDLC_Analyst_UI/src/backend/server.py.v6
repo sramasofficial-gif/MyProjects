@@ -435,40 +435,6 @@ SECTION_EXTRACT_JS = r"""
         return false;
     };
 
-    const extractAssetCandidates = (el) => {
-        const candidates = [];
-        const add = (value, kind) => {
-            if (!value) return;
-            const raw = String(value).trim();
-            if (!raw || raw.startsWith('data:') || raw.startsWith('blob:')) return;
-            try {
-                const absolute = new URL(raw, window.location.href).href;
-                if (!candidates.some(c => c.url === absolute)) {
-                    candidates.push({ url: absolute, kind });
-                }
-            } catch (_) {}
-        };
-
-        ['src', 'data-src', 'data-image-src', 'data-full-src', 'data-original', 'data-original-src'].forEach(attr => {
-            add(el.getAttribute(attr), attr);
-        });
-
-        const srcset = el.getAttribute('srcset');
-        if (srcset) {
-            srcset.split(',').forEach(part => {
-                const url = part.trim().split(/\s+/)[0];
-                add(url, 'srcset');
-            });
-        }
-
-        const parentLink = el.closest('a[href]');
-        if (parentLink) {
-            add(parentLink.getAttribute('href'), 'parent-link');
-        }
-
-        return candidates;
-    };
-
     let sectionIndex = 0;
 
     for (const el of relevant) {
@@ -530,9 +496,7 @@ SECTION_EXTRACT_JS = r"""
                 domId: el.id || null,
                 className: typeof el.className === 'string' ? el.className : '',
                 alt: el.getAttribute('alt') || null,
-                title: el.getAttribute('title') || null,
-                assetCandidates: extractAssetCandidates(el),
-                iframeSrc: tag === 'iframe' ? (el.getAttribute('src') || null) : null
+                title: el.getAttribute('title') || null
             });
         }
     }
@@ -683,71 +647,18 @@ def _safe_section_file_name(section_id: int) -> str:
     return f"section_{section_id:03d}.png"
 
 
-async def _download_original_asset_async(request_context, candidates, output_path: Path) -> tuple[bool, str | None, str | None]:
-    """Try authenticated browser-context downloads for original raster image assets."""
-    for candidate in candidates or []:
-        url = candidate.get("url") if isinstance(candidate, dict) else None
-        kind = candidate.get("kind") if isinstance(candidate, dict) else "unknown"
-        if not url or not url.startswith(("http://", "https://")):
-            continue
-        try:
-            response = await request_context.get(url, timeout=15000)
-            if not response.ok:
-                continue
-
-            content_type = (response.headers.get("content-type") or "").lower().split(";", 1)[0].strip()
-            # Prefer raster assets that can be normalized to PNG for consistent UI/vision input.
-            if content_type not in {"image/png", "image/jpeg", "image/jpg", "image/webp", "image/gif"}:
-                continue
-
-            body = await response.body()
-            if len(body) < 100:
-                continue
-
-            temp_path = output_path.with_suffix(".download")
-            temp_path.write_bytes(body)
-
-            try:
-                from PIL import Image
-                with Image.open(temp_path) as img:
-                    # Flatten animation/transparency safely into a standard RGB/RGBA PNG.
-                    if img.mode not in ("RGB", "RGBA"):
-                        img = img.convert("RGBA" if "transparency" in img.info else "RGB")
-                    img.save(output_path, format="PNG", optimize=True)
-            finally:
-                try:
-                    temp_path.unlink()
-                except OSError:
-                    pass
-
-            return True, kind, content_type
-        except Exception:
-            try:
-                temp_path = output_path.with_suffix(".download")
-                if temp_path.exists():
-                    temp_path.unlink()
-            except OSError:
-                pass
-            continue
-
-    return False, None, None
-
-
-async def capture_section_visuals_async(page, context, page_hash: str, rows: list[dict]) -> None:
-    """Prefer original Confluence image assets; fall back to high-DPI rendered screenshots."""
+async def capture_section_visuals_async(page, page_hash: str, rows: list[dict]) -> None:
+    """Capture actual rendered image/diagram pixels for sections that contain visual content."""
     visual_root = HLD_VISUAL_CACHE_DIR / page_hash
     visual_root.mkdir(parents=True, exist_ok=True)
 
     visual_selector = '[data-hld-section-visual]'
-    total_original = 0
-    total_screenshot = 0
+    total_captured = 0
 
     for row in rows:
         types = set(row.get("types") or [])
         if not types.intersection({"image", "diagram", "diagram-iframe"}):
             row["visual_evidence"] = []
-            row["visual_review_available"] = False
-            row["visual_review_analyzed"] = False
             continue
 
         section_id = int(row["id"])
@@ -758,78 +669,25 @@ async def capture_section_visuals_async(page, context, page_hash: str, rows: lis
         for idx in range(count):
             element = locator.nth(idx)
             try:
-                metadata = await element.evaluate("""el => ({
-                    tag: el.tagName.toLowerCase(),
-                    alt: el.getAttribute('alt'),
-                    title: el.getAttribute('title'),
-                    candidates: (el._hldAssetCandidates || []),
-                    rect: (() => { const r = el.getBoundingClientRect(); return {width: r.width, height: r.height}; })()
-                })""")
-
-                # Recompute candidates from the live DOM so wrapper links/data-* values are available.
-                candidates = await element.evaluate("""el => {
-                    const out = [];
-                    const add = (value, kind) => {
-                        if (!value) return;
-                        const raw = String(value).trim();
-                        if (!raw || raw.startsWith('data:') || raw.startsWith('blob:')) return;
-                        try {
-                            const absolute = new URL(raw, window.location.href).href;
-                            if (!out.some(c => c.url === absolute)) out.push({url: absolute, kind});
-                        } catch (_) {}
-                    };
-                    ['src','data-src','data-image-src','data-full-src','data-original','data-original-src'].forEach(a => add(el.getAttribute(a), a));
-                    const srcset = el.getAttribute('srcset');
-                    if (srcset) srcset.split(',').forEach(part => add(part.trim().split(/\\s+/)[0], 'srcset'));
-                    const a = el.closest('a[href]');
-                    if (a) add(a.getAttribute('href'), 'parent-link');
-                    return out;
-                }""")
+                await element.scroll_into_view_if_needed(timeout=5000)
+                await page.wait_for_timeout(250)
+                box = await element.bounding_box()
+                if not box or box["width"] < 4 or box["height"] < 4:
+                    continue
 
                 output_dir = visual_root / str(section_id)
                 output_dir.mkdir(parents=True, exist_ok=True)
                 image_path = output_dir / f"visual_{idx + 1:02d}.png"
-
-                downloaded, source_kind, source_mime = await _download_original_asset_async(
-                    context.request,
-                    candidates,
-                    image_path,
-                )
-
-                if downloaded:
-                    total_original += 1
-                    evidence.append({
-                        "path": str(image_path.resolve()),
-                        "url": f"/api/hld/visual/{page_hash}/{section_id}/{idx + 1:02d}",
-                        "mimeType": "image/png",
-                        "displayName": f"section_{section_id:03d}_visual_{idx + 1:02d}.png",
-                        "sourceTag": metadata.get("tag"),
-                        "captureMethod": "original-asset",
-                        "originalSourceKind": source_kind,
-                        "originalMimeType": source_mime,
-                    })
-                    print(f"[VISUAL CAPTURE] Section {section_id} visual {idx + 1}: original asset downloaded ({source_kind}, {source_mime}) and normalized to PNG.")
-                    continue
-
-                # Fallback: capture the actual rendered element at device scale factor 2.
-                await element.scroll_into_view_if_needed(timeout=3000)
-                await page.wait_for_timeout(150)
-                box = await element.bounding_box()
-                if not box or box["width"] < 4 or box["height"] < 4:
-                    print(f"[VISUAL CAPTURE] Section {section_id} visual {idx + 1} skipped: element has no usable bounding box.")
-                    continue
-
                 await element.screenshot(path=str(image_path), type="png")
-                total_screenshot += 1
+
                 evidence.append({
                     "path": str(image_path.resolve()),
                     "url": f"/api/hld/visual/{page_hash}/{section_id}/{idx + 1:02d}",
                     "mimeType": "image/png",
                     "displayName": f"section_{section_id:03d}_visual_{idx + 1:02d}.png",
-                    "sourceTag": metadata.get("tag"),
-                    "captureMethod": "rendered-screenshot",
+                    "sourceTag": await element.evaluate("el => el.tagName.toLowerCase()"),
                 })
-                print(f"[VISUAL CAPTURE] Section {section_id} visual {idx + 1}: original unavailable; rendered screenshot captured.")
+                total_captured += 1
             except Exception as exc:
                 print(f"[VISUAL CAPTURE] Section {section_id} visual {idx + 1} skipped: {exc}")
 
@@ -837,11 +695,7 @@ async def capture_section_visuals_async(page, context, page_hash: str, rows: lis
         row["visual_review_available"] = bool(evidence)
         row["visual_review_analyzed"] = False
 
-    print(
-        f"[VISUAL CAPTURE] Original assets: {total_original}; "
-        f"rendered screenshot fallbacks: {total_screenshot}; "
-        f"total visual evidence assets: {total_original + total_screenshot} across {len(rows)} sections."
-    )
+    print(f"[VISUAL CAPTURE] Captured {total_captured} rendered image/diagram asset(s) across {len(rows)} sections.")
 
 # --- Phase 1: Ingestion & Matrix Compiling Endpoint ---
 def get_file_cache_path(filename: str) -> str:
@@ -888,11 +742,7 @@ async def generate_verified_matrix(payload: ConfluenceURLRequest):
         # 🟢 FIX: Initialize and orchestrate via async context managers and explicit keyword awaits
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
-            context = await browser.new_context(
-                storage_state=AUTH_STATE_FILE,
-                viewport={"width": 1920, "height": 1200},
-                device_scale_factor=2,
-            )
+            context = await browser.new_context(storage_state=AUTH_STATE_FILE)
             page = await context.new_page()
 
             await page.goto(payload.page_url)
@@ -908,7 +758,7 @@ async def generate_verified_matrix(payload: ConfluenceURLRequest):
 
             # Capture the actual rendered pixels for image/diagram sections. These files
             # become optional visual evidence for the later Copilot vision review.
-            await capture_section_visuals_async(page, context, url_hash[:16], matrix_rows)
+            await capture_section_visuals_async(page, url_hash[:16], matrix_rows)
 
             if not matrix_rows:
                 raise HTTPException(status_code=422, detail="No HLD sections were detected in the rendered wiki content.")

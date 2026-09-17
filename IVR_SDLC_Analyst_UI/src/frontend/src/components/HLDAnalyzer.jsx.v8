@@ -1238,29 +1238,15 @@ export default function HLDAnalyzer() {
                 {analysisResult && !loading && (
                     <div
                         style={{
-                            flex: 1,
-                            minHeight: 0,
-                            height: "100%",
-                            overflowY: "auto",
-                            overflowX: "hidden",
-                            paddingRight: 6,
-                            paddingBottom: 20,
-                            scrollbarGutter: "stable",
+                            maxWidth: 1080,
+                            margin: "0 auto",
+                            background: REPORT.panel,
+                            border: `1px solid ${REPORT.line}`,
+                            borderRadius: 8,
+                            padding: 20,
                         }}
                     >
                         <div
-                            style={{
-                                width: "100%",
-                                maxWidth: "none",
-                                margin: 0,
-                                background: REPORT.panel,
-                                border: `1px solid ${REPORT.line}`,
-                                borderRadius: 8,
-                                padding: 20,
-                                boxSizing: "border-box",
-                            }}
-                        >
-                            <div
                             style={{
                                 display: "flex",
                                 justifyContent: "space-between",
@@ -1388,7 +1374,6 @@ export default function HLDAnalyzer() {
                                     </div>
                                 )}
                             </section>
-                        </div>
                         </div>
                     </div>
                 )}

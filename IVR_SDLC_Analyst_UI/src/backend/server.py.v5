@@ -19,7 +19,6 @@ from pydantic import BaseModel
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
-from fastapi.responses import FileResponse
 
 from services.repo_tools import read_file  # Import your existing file reader
 
@@ -420,76 +419,21 @@ SECTION_EXTRACT_JS = r"""
         return txt.length === 0 && !hasMedia;
     };
 
-    const isVisualElement = (el) => {
-        const tag = el.tagName.toLowerCase();
-        const directMedia = tag === 'img' || tag === 'svg' || tag === 'canvas' || tag === 'iframe';
-        const embeddedImage = el.classList.contains('confluence-embedded-image') || el.classList.contains('image-wrap');
-        const diagramContainer = [...el.classList].some(c => /drawio|gliffy|visio|diagram/i.test(c));
-
-        // Capture the actual rendered media element when possible. If a diagram is
-        // represented only by a wrapper/container, capture that wrapper instead.
-        if (directMedia || embeddedImage) return true;
-        if (diagramContainer) {
-            return !el.querySelector('img,svg,canvas,iframe');
-        }
-        return false;
-    };
-
-    const extractAssetCandidates = (el) => {
-        const candidates = [];
-        const add = (value, kind) => {
-            if (!value) return;
-            const raw = String(value).trim();
-            if (!raw || raw.startsWith('data:') || raw.startsWith('blob:')) return;
-            try {
-                const absolute = new URL(raw, window.location.href).href;
-                if (!candidates.some(c => c.url === absolute)) {
-                    candidates.push({ url: absolute, kind });
-                }
-            } catch (_) {}
-        };
-
-        ['src', 'data-src', 'data-image-src', 'data-full-src', 'data-original', 'data-original-src'].forEach(attr => {
-            add(el.getAttribute(attr), attr);
-        });
-
-        const srcset = el.getAttribute('srcset');
-        if (srcset) {
-            srcset.split(',').forEach(part => {
-                const url = part.trim().split(/\s+/)[0];
-                add(url, 'srcset');
-            });
-        }
-
-        const parentLink = el.closest('a[href]');
-        if (parentLink) {
-            add(parentLink.getAttribute('href'), 'parent-link');
-        }
-
-        return candidates;
-    };
-
-    let sectionIndex = 0;
-
     for (const el of relevant) {
         const tag = el.tagName.toLowerCase();
 
         if (/^h[1-6]$/.test(tag)) {
             if (current) sections.push(current);
-            sectionIndex += 1;
             const raw = (el.innerText || '').trim();
             const numMatch = raw.match(/^([0-9]+(\.[0-9]+)*)/);
             current = {
-                index: sectionIndex,
                 level: parseInt(tag.slice(1), 10),
                 heading: raw,
                 numbering: numMatch ? numMatch[1] : null,
                 types: new Set(),
                 placeholderCount: 0,
-                domId: el.id || null,
-                visualElements: []
+                domId: el.id || null
             };
-            el.setAttribute('data-hld-section-heading-index', String(sectionIndex));
             continue;
         }
 
@@ -522,22 +466,10 @@ SECTION_EXTRACT_JS = r"""
         } else if (tag === 'p' || tag === 'ul' || tag === 'ol') {
             if ((el.innerText || '').trim().length > 0) bucket.types.add('text');
         }
-
-        if (current && isVisualElement(el)) {
-            el.setAttribute('data-hld-section-visual', String(current.index));
-            current.visualElements.push({
-                tag,
-                domId: el.id || null,
-                className: typeof el.className === 'string' ? el.className : '',
-                alt: el.getAttribute('alt') || null,
-                title: el.getAttribute('title') || null,
-                assetCandidates: extractAssetCandidates(el),
-                iframeSrc: tag === 'iframe' ? (el.getAttribute('src') || null) : null
-            });
-        }
     }
     if (current) sections.push(current);
 
+    // Capture the rendered text belonging to each heading using DOM ranges.
     sections.forEach((section, index) => {
         const headingEl = headings[index];
         const nextHeadingEl = headings[index + 1] || null;
@@ -565,8 +497,7 @@ SECTION_EXTRACT_JS = r"""
             types: Array.from(s.types),
             placeholderCount: s.placeholderCount,
             domId: s.domId,
-            content: s.content || '',
-            visualElements: s.visualElements || []
+            content: s.content || ''
         }))
     };
 }
@@ -581,8 +512,7 @@ TYPE_LABELS = {
     "unresolved-macro": "Unresolved macro",
 }
 
-MATRIX_SCHEMA_VERSION = 4
-HLD_VISUAL_CACHE_DIR = Path(__file__).resolve().parent / "hld_visual_cache"
+MATRIX_SCHEMA_VERSION = 3
 
 # Review scopes used to route HLD sections to an appropriate AI review strategy.
 REVIEW_SCOPE_DEFINITIONS = {
@@ -656,7 +586,7 @@ class HLDReviewPlanRequest(BaseModel):
 
 
 async def extract_confluence_section_inventory_async(page, selector):
-    """Run the rendered-DOM content type detection and record visual elements per section."""
+    """Run the same rendered-DOM content type detection as confluence_wiki_reader.py."""
     result = await page.evaluate(SECTION_EXTRACT_JS, selector)
     rows = []
     for index, section in enumerate(result.get("sections", []), start=1):
@@ -674,174 +604,8 @@ async def extract_confluence_section_inventory_async(page, selector):
             "status": status,
             "domId": section.get("domId"),
             "content": content,
-            "visualElements": section.get("visualElements") or [],
         })
     return rows
-
-
-def _safe_section_file_name(section_id: int) -> str:
-    return f"section_{section_id:03d}.png"
-
-
-async def _download_original_asset_async(request_context, candidates, output_path: Path) -> tuple[bool, str | None, str | None]:
-    """Try authenticated browser-context downloads for original raster image assets."""
-    for candidate in candidates or []:
-        url = candidate.get("url") if isinstance(candidate, dict) else None
-        kind = candidate.get("kind") if isinstance(candidate, dict) else "unknown"
-        if not url or not url.startswith(("http://", "https://")):
-            continue
-        try:
-            response = await request_context.get(url, timeout=15000)
-            if not response.ok:
-                continue
-
-            content_type = (response.headers.get("content-type") or "").lower().split(";", 1)[0].strip()
-            # Prefer raster assets that can be normalized to PNG for consistent UI/vision input.
-            if content_type not in {"image/png", "image/jpeg", "image/jpg", "image/webp", "image/gif"}:
-                continue
-
-            body = await response.body()
-            if len(body) < 100:
-                continue
-
-            temp_path = output_path.with_suffix(".download")
-            temp_path.write_bytes(body)
-
-            try:
-                from PIL import Image
-                with Image.open(temp_path) as img:
-                    # Flatten animation/transparency safely into a standard RGB/RGBA PNG.
-                    if img.mode not in ("RGB", "RGBA"):
-                        img = img.convert("RGBA" if "transparency" in img.info else "RGB")
-                    img.save(output_path, format="PNG", optimize=True)
-            finally:
-                try:
-                    temp_path.unlink()
-                except OSError:
-                    pass
-
-            return True, kind, content_type
-        except Exception:
-            try:
-                temp_path = output_path.with_suffix(".download")
-                if temp_path.exists():
-                    temp_path.unlink()
-            except OSError:
-                pass
-            continue
-
-    return False, None, None
-
-
-async def capture_section_visuals_async(page, context, page_hash: str, rows: list[dict]) -> None:
-    """Prefer original Confluence image assets; fall back to high-DPI rendered screenshots."""
-    visual_root = HLD_VISUAL_CACHE_DIR / page_hash
-    visual_root.mkdir(parents=True, exist_ok=True)
-
-    visual_selector = '[data-hld-section-visual]'
-    total_original = 0
-    total_screenshot = 0
-
-    for row in rows:
-        types = set(row.get("types") or [])
-        if not types.intersection({"image", "diagram", "diagram-iframe"}):
-            row["visual_evidence"] = []
-            row["visual_review_available"] = False
-            row["visual_review_analyzed"] = False
-            continue
-
-        section_id = int(row["id"])
-        locator = page.locator(f'{visual_selector}[data-hld-section-visual="{section_id}"]')
-        count = await locator.count()
-        evidence = []
-
-        for idx in range(count):
-            element = locator.nth(idx)
-            try:
-                metadata = await element.evaluate("""el => ({
-                    tag: el.tagName.toLowerCase(),
-                    alt: el.getAttribute('alt'),
-                    title: el.getAttribute('title'),
-                    candidates: (el._hldAssetCandidates || []),
-                    rect: (() => { const r = el.getBoundingClientRect(); return {width: r.width, height: r.height}; })()
-                })""")
-
-                # Recompute candidates from the live DOM so wrapper links/data-* values are available.
-                candidates = await element.evaluate("""el => {
-                    const out = [];
-                    const add = (value, kind) => {
-                        if (!value) return;
-                        const raw = String(value).trim();
-                        if (!raw || raw.startsWith('data:') || raw.startsWith('blob:')) return;
-                        try {
-                            const absolute = new URL(raw, window.location.href).href;
-                            if (!out.some(c => c.url === absolute)) out.push({url: absolute, kind});
-                        } catch (_) {}
-                    };
-                    ['src','data-src','data-image-src','data-full-src','data-original','data-original-src'].forEach(a => add(el.getAttribute(a), a));
-                    const srcset = el.getAttribute('srcset');
-                    if (srcset) srcset.split(',').forEach(part => add(part.trim().split(/\\s+/)[0], 'srcset'));
-                    const a = el.closest('a[href]');
-                    if (a) add(a.getAttribute('href'), 'parent-link');
-                    return out;
-                }""")
-
-                output_dir = visual_root / str(section_id)
-                output_dir.mkdir(parents=True, exist_ok=True)
-                image_path = output_dir / f"visual_{idx + 1:02d}.png"
-
-                downloaded, source_kind, source_mime = await _download_original_asset_async(
-                    context.request,
-                    candidates,
-                    image_path,
-                )
-
-                if downloaded:
-                    total_original += 1
-                    evidence.append({
-                        "path": str(image_path.resolve()),
-                        "url": f"/api/hld/visual/{page_hash}/{section_id}/{idx + 1:02d}",
-                        "mimeType": "image/png",
-                        "displayName": f"section_{section_id:03d}_visual_{idx + 1:02d}.png",
-                        "sourceTag": metadata.get("tag"),
-                        "captureMethod": "original-asset",
-                        "originalSourceKind": source_kind,
-                        "originalMimeType": source_mime,
-                    })
-                    print(f"[VISUAL CAPTURE] Section {section_id} visual {idx + 1}: original asset downloaded ({source_kind}, {source_mime}) and normalized to PNG.")
-                    continue
-
-                # Fallback: capture the actual rendered element at device scale factor 2.
-                await element.scroll_into_view_if_needed(timeout=3000)
-                await page.wait_for_timeout(150)
-                box = await element.bounding_box()
-                if not box or box["width"] < 4 or box["height"] < 4:
-                    print(f"[VISUAL CAPTURE] Section {section_id} visual {idx + 1} skipped: element has no usable bounding box.")
-                    continue
-
-                await element.screenshot(path=str(image_path), type="png")
-                total_screenshot += 1
-                evidence.append({
-                    "path": str(image_path.resolve()),
-                    "url": f"/api/hld/visual/{page_hash}/{section_id}/{idx + 1:02d}",
-                    "mimeType": "image/png",
-                    "displayName": f"section_{section_id:03d}_visual_{idx + 1:02d}.png",
-                    "sourceTag": metadata.get("tag"),
-                    "captureMethod": "rendered-screenshot",
-                })
-                print(f"[VISUAL CAPTURE] Section {section_id} visual {idx + 1}: original unavailable; rendered screenshot captured.")
-            except Exception as exc:
-                print(f"[VISUAL CAPTURE] Section {section_id} visual {idx + 1} skipped: {exc}")
-
-        row["visual_evidence"] = evidence
-        row["visual_review_available"] = bool(evidence)
-        row["visual_review_analyzed"] = False
-
-    print(
-        f"[VISUAL CAPTURE] Original assets: {total_original}; "
-        f"rendered screenshot fallbacks: {total_screenshot}; "
-        f"total visual evidence assets: {total_original + total_screenshot} across {len(rows)} sections."
-    )
 
 # --- Phase 1: Ingestion & Matrix Compiling Endpoint ---
 def get_file_cache_path(filename: str) -> str:
@@ -888,11 +652,7 @@ async def generate_verified_matrix(payload: ConfluenceURLRequest):
         # 🟢 FIX: Initialize and orchestrate via async context managers and explicit keyword awaits
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
-            context = await browser.new_context(
-                storage_state=AUTH_STATE_FILE,
-                viewport={"width": 1920, "height": 1200},
-                device_scale_factor=2,
-            )
+            context = await browser.new_context(storage_state=AUTH_STATE_FILE)
             page = await context.new_page()
 
             await page.goto(payload.page_url)
@@ -905,10 +665,6 @@ async def generate_verified_matrix(payload: ConfluenceURLRequest):
 
             # IMPORTANT: classify the ACTUAL rendered DOM, not inner_text alone.
             matrix_rows = await extract_confluence_section_inventory_async(page, selector)
-
-            # Capture the actual rendered pixels for image/diagram sections. These files
-            # become optional visual evidence for the later Copilot vision review.
-            await capture_section_visuals_async(page, context, url_hash[:16], matrix_rows)
 
             if not matrix_rows:
                 raise HTTPException(status_code=422, detail="No HLD sections were detected in the rendered wiki content.")
@@ -929,9 +685,6 @@ async def generate_verified_matrix(payload: ConfluenceURLRequest):
                     "numbering": row["numbering"],
                     "placeholderCount": row["placeholderCount"],
                     "domId": row["domId"],
-                    "visual_evidence": row.get("visual_evidence", []),
-                    "visual_review_available": row.get("visual_review_available", False),
-                    "visual_review_analyzed": row.get("visual_review_analyzed", False),
                 }
                 # Keep content at the top level so the React inventory can show it.
                 matrix_chunks.append(row)
@@ -1113,20 +866,11 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
                 
             print(f"   ↳ Auditing block {idx+1}/{len(matrix_chunks)}: [{header_context}]")
             
-            visual_evidence = chunk.get("visual_evidence") or (chunk.get("metadata") or {}).get("visual_evidence") or []
-            visual_scopes = {"architecture", "security", "vulnerability", "integration", "ivr", "documentation", "reliability", "performance"}
-            should_attach_visuals = bool(visual_evidence) and bool(set(review_scopes).intersection(visual_scopes))
-
-            # Copilot SDK image attachments use absolute file paths. We pass the
-            # attachment metadata to the Node reviewer; it should attach these files
-            # to session.send()/sendAndWait() when visual review is enabled.
             script_payload = {
                 "relativePath": f"{payload.document_title} -> {header_context}",
                 "source": chunk["content"],
                 "diagramType": "HLD_SEGMENTATION_MODE",
                 "reviewScopes": review_scopes or ["ALL"],
-                "visualReviewRequired": should_attach_visuals,
-                "visualEvidence": visual_evidence if should_attach_visuals else [],
             }
 
             proc.stdin.write(json.dumps(script_payload) + "\n")
@@ -1164,20 +908,6 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.get("/api/hld/visual/{page_hash}/{section_id}/{visual_name}")
-def get_hld_visual(page_hash: str, section_id: int, visual_name: str):
-    """Serve a captured rendered Confluence image/diagram for UI inspection."""
-    if not re.fullmatch(r"[0-9a-f]{16}", page_hash):
-        raise HTTPException(status_code=400, detail="Invalid HLD page hash.")
-    if not re.fullmatch(r"visual_[0-9]{2}", visual_name):
-        raise HTTPException(status_code=400, detail="Invalid visual identifier.")
-
-    path = HLD_VISUAL_CACHE_DIR / page_hash / str(section_id) / f"{visual_name}.png"
-    if not path.exists():
-        raise HTTPException(status_code=404, detail="Visual evidence not found. Re-scrape the HLD page.")
-    return FileResponse(path, media_type="image/png", filename=path.name)
 
     
 @app.get("/api/repo/tree")

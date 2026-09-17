@@ -1,7 +1,5 @@
 import process from "node:process";
 import readline from "node:readline";
-import fs from "node:fs";
-import path from "node:path";
 import { CopilotClient, RuntimeConnection } from "@github/copilot-sdk";
 
 async function main() {
@@ -97,49 +95,8 @@ async function main() {
                     specificPrompt = `Generate a high-quality, professional-grade ${request.diagramType} layout string mapping the initialized file code parameters cleanly using strict Mermaid syntax guidelines. Check node tags and bracket strings to prevent compilation errors. Output raw syntax ONLY.`;
                 }
 
-                // 3. Dispatch prompt to the current live active chat session thread.
-                //    HLD visual evidence is attached here so the Copilot model can
-                //    inspect the actual rendered image/diagram instead of only the
-                //    flattened OCR/text representation. GitHub Copilot SDK expects
-                //    absolute file paths for file attachments.
-                const attachments = [];
-
-                if (request.diagramType === "HLD_SEGMENTATION_MODE" && Array.isArray(request.visualEvidence)) {
-                    for (const evidence of request.visualEvidence) {
-                        const evidencePath = typeof evidence === "string"
-                            ? evidence
-                            : evidence?.path;
-
-                        if (!evidencePath || !path.isAbsolute(evidencePath)) {
-                            process.stderr.write(
-                                `[VISUAL REVIEW] Ignoring non-absolute visual evidence path: ${String(evidencePath)}\n`
-                            );
-                            continue;
-                        }
-
-                        if (!fs.existsSync(evidencePath)) {
-                            process.stderr.write(
-                                `[VISUAL REVIEW] Visual evidence file not found: ${evidencePath}\n`
-                            );
-                            continue;
-                        }
-
-                        attachments.push({
-                            type: "file",
-                            path: evidencePath,
-                            displayName: evidence?.displayName || path.basename(evidencePath)
-                        });
-                    }
-                }
-
-                if (attachments.length > 0) {
-                    specificPrompt += `\n\nVISUAL REVIEW INSTRUCTION:\nThe attached image file(s) are the actual rendered visual evidence for this HLD section. Inspect the visual content itself (components, boundaries, arrows, connectors, labels, relationships, and architectural groupings) and use it together with the supplied text context. Do not assume that the flattened OCR text preserves visual relationships.`;
-                }
-
-                const response = await session.sendAndWait({
-                    prompt: specificPrompt,
-                    ...(attachments.length > 0 ? { attachments } : {})
-                });
+                // 3. Dispatch prompt to the current live active chat session thread
+                const response = await session.sendAndWait({ prompt: specificPrompt });
                 
                 let rawText = "";
                 if (typeof response === "string") { rawText = response; }

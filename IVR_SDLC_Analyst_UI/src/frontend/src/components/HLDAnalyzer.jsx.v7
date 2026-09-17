@@ -290,11 +290,6 @@ export default function HLDAnalyzer() {
                     status,
                     placeholderCount: Number(metadata.placeholderCount || chunk?.placeholderCount || 0),
                     auditTags: Array.isArray(metadata.audit_tags) ? metadata.audit_tags : (Array.isArray(chunk?.audit_tags) ? chunk.audit_tags : []),
-                    visualEvidence: Array.isArray(chunk?.visual_evidence)
-                        ? chunk.visual_evidence
-                        : (Array.isArray(metadata.visual_evidence) ? metadata.visual_evidence : []),
-                    visualReviewAvailable: Boolean(chunk?.visual_review_available || metadata.visual_review_available),
-                    visualReviewAnalyzed: Boolean(chunk?.visual_review_analyzed || metadata.visual_review_analyzed),
                     wordCount: String(chunk?.content || "").trim()
                         ? String(chunk.content).trim().split(/\s+/).length
                         : 0,
@@ -320,15 +315,10 @@ export default function HLDAnalyzer() {
             const status = r?.metadata?.status || r?.status || (r?.metadata?.placeholderCount ? "issue" : (types.length ? "ok" : "empty"));
             return status === "issue";
         }).length;
-        const withVisualEvidence = rows.filter((r) => {
-            const evidence = r?.visual_evidence || r?.metadata?.visual_evidence || [];
-            return Array.isArray(evidence) && evidence.length > 0;
-        }).length;
         return {
             total: rows.length,
             withTables,
             withDiagrams,
-            withVisualEvidence,
             issues,
         };
     }, [verificationMatrix]);
@@ -1055,21 +1045,6 @@ export default function HLDAnalyzer() {
                                                                                 None detected
                                                                             </span>
                                                                         )}
-                                                                        {row.visualReviewAvailable && (
-                                                                            <span
-                                                                                style={{
-                                                                                    display: "inline-block",
-                                                                                    fontSize: 10,
-                                                                                    fontWeight: 700,
-                                                                                    padding: "3px 7px",
-                                                                                    borderRadius: 100,
-                                                                                    background: REPORT.greenBg,
-                                                                                    color: REPORT.green,
-                                                                                }}
-                                                                            >
-                                                                                VISUAL CAPTURED
-                                                                            </span>
-                                                                        )}
                                                                     </div>
                                                                 </td>
                                                                 <td style={{ padding: "10px 12px", borderBottom: `1px solid ${REPORT.line}`, verticalAlign: "top" }}>
@@ -1086,30 +1061,6 @@ export default function HLDAnalyzer() {
                                                                             background: row.status === "issue" ? "#fcf4eb" : "#fafbfc",
                                                                         }}
                                                                     >
-                                                                        {row.visualEvidence.length > 0 && (
-                                                                            <div style={{ marginBottom: 12 }}>
-                                                                                <div style={{ fontSize: 12, fontWeight: 700, color: REPORT.ink, marginBottom: 8 }}>
-                                                                                    Visual evidence captured ({row.visualEvidence.length})
-                                                                                </div>
-                                                                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 10 }}>
-                                                                                    {row.visualEvidence.map((visual, visualIndex) => (
-                                                                                        <div key={visualIndex} style={{ border: `1px solid ${REPORT.line}`, borderRadius: 6, padding: 8, background: REPORT.panel }}>
-                                                                                            <img
-                                                                                                src={`${BACKEND_API_BASE}${visual.url}`}
-                                                                                                alt={visual.displayName || `Section ${row.id} visual ${visualIndex + 1}`}
-                                                                                                style={{ display: "block", width: "100%", maxHeight: 360, objectFit: "contain", background: "#f6f8fa", borderRadius: 4 }}
-                                                                                            />
-                                                                                            <div style={{ fontSize: 10.5, color: REPORT.inkSoft, marginTop: 6, wordBreak: "break-all" }}>
-                                                                                                {visual.displayName || `Visual ${visualIndex + 1}`}
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    ))}
-                                                                                </div>
-                                                                            </div>
-                                                                        )}
-                                                                        <div style={{ fontSize: 11, color: REPORT.inkSoft, marginBottom: 6 }}>
-                                                                            {row.visualReviewAnalyzed ? "Visual evidence reviewed by AI" : row.visualReviewAvailable ? "Visual evidence captured; AI visual review pending" : "No visual evidence captured"}
-                                                                        </div>
                                                                         <pre
                                                                             style={{
                                                                                 margin: 0,
@@ -1238,29 +1189,15 @@ export default function HLDAnalyzer() {
                 {analysisResult && !loading && (
                     <div
                         style={{
-                            flex: 1,
-                            minHeight: 0,
-                            height: "100%",
-                            overflowY: "auto",
-                            overflowX: "hidden",
-                            paddingRight: 6,
-                            paddingBottom: 20,
-                            scrollbarGutter: "stable",
+                            maxWidth: 1080,
+                            margin: "0 auto",
+                            background: REPORT.panel,
+                            border: `1px solid ${REPORT.line}`,
+                            borderRadius: 8,
+                            padding: 20,
                         }}
                     >
                         <div
-                            style={{
-                                width: "100%",
-                                maxWidth: "none",
-                                margin: 0,
-                                background: REPORT.panel,
-                                border: `1px solid ${REPORT.line}`,
-                                borderRadius: 8,
-                                padding: 20,
-                                boxSizing: "border-box",
-                            }}
-                        >
-                            <div
                             style={{
                                 display: "flex",
                                 justifyContent: "space-between",
@@ -1388,7 +1325,6 @@ export default function HLDAnalyzer() {
                                     </div>
                                 )}
                             </section>
-                        </div>
                         </div>
                     </div>
                 )}
