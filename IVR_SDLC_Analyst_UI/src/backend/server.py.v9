@@ -581,13 +581,8 @@ TYPE_LABELS = {
     "unresolved-macro": "Unresolved macro",
 }
 
-MATRIX_SCHEMA_VERSION = 5
+MATRIX_SCHEMA_VERSION = 4
 HLD_VISUAL_CACHE_DIR = Path(__file__).resolve().parent / "hld_visual_cache"
-
-# Lazy OCR reader used only on the small top strip of exported interactive diagrams.
-# It is intentionally initialized on first use so normal HLD scraping does not pay
-# the OCR startup cost.
-_HEADING_OCR_READER = None
 
 # Review scopes used to route HLD sections to an appropriate AI review strategy.
 REVIEW_SCOPE_DEFINITIONS = {
@@ -817,118 +812,6 @@ async def _capture_interactive_viewer_export_async(page, context, element, outpu
     return False, None
 
 
-
-def _normalize_heading_text(value: str) -> str:
-    value = re.sub(r"[^a-z0-9]+", " ", (value or "").lower())
-    return re.sub(r"\s+", " ", value).strip()
-
-
-def _heading_similarity(expected: str, observed: str) -> float:
-    """Token-overlap similarity used to avoid deleting unrelated text from diagrams."""
-    expected_tokens = set(_normalize_heading_text(expected).split())
-    observed_tokens = set(_normalize_heading_text(observed).split())
-    if not expected_tokens or not observed_tokens:
-        return 0.0
-    return len(expected_tokens.intersection(observed_tokens)) / len(expected_tokens)
-
-
-def _find_matching_heading_band_with_ocr(image_path: Path, section_heading: str) -> tuple[int | None, float, str]:
-    """
-    OCR only the upper strip and find the section heading if the exported viewer
-    duplicated it as a title/header above the actual diagram.
-
-    The match threshold is deliberately high. If OCR is unavailable, inconclusive,
-    or the match is weak, no pixels are removed.
-    """
-    global _HEADING_OCR_READER
-
-    if not section_heading or len(_normalize_heading_text(section_heading)) < 5:
-        return None, 0.0, "no-section-heading"
-
-    try:
-        from PIL import Image
-
-        with Image.open(image_path) as img:
-            rgb = img.convert("RGB")
-            width, height = rgb.size
-            top_h = max(80, min(int(height * 0.20), 500))
-            top_strip = rgb.crop((0, 0, width, top_h))
-
-            # Convert to a temporary in-memory image file so EasyOCR can consume it.
-            temp_ocr = image_path.with_suffix(".heading_ocr.png")
-            top_strip.save(temp_ocr, format="PNG", optimize=True)
-
-        try:
-            if _HEADING_OCR_READER is None:
-                try:
-                    import easyocr
-                    _HEADING_OCR_READER = easyocr.Reader(["en"], gpu=False, verbose=False)
-                except Exception:
-                    _HEADING_OCR_READER = False
-
-            if _HEADING_OCR_READER is False:
-                return None, 0.0, "easyocr-unavailable"
-
-            detections = _HEADING_OCR_READER.readtext(str(temp_ocr), detail=1, paragraph=False)
-            expected = _normalize_heading_text(section_heading)
-            best = (None, 0.0, "no-match")
-
-            for bbox, observed, confidence in detections:
-                if confidence < 0.45:
-                    continue
-                score = _heading_similarity(expected, observed)
-                if score > best[1]:
-                    # bbox is four points: top-left, top-right, bottom-right, bottom-left.
-                    top_y = min(point[1] for point in bbox)
-                    bottom_y = max(point[1] for point in bbox)
-                    best = (int(bottom_y), score, str(observed))
-
-            crop_y, score, observed = best
-            if crop_y is None or score < 0.80:
-                return None, score, f"heading-match-too-weak:{score:.2f}:{observed}"
-
-            # Do not crop deep into the image. This is strictly a title/header cleanup.
-            if crop_y > min(140, top_h // 2):
-                return None, score, f"heading-band-too-tall:{crop_y}px"
-
-            return crop_y, score, f"heading-match:{observed}"
-        finally:
-            try:
-                temp_ocr.unlink()
-            except OSError:
-                pass
-
-    except Exception as exc:
-        return None, 0.0, f"ocr-error:{exc}"
-
-
-def _remove_exported_section_heading(image_path: Path, section_heading: str) -> tuple[bool, int | None, str]:
-    """
-    Remove only a confidently OCR-matched top title band from an interactive viewer export.
-
-    The original export is expected to be preserved separately by the caller. This helper
-    changes the working PNG only when the recognized top text strongly matches the HLD
-    section heading.
-    """
-    crop_y, score, reason = _find_matching_heading_band_with_ocr(image_path, section_heading)
-    if crop_y is None:
-        return False, None, reason
-
-    try:
-        from PIL import Image
-        with Image.open(image_path) as img:
-            width, height = img.size
-            # Add a small margin below the title so antialiased descenders do not remain.
-            crop_y = min(height - 1, crop_y + 8)
-            if crop_y < 18:
-                return False, None, f"crop-too-small:{crop_y}"
-            cleaned = img.crop((0, crop_y, width, height))
-            cleaned.save(image_path, format="PNG", optimize=True)
-        return True, crop_y, f"removed-heading-score:{score:.2f}"
-    except Exception as exc:
-        return False, None, f"crop-error:{exc}"
-
-
 async def capture_section_visuals_async(page, context, page_hash: str, rows: list[dict]) -> None:
     """Prefer viewer exports/original Confluence assets; fall back to high-DPI screenshots."""
     visual_root = HLD_VISUAL_CACHE_DIR / page_hash
@@ -1008,9 +891,6 @@ async def capture_section_visuals_async(page, context, page_hash: str, rows: lis
                         "sourceTag": metadata.get("tag"),
                         "captureMethod": export_method,
                         "viewerExport": True,
-                        "cleanedHeading": bool(changed),
-                        "headingCropY": crop_y,
-                        "rawExportPath": str(raw_export_path.resolve()) if raw_export_path else None,
                     })
                     continue
 

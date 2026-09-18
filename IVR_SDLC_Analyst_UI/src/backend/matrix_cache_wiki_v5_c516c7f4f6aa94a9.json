@@ -1,0 +1,3106 @@
+[
+  {
+    "id": 1,
+    "level": 1,
+    "heading": "Language Selection\nPre Menu\nPreMenu Challenger\nAccount Status\nAccount LookUp\nActivate Card - Pre Menu\nAccount Summary Info\nMain Menu\nActivate Card - Main Menu\nTransactions\nCredit Limit\nRewards\nLost n Stolen\nDOB Module\nPIN Validation\nSet PIN Module\nChange PIN Flow\nPhone Number Module\nLegends\nRules\nSelf-Service\nFraud ANI\nChange Existing PIN Module\nStep Up Module\nAuthentication\nPre Menu Corporate\nMain Menu Corporate\nService\nDirect Transfer\nPost Call Survey\nIn-Queue Callback\nPre-Queue Callback\nVoiceMail\nQueue Config\nCNX_DID-Collect_Flow\nVIP OOP Call Flow\nPre Menu SMB\nMain Menu SMB\nSelectQueue Module\nCustomer Queue",
+    "numbering": null,
+    "types": [
+      "macro:toc",
+      "text",
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-1true",
+    "content": "2Language Selection3Pre Menu4PreMenu Challenger5Account Status6Account LookUp7Activate Card - Pre Menu8Account Summary Info9Main Menu10Activate Card - Main Menu11Transactions12Credit Limit13Rewards14Lost n Stolen15DOB Module16PIN Validation17Set PIN Module18Change PIN Flow19Phone Number Module20Legends21Rules22Self-Service23Fraud ANI24Change Existing PIN Module25Step Up Module26Authentication27Pre Menu Corporate28Main Menu Corporate29Service30Direct Transfer31Post Call Survey32In-Queue Callback33Pre-Queue Callback34VoiceMail35Queue Config36CNX_DID-Collect_Flow37VIP OOP Call Flow38Pre Menu SMB39Main Menu SMB40SelectQueue Module41Customer Queue\n\tIVR Flow all\n\tIVR Flows",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-861366831",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\1\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/1/01",
+        "mimeType": "image/png",
+        "displayName": "section_001_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "SECURITY"
+    ],
+    "metadata": {
+      "parent_section": "Language Selection\nPre Menu\nPreMenu Challenger\nAccount Status\nAccount LookUp\nActivate Card - Pre Menu\nAccount Summary Info\nMain Menu\nActivate Card - Main Menu\nTransactions\nCredit Limit\nRewards\nLost n Stolen\nDOB Module\nPIN Validation\nSet PIN Module\nChange PIN Flow\nPhone Number Module\nLegends\nRules\nSelf-Service\nFraud ANI\nChange Existing PIN Module\nStep Up Module\nAuthentication\nPre Menu Corporate\nMain Menu Corporate\nService\nDirect Transfer\nPost Call Survey\nIn-Queue Callback\nPre-Queue Callback\nVoiceMail\nQueue Config\nCNX_DID-Collect_Flow\nVIP OOP Call Flow\nPre Menu SMB\nMain Menu SMB\nSelectQueue Module\nCustomer Queue",
+      "audit_tags": [
+        "SECURITY"
+      ],
+      "types": [
+        "macro:toc",
+        "text",
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-1true",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\1\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/1/01",
+          "mimeType": "image/png",
+          "displayName": "section_001_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 2,
+    "level": 1,
+    "heading": "Language Selection",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-LanguageSelection",
+    "content": "Language Selection\n\tLanguage Selection\n\tArea CodeMerci d'avoir appel\u00e9 la Banque Rogers.For English, please, press 1.Thank you for calling Rogers Bank. pour passer en francais, appuyez sur1\u00a0QuebecElseInputInputset Language = Frenchset Language = EnglishcheckFraudANIisFraudCSRqueueName\u00a0=\u00a0FraudgetSSMParamsTrueFalseAdvisory EnabledPlay Advisory MessageAdvisory DisconnectEnd CallTrueTruePreMenubyPassAuthCSRTrueFalseFalseFalseQuebec Area Codes:263, 354, 367, 418, 438, 450,\u00a0468, 514, 579, 581, 819 and 873.StartPressed 1Pressed 1ElseElseLanguage Selection",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-752634707",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\2\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/2/01",
+        "mimeType": "image/png",
+        "displayName": "section_002_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "SECURITY"
+    ],
+    "metadata": {
+      "parent_section": "Language Selection",
+      "audit_tags": [
+        "SECURITY"
+      ],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-LanguageSelection",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\2\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/2/01",
+          "mimeType": "image/png",
+          "displayName": "section_002_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 3,
+    "level": 1,
+    "heading": "Pre Menu",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-PreMenu",
+    "content": "Pre Menu\n\tPre Menu\n\tRCI\u00a0CSRCHTR\u00a0CSRCSR\u00a0FIDONewAccounts\u00a0CSROk, connecting you with a customer service\u00a0representative.\u00a0To access your account, Press 1.To change your PIN, check the status of an application, or report your card lost stolen, Press 2.For help with mobile services from Rogers, Chatr, or FIDO, press 3.To speak with a customer service representative, Press 0.To repeat these options, press pound.Press *\u00a0Press 2Press 1\u00a0Press 3\u00a0\u00a0Press 2\u00a0Press *For Rogers mobile services, press 1.For Chatr Services, press 2.For FIDO services, press 3.To return to the previous menu, press *(star).\u00a0Press 2Press 0\u00a0\u00a0Press 1InputPRE MENUstart\u00a0Press 3\u00a0Press 3To change your PIN, press 1.To check the status of an application, press 2.To report your card lost stolen, press 3.To return to the previous menu press *(star).Account StatuschangePIN FlowLost & Stolen\u00a0Press 1Queue Name\u00a0=\u00a0888-481-3436Queue Name\u00a0=\u00a0800-485-9745Queue Name\u00a0=\u00a0888-764-3771Queue Name\u00a0=\u00a0applicationStatusNote: Before Transferring to CSR we need to play a message",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-752634714",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\3\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/3/01",
+        "mimeType": "image/png",
+        "displayName": "section_003_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Pre Menu",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-PreMenu",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\3\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/3/01",
+          "mimeType": "image/png",
+          "displayName": "section_003_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 4,
+    "level": 1,
+    "heading": "PreMenu Challenger",
+    "numbering": null,
+    "types": [
+      "text",
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-PreMenuChallenger",
+    "content": "PreMenu Challenger",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\4\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/4/01",
+        "mimeType": "image/png",
+        "displayName": "section_004_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "PreMenu Challenger",
+      "audit_tags": [],
+      "types": [
+        "text",
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-PreMenuChallenger",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\4\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/4/01",
+          "mimeType": "image/png",
+          "displayName": "section_004_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 5,
+    "level": 1,
+    "heading": "PreMenu Challenger",
+    "numbering": null,
+    "types": [
+      "table",
+      "image",
+      "diagram"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": null,
+    "content": "PreMenu ChallengerStartQueueName=FRDQueueName=Lost&Stolen CSR  To report your card Lost or Stolen, Press 1.For the status of your recent application,\u00a0Press 2. For help with mobile services from Rogers, Chatr, or FIDO, Press 3. To speak with a customer service representative, Press 0. To repeat this menu, Press pound.InputNew Accounts CSRQueueName=applicationStatusPress 2  For Rogers mobile services, press 1.For Chatr Services, press 2.For FIDO services, press 3.To return to the previous menu, press star.RCI CSRCHTR CSRFIDO CSRQueueName=888-764-3771QueueName=800-485-9745QueueName=888-481-3436Press 3Press 1Press 1Press 2Press 3Press *To report an unauthorized transaction, press 1To replace a lost or stolen card, press 2.\u00a0To return to the previous menu, press Star.Fraud CSRCSRPress *Press 1Press 2AccountLookupResultFailAccountStatusSuccess\n\tPreMenu Challenger",
+    "visualElements": [
+      {
+        "tag": "img",
+        "domId": "comments-icon-1176801993",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [],
+    "visual_review_available": false,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "SECURITY"
+    ],
+    "metadata": {
+      "parent_section": "PreMenu Challenger",
+      "audit_tags": [
+        "SECURITY"
+      ],
+      "types": [
+        "table",
+        "image",
+        "diagram"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": null,
+      "visual_evidence": [],
+      "visual_review_available": false,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 6,
+    "level": 1,
+    "heading": "Account Status",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-AccountStatus",
+    "content": "Account Status\n\tAccount Info flow\n\tSFStatusFraud\u00a0CSRNoAgency\u00a0code?AIC005/AIC015External\u00a0TransferNopast\u00a0dueWe see that your account is past due. To make a payment arrangement press 1.\u00a0If you do not wish to make a paymentarrangement, press 2.\u00a0To hear these options again press, pound key.External\u00a0TransferACCOUNT STATUSStart1Activate CardAccountLookup#phoneNoPlease hold your call is being transferred.Please hold your call is being transferred.ResultPassFailCSRInsert ANI on MCNS\u00a0Account Status(XP - account details)QueueName =\u00a0855-553-4541QueueName =\u00a0888-241-7875QueueName =\u00a0CSR/SMBQueueName =\u00a0FRDQueueName =\u00a0CSRInputs:Account IDInputs:Account ID, Customer IDPress 1press 2InputCredit Limit( Pre Menu )0PreMenu OptionInputs:Account ID, CustomerIdYesNoPrimary\u00a0UserWe are unable to provide information at this time.The primary cardholder of your account must call in forfurther information.End callMCA001/MCA002LGL001/LGL002YesYes\u00a0Primary UserCSRSucessFail\u00a0ResultPlease hold your call is being transferred.CSRQueueName =\u00a0Activate card CSRAccount Summary InfoExternal\u00a0TransferQueueName =\u00a0888-797-7727External\u00a0TransferQueueName =\u00a0888-323-7453NoYesExternal\u00a0TransferQueueName =\u00a0888-510-0694TSI001/TSI002/TSI003CBVDS2CBVDS1External\u00a0TransferExternal\u00a0TransferQueueName =\u00a0855-528-5378QueueName =\u00a0855-553-4015",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-752646620",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\6\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/6/01",
+        "mimeType": "image/png",
+        "displayName": "section_006_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Account Status",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-AccountStatus",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\6\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/6/01",
+          "mimeType": "image/png",
+          "displayName": "section_006_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 7,
+    "level": 1,
+    "heading": "Account LookUp",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-AccountLookUp",
+    "content": "Account LookUp\n\tAccount LookUp\n\tStartPlease enter your 16 digit card number.NoGet Account By ANI(TSYS API)No\u00a0YesANI\u00a0FoundPlease enter the last 4 digits of your card number.Get Account By Card(TSYS API)NoYes\u00a0Acccount\u00a0FoundSorry, that was an invalid entry.Timeout\u00a0To FewElseResultSorry, we did not receive any input.Sorry, that was an invalid entry.<3AttemptsPlease wait while we retrieve your account information.NoYesAcccount\u00a0FoundReturnAcccountFoundAccountIdCustomerIdAccountFound =\u00a0 FalseAccountFound = TrueANI ACCOUNT INFOCard numberANIYesAccountFoundReturnAcccountFoundAccountIdCustomerId",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-813217731",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\7\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/7/01",
+        "mimeType": "image/png",
+        "displayName": "section_007_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "INTEGRATION"
+    ],
+    "metadata": {
+      "parent_section": "Account LookUp",
+      "audit_tags": [
+        "INTEGRATION"
+      ],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-AccountLookUp",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\7\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/7/01",
+          "mimeType": "image/png",
+          "displayName": "section_007_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 8,
+    "level": 1,
+    "heading": "Activate Card - Pre Menu",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-ActivateCard-PreMenu",
+    "content": "Activate Card - Pre Menu\n\tActivate Card(Pre Menu)\n\tNoCard\u00a0ActiveYesNoAuth\u00a0userYesNo\u00a0Primary\u00a0activePress 1\u00a0Press 2\u00a0Your card has not been activated.To activate your card, press 1.Otherwise, press 2.=00000<90 daysLast Issued date<90 daysOpen Date\u00a0 R or S\u00a0Reissue PinreasonFail\u00a0SuccessResultActivate Card(TSYS)Activate Card(TSYS)SuccessFail\u00a0ResultThank you.Your PIN has been updated and your card is now active.  You can begin using your card immediately.On your first purchase you may be prompted to insert your card and enter your PIN upto 3 times before the transaction is approved.Thank you. Your card has been activated and you can begin using it immediately.SuccessYes> 90 days\u00a0ACIVATE CARD [ PRE MENU ]\u00a0StartAuthenticationSet Pin Module\u00a0New\u00a0AuthenticationElseNew\u00a0Reissue PinreasonInputs :\u00a0StepUp,Phone, DOBAuthenticationInputs : StepUpVerification\u00a0> 90 daysAccId,\u00a0CustIdAccId\u00a0CustIdThere is descrepency between Main Menu activation Flow and Premenu activation FlowGet card Details(XP - get card details)AccId\u00a0CustIdFail\u00a0ResultSuccessSuccess\u00a0Fail\u00a0ResultInputs :\u00a0Verification\u00a0Fail\u00a0ResultReturn\u00a0Activated = TrueReturn\u00a0Activated\u00a0= FalseReturn\u00a0Activated\u00a0= FalseReturn\u00a0Activated\u00a0= False",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-752634759",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\8\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/8/01",
+        "mimeType": "image/png",
+        "displayName": "section_008_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "SECURITY"
+    ],
+    "metadata": {
+      "parent_section": "Activate Card - Pre Menu",
+      "audit_tags": [
+        "SECURITY"
+      ],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-ActivateCard-PreMenu",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\8\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/8/01",
+          "mimeType": "image/png",
+          "displayName": "section_008_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 9,
+    "level": 1,
+    "heading": "Account Summary Info",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-AccountSummaryInfo",
+    "content": "Account Summary Info\n\tAccount Summary\n\tPress pound (#) at any time to skip the account summaryPrimaryElseAccountTypeThe balance on your account is <amount>. OR\u00a0\u00a0You have a credit balance of <amount>YesAvailableBalanceYour account has no credit available.No\u00a0YesNoOverlimitAvailableThe Balance on your account exceeds your credit limit. Please make a payment to bring your account within your credit limit so that you can continue to use your card.Your account has no credit available.Your available credit is <available>Your credit limit is <limit>\u00a0No\u00a0PaydueThere is no payment due on this accountat this timeA minimum payment of <payment due>\u00a0is due on <Due date>\u00a0Yes\u00a0Yes\u00a0No\u00a0Last\u00a0pay\u00a0The last payment of <amount> was applied to your account on <date>YesNoStatement?Your last statement balance is a credit of\u00a0 <amount>\u00a0Credit\u00a0ElseStatementEndBalanceYour last statement balance is <amount>RewardsACCOUNT SUMMARY INFOStartMain MenuMain MenuYour available credit is <available>CPCElseWe are unable to retrieve your reward balance at this time, we apologize for the inconvenienceLambda FailureCSR<0Your rewards balance is <reward Balance> .CPC = CSC or PIC or TECYou have no reward cashback balance on your account.You have a negative reward balance of\u00a0 \u00a0<reward Balance>.=0>0",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-768709489",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\9\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/9/01",
+        "mimeType": "image/png",
+        "displayName": "section_009_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Account Summary Info",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-AccountSummaryInfo",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\9\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/9/01",
+          "mimeType": "image/png",
+          "displayName": "section_009_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 10,
+    "level": 1,
+    "heading": "Main Menu",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-MainMenu",
+    "content": "Main Menu\n\tMain Menu\n\tCardActive,PrimaryPress 4Press 5Press 6Press 8Press 1Press 3To activate your card, press 1.\u00a0To hear your rewards details press 2To request a replacement of your damaged card, press 3.\u00a0To request a change to your credit limit, press 4.\u00a0To hear your recent transactions, press 5.\u00a0For assistance with the Rogers Bank app, online banking or mobile wallet, press 6.\u00a0For Balance Transfers or Equal Payment Plans, press 7.\u00a0For benefits and insurance, press 8.\u00a0For a summary of your account information, press 9.\u00a0To repeat these options, press pound.\u00a0To speak with a customer service representative, press 0.Press 1Press 3To hear your Available Credit, press 1.\u00a0To request a replacement of your damaged card, press 2.To hear your recent transactions, press 3.\u00a0To ask a question about your mobile wallet,press 4.\u00a0To repeat these options, press pound.\u00a0To speak with a customer service representative, press 0.Press 1Press 2To hear your rewards details press 1To request a change to your credit limit, press 2.\u00a0\u00a0To request a replacement of your damaged card, press 3.\u00a0To hear your recent transactions, press 4.\u00a0For assistance with the Rogers Bank app, online Banking\u00a0 or mobile wallet, press 5.\u00a0For Balance Transfer or Equal Payment Plans, press 6.\u00a0For cardholder benefits and Insurance, press 7.\u00a0For a summary of your account information, press 8.\u00a0To repeat these options, press pound.\u00a0To speak with a customer service representative, press 0.Press 1Press 2To activate your card, press 1.To hear your Available Credit, press 2.To request a replacement of your damaged card press 3.\u00a0To hear your recent transactions, press 4.\u00a0To ask a question about your mobile wallet, press 5.\u00a0To repeat these options, press pound.\u00a0To speak with a customer service representative, press 0.CardActive=No, Primary=YesCardActive=Yes, Primary=NoCardActive=No, Primary=NoRewardsCredit limitTransactionsAPP MenuAccount Summary InfoAPP MenuMain MenuPress 2Press 3For assistance with online banking, press 1.For assistance with the Rogers Bank app, press 2.For assistance with your mobile wallet, press 3.\u00a0To return to the main menu, press 9.For assistance setting up or using your mobile wallet, Press 1.\u00a0 \u00a0 \u00a0To report unauthorized transactions or a lost or stolen mobile device, press 2.To repeat these options, press pound.\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0\u00a0To return to the previous menu, press star.Q=FraudCSRPress 2Q=CSQ=CSCSRCSRCSRPress 1Credit LimitTransactionsAPP MenuAccount Summary InfoCardActive=Yes, Primary=YesActiate CardCredit LimitTransactionsMobile Wallet MenuCredit LimitTransactionsReplace CardActivate Card11Press 1Press 2For information about Account Protection and Balance Protection Insurance, press 1.For information about cardholder benefits, press 2.To return to the main menu, press 9.Benefit & Insurance MenuNumber =\u00a0866-249-0515 /866-249-0516CSRQ=CSTransfer\u00a0to CP InusrancePress 3Press 4Press 5Press 7Press 8Press 9Mobile Wallet MenuMobile Wallet MenuReplace CardPress 6RewardsPress 2Press 7Replace cardPress 5Press 4Replace CardPress 3Mobile Wallet MenuPress 4Press 2Replace CardPress 1Replace Card(XP - Replace Card)accountId:<actId>customerId:<custId>Fetch Address details(XP - Address details)InputTenure Address checkTo have the card delivered to <address>, Press 1.  To have the card delivered to a different address, Press 2.No InputYour request was successful and a replacement card will arrive at <address> within 10 business days. To expedite the delivery of your card, Press 1.CSRQ= Lost and\u00a0StolenPress 2\u00a0Press 1\u00a0DisconnectPress 1Q=CSPrimaryTextAuthCustomer TypeCSRCPC\u00a0Benefit & Insurance MenuLegend Benefit & Insurance MenuCPC\u00a0WLCPress 1To be connected to Mastercard Concierge, press 1.For information related to Plaza Premium Lounge Passes, Press 2.For information about the insurance benefits included with your credit card, Press 3.For information about Rogers Account Protection, Press 4.To speak with a customer service representative, Press 0.Legend Benefit & Insurance MenuNumber =\u00a0+1833-957-3967LEGPress 0Number =\u00a0+1437-837-1124Number =\u00a0+1866-856-7323Press 2Press 3Number =\u00a0+1866-249-0516Press 4CPC\u00a0LEGCSRCPC\u00a0WLCLEGCSRWLCBenefit & Insurance MenuLegend Benefit & Insurance MenuWLC",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-752634723",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\10\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/10/01",
+        "mimeType": "image/png",
+        "displayName": "section_010_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "SECURITY"
+    ],
+    "metadata": {
+      "parent_section": "Main Menu",
+      "audit_tags": [
+        "SECURITY"
+      ],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-MainMenu",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\10\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/10/01",
+          "mimeType": "image/png",
+          "displayName": "section_010_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 11,
+    "level": 1,
+    "heading": "Activate Card - Main Menu",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-ActivateCard-MainMenu",
+    "content": "Activate Card - Main Menu\n\tActivate Card(Main Menu)\n\tYesNoAuthUserNoPrimary\u00a0active=\"000000\"Last Issued\u00a0dateWe cannot activate your card until the primary card on this account has been activated. Please ask the primary cardholder to activate their card, and then call us back.End CallNot activated\u00a0ActivatedResultActivate Card(TSYS)Thank you. Your card has been activated and you can begin using it immediately.ACTIVATE CARD [ MAIN MENU]StartMain MenuCSRPlease hold. Your call is beingtransferred\u00a0Yes\u00a0>=90 days\u00a0from today<90 days\u00a0from todayQueue Name\u00a0=\u00a0CSROpen Date>=90 days\u00a0from today<90 days\u00a0from todayAccId, CustID",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-752634766",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\11\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/11/01",
+        "mimeType": "image/png",
+        "displayName": "section_011_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "SECURITY"
+    ],
+    "metadata": {
+      "parent_section": "Activate Card - Main Menu",
+      "audit_tags": [
+        "SECURITY"
+      ],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-ActivateCard-MainMenu",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\11\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/11/01",
+          "mimeType": "image/png",
+          "displayName": "section_011_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 12,
+    "level": 1,
+    "heading": "Transactions",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-Transactions",
+    "content": "Transactions\n\tRecent Transactions IVR Flow\n\tGet Transactions()NoTransactionsElseif activityClassification=['Purchase','Cash,''Payment','Fees']A Purchase/ Cash / Finance charge\u00a0of <amount>\u00a0YesNoTxAmt is +veA credit of <amount>A Transaction of <amount>\u00a0posted to your account on <date>There are no more transactions.\u00a0To hear your transactions again from the beginning, press 1.\u00a0To return to the main menu, press 9.To hear your next 5 transactions, Press 1. To repeat your last 5 transactions, press 2.\u00a0To return to the main menu, press 9.5th TransNoEnd of Trans.?5th Trans.?10th Trans.?There are no more transactions.\u00a0To hear your transactions again from the beginning, press 1.\u00a0To return to the main menu, press 9.InputMain Menu\u00a0Recent TransactionStartMain Menu\u00a0You have no transactions made in the last 90 days.If caller entered the primary account they will hear all transactions for all cards connected with that entered primary account\u00a0All other account types will hear only their transactionsaccount id & customerIDYes10th TransSorry, that was an invalid entry.Sorry, we did not receive any input.attempts>3InvalidNo Input<3Press 9End of TransCSRPlease hold. Your call is being transferred.queueName=CSRqueueName=CSRTxAmt is +veNoNoif\u00a0 categoryCode is presentPurchase/ CashYesNoTxAmt is +veA Transaction of\u00a0<amount>\u00a0A Payment of <amount>\u00a0PaymentYesFeesYesNo",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-757171940",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\12\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/12/01",
+        "mimeType": "image/png",
+        "displayName": "section_012_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Transactions",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-Transactions",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\12\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/12/01",
+          "mimeType": "image/png",
+          "displayName": "section_012_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 13,
+    "level": 1,
+    "heading": "Credit Limit",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image",
+      "table",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-CreditLimit",
+    "content": "Credit Limit\n\tCredit Limit(Pre Menu)\n\tCREDIT LIMIT\u00a0Account StatusAcc StatusT0030F (Freeze)ReturnFalseAcc StatusBK,CC,CL,CO,CR,LG,PD,RD,SFWA\\OT CW\\21 TW\\21ReturnTrueCredit LimitOfferAccount StatusResultMenuOptionPremenuCheck for Offer\u00a0Offer found&Menu OptionCongratulations, you are eligible for a credit limit increase To review the offer, press 1 To skip the offer press 2OptionYou are eligible for a new credit limit of <amount>To accept this limit, press 1\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0To set a lower\u00a0 limit, press 2To apply for a higher\u00a0 limit, press 3\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0To return to the previous menu, press StarUsing your touchtone keypad, please enter the desired credit limit between <current limit> and <eligible limit>. The amount entered should be rounded to the nearest $100 with no decimals.OptionThe amount\u00a0entered is less than\u00a0your current credit limit\u00a0The amount\u00a0entered is above\u00a0your eligible limitThe amount entered is the same as your current credit limit.\u00a0The amount entered is not a multiple of 100.Update Credit LimitUpdate TSYS MMCL with\u00a0 Source=VRCFC\u00a0& Channel=IVCongratulations! Your credit limit has been updated and is available to use immediately.\u00a0To request a credit limit increase, press 1To request a credit limit decrease, press2To return to the previous menu, press StarMain menuCPCYou can request a credit limit increase if your account has been open for at least four months and you've paid at least the minimum amount due on time every month.. To proceed, press 1. To return to the Main Menu press 9We\u2019re sorry, but\u00a0we are unable to offer a credit limit increase at this time.Option=Main MenuStatus=FalseOption=Pre MenuStatus=FalseReturnPreMenu ContinuePress 1Option=Main MenuFound=TrueOption= Pre MenuFound=TruePress 1Return(main/premenu)Press 1AmountAttm<3ResultSorry, At this time we are unable to fulfill the request. Please hold while we transfer you to Customer Service Representative for further assistanceCS\u00a0CSRPlease hold the line while we update the system.FailCSCReturnMain MenuThank you, we've received your request. You will be notified of the outcome by mail within 7 to 10 business days.OptionPress 1Press 2We're sorry, but you are not eligiblefor a credit limit increase at this time.Option=Main MenuFound=FalseOption=Pre MenuFound=FalsePress 1Press 2Returnmain menu orpremenu\u00a0Press 3x 100<=>Press 2Press 3Prim AcctPress 2= 3Get current LimitNoYesTransfer to CSRPlease hold, your call is being transferred.CSRTransfer to CSRTransfer to CSRPassWe can approve your request for a new credit limit of $xxxxx.Please confirm that you are requesting we increase your credit to $xxxxx, and that we have your consent to proceed.To\u00a0consent,\u00a0press 1To accept a different amount press 2.To decline press 3\u00a0.",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-752634737",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\13\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/13/01",
+        "mimeType": "image/png",
+        "displayName": "section_013_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "INTEGRATION"
+    ],
+    "metadata": {
+      "parent_section": "Credit Limit",
+      "audit_tags": [
+        "INTEGRATION"
+      ],
+      "types": [
+        "diagram",
+        "image",
+        "table",
+        "text"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-CreditLimit",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\13\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/13/01",
+          "mimeType": "image/png",
+          "displayName": "section_013_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 14,
+    "level": 1,
+    "heading": "Rewards",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-Rewards",
+    "content": "Rewards\n\tRewards flow\n\toptions\u00a010th TransactionEnd?5th?10th?CSRREWARDSPlease hold, your call is being transferred.Sorry, that was an invalid entry.Sorry, we did not receive any input.For the transaction amount of <txamount> $, you earned\u00a0 <rewards earned> on <date> <dd-mmm-yyyy>.There are no transactions available. To return to the main menu, press 9.To repeat these transactions, press 1. To hear the next 5 transactions, press 2. To return to the main menu, press 9.There are no more transactions. To hear your transactions again from the beginning, press 1. To return to the main menu, press 9.option 1 or 2InputqueueName=CSRGet point-detailsuserId: <userId>userId_type:RANACPress 1Search TranactionsuserId: <userId>userId_type:RANACattempts>3<3CSRSorry, that was an invalid entry.Sorry, we did not receive any input.queueName=CSR5thRewardBalancesYou have no reward cashback balance on your account.\u00a0Main MenuNo InputInvalidEnd of TransactionMain MenuOption 9Press 9attempts>3< 3No TxMain MenuTransaction Positon ?\u00a0Option Selected ?\u00a0 \u00a0 > 0Your have a negative reward balance of <rewardBalance> \u00a0.= 0<\u00a00To review a list of the last 10 transactions and the rewards earned, press1To return to the main menu press 9For the transaction amount of <txamount> $, your\u00a0 <rewards earned> were\u00a0 reversed\u00a0on <date> <dd-mmm-yyyy>.Rewards < 0Rewards > 0Your current reward balance is <rewardBalance>. The rogers redemption bonus of <redemptionbonus>\u00a0is available if applied against a rogers bill or purchase.\u00a0Please hold, your call is being transferred.",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-768709680",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\14\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/14/01",
+        "mimeType": "image/png",
+        "displayName": "section_014_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Rewards",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image",
+        "text"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-Rewards",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\14\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/14/01",
+          "mimeType": "image/png",
+          "displayName": "section_014_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 15,
+    "level": 1,
+    "heading": "Lost n Stolen",
+    "numbering": null,
+    "types": [
+      "text",
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-LostnStolen",
+    "content": "Lost n StolenCustomer calls the bank for lost/stolen card.Customer presented with pre-menu option in the contact flow, and selects 'lost n stolen' option.In the 'lost n stolen' option, customer will be presented with further options to Temporary block/unblock or Replace the card.Temporary Block/UnblockIf customer selects block/unblock option then customer is first authenticated via Phone Number or 16 Digit card number and then 4 digit pin.( Refer this\u00a0High Level Design - Contact Center Re-Platform - MVP (PCI)#2.4UseCaseRealization)Once verified, Amazon Connect invokes 'TemporaryBlockCard' lambda with customer 'accountid' and 'customerid' to hit the TSYS API to block/unblock the customer card.\n\tLost n Stolen\n\tStart\u00a0Press 1\u00a0\u00a0Press 1LOST & STOLENTo report your card as lost or stolen, press 1. If you wish to temporarily lock your card, or you wish to unblock a blocked card, press 2To hear these options again, press #(pound)To return to the previous menu press *(star)To report an unauthorized transaction, press 1.To replace a lost or stolen card, press 2. To return to the previous menu, press star.Please hold. Your call is beingtransferred\u00a0CSRFraud\u00a0CSRqueueName:\u00a0FRD\u00a0QueueName =\u00a0Lost& Stolen CSRIf your card is lost or stolen, you can lock your card immediately\u00a0through online banking or the Rogers Bank app, to ensure no\u00a0unauthorized transactions take place.Pre MenuPlease hold. Your call is being\u00a0transferred\u00a0InputPress 2Input\u00a0Fail\u00a0Please hold. Your call is beingtransferred\u00a0CSRQueueName =\u00a0Lost& Stolen CSRFailAccountLookUp\u00a0No\u00a0\u00a0Yes\u00a0AccountFoundpress 1To lock your card, press 1.Temp Block card(XP - lock status )Unblock Block card(XP - Lock Status)Your card has been temporarily locked. You can unlock it through the Rogers Bank app or by calling the number on the back of your card.Your card is now unlocked.Press 9\u00a0To return to the main menu, press 9Or, you can hang up if you have no further inquiries.AuthenticationSuccesslockStatus:\u00a0TrueaccountIdcustomerIdAuthenticationFor Temporary card blocking\u00a0complete card details are required or\u00a0need to route to CSRInputs :\u00a0VerificationResultResultInputs : StepUpVerificationIVR log in TSYS(different msg type required)WFRD screen ?\u00a0Press 2\u00a0\u00a0Press *\u00a0Press #Main MenuSuccessCard Status(XP - Lock Status)press 1To unlock your card, press 1.UnlockedLocked",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-752634774",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\15\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/15/01",
+        "mimeType": "image/png",
+        "displayName": "section_015_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "SECURITY",
+      "INTEGRATION"
+    ],
+    "metadata": {
+      "parent_section": "Lost n Stolen",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ],
+      "types": [
+        "text",
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-LostnStolen",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\15\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/15/01",
+          "mimeType": "image/png",
+          "displayName": "section_015_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 16,
+    "level": 1,
+    "heading": "DOB Module",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-DOBModule",
+    "content": "DOB Module\n\tDOB Module\n\tDOB\u00a0Module\u00a0Improper FormatTo fewTimeoutPlease enter your date of birth using twodigits for month, two digits for day, and fourdigits for the year. For example, January 3,1955, would be 01, 03, 1955.\u00a0noYesValidSorry, you have used the wrong format when entering the dateSorry, that was an invalid entry.Sorry, we did not receive any input.<3\u00a0> 3AttemptsCSRPress 1\u00a0Press 2You've entered <DOB>. If this is correct press1, To try again Press 2.Set Pin\u00a0Module>3< 3CSRAttemptsGet DOB(XP - Get DOB)DOB\u00a0blank\u00a0Yes\u00a0noPlease hold. Your call is beingtransferred\u00a0queuename= CSRqueuename= CSRPlease hold. Your call is beingtransferred",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-752634786",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\16\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/16/01",
+        "mimeType": "image/png",
+        "displayName": "section_016_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "DOB Module",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-DOBModule",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\16\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/16/01",
+          "mimeType": "image/png",
+          "displayName": "section_016_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 17,
+    "level": 1,
+    "heading": "PIN Validation",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-PINValidation",
+    "content": "PIN Validation\n\tPIN Valdation \n\tTo few\u00a0Timeout = 5 secSuccessPlease enter your 4 digit PIN.Sorry, that was an invalid entry.Sorry, we did not receive any input.Yes\u00a0\u00a0No\u00a0Valid< 3>3AttemptsPIN VALIDATIONReturnPINValidatedStartPlease hold. Your call is being\u00a0transferred\u00a0Verify PIN(TSYS - View PIN)update PIN failures on MCNS screenGet nbr PIN failures on MCNS screenElse\u00a0=4\u00a0failuresPlace \"WA\" on accountPINValidated =TruePINValidated =FalseAccId,\u00a0CustIDLoad LambdaIn ProgressThank you, please hold while we verify your account.\u00a0%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22%26amp%3Bgt%3B3%22%20style%3D%22edgeLabel%3Bhtml%3D1%3Balign%3Dcenter%3BverticalAlign%3Dmiddle%3Bresizable%3D0%3Bpoints%3D%5B%5D%3B%22%20vertex%3D%221%22%20connectable%3D%220%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22-110%22%20y%3D%22570%22%20as%3D%22geometry%22%3E%3CmxPoint%20x%3D%22-16%22%20y%3D%2213%22%20as%3D%22offset%22%2F%3E%3C%2FmxGeometry%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3wWait%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22%26amp%3Bgt%3B3%22%20style%3D%22edgeLabel%3Bhtml%3D1%3Balign%3Dcenter%3BverticalAlign%3Dmiddle%3Bresizable%3D0%3Bpoints%3D%5B%5D%3B%22%20vertex%3D%221%22%20connectable%3D%220%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22-110%22%20y%3D%22570%22%20as%3D%22geometry%22%3E%3CmxPoint%20x%3D%22-16%22%20y%3D%2213%22%20as%3D%22offset%22%2F%3E%3C%2FmxGeometry%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3w=5secs%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22%26amp%3Bgt%3B3%22%20style%3D%22edgeLabel%3Bhtml%3D1%3Balign%3Dcenter%3BverticalAlign%3Dmiddle%3Bresizable%3D0%3Bpoints%3D%5B%5D%3B%22%20vertex%3D%221%22%20connectable%3D%220%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22-110%22%20y%3D%22570%22%20as%3D%22geometry%22%3E%3CmxPoint%20x%3D%22-16%22%20y%3D%2213%22%20as%3D%22offset%22%2F%3E%3C%2FmxGeometry%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3wCSR\u00a0 \u00a0>3Queue Name = CSR",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-752634808",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\17\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/17/01",
+        "mimeType": "image/png",
+        "displayName": "section_017_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "PIN Validation",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image",
+        "text"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-PINValidation",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\17\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/17/01",
+          "mimeType": "image/png",
+          "displayName": "section_017_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 18,
+    "level": 1,
+    "heading": "Set PIN Module",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-SetPINModule",
+    "content": "Set PIN Module\n\tSet PIN\n\tTo use your card, you must set up a four-digit PIN. Keep this number confidential, and don't select something easy to guess, such as your birth yearSorry, we cannot process your request at this timeElse\u00a0Timeout\u00a0Enter a new 4 digit PIN.NoYesValid\u00a0Length< 3> 3\u00a0AttemptsFor verification, re-enter your new 4-digit PIN.Match< 3\u00a0> 3\u00a0AttemptsNoThe PINs you entered did not match.Change Pin(TSYS - changePIN)Weak Pin\u00a0ResultSorry, what you entered is not secureenough. Avoid using repetitive orsequential numbers, such as 1111 or 1234.Please try again using a different PINSET PINReturnchangePINStartSorry, that was an invalid entry.Sorry, we did not receive any input.YesSuccesschangePIN = TruechangePIN = FalseAuthentication(step-up)AccId, CustId",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-752634815",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\18\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/18/01",
+        "mimeType": "image/png",
+        "displayName": "section_018_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "SECURITY"
+    ],
+    "metadata": {
+      "parent_section": "Set PIN Module",
+      "audit_tags": [
+        "SECURITY"
+      ],
+      "types": [
+        "diagram",
+        "image",
+        "text"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-SetPINModule",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\18\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/18/01",
+          "mimeType": "image/png",
+          "displayName": "section_018_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 19,
+    "level": 1,
+    "heading": "Change PIN Flow",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-ChangePINFlow",
+    "content": "Change PIN Flow\n\tchange PIN\n\tSuccessTrueCHANGE PIN FLOWFalseChange Existing PINStartYou have successfully set your PIN.Please note: When making your next PIN-basedtransaction, the payment terminal may declineyou twice before your PIN is updated. Don'tworry the transaction will be approved afteryou enter your PIN correctly the third time,despite the payment terminal warning aboutexceeding your PIN entry limit. Please note thismay be affected by external factors outside ofour control, such as network connection issuesor card terminal failure.\u00a0AuthenticationInputs : StepUp/MFAVerificationResultfailQ PIN\u00a0CSRAccId, CustIDchangePINAccountLookUpYes\u00a0No\u00a0AccountFoundThis is being called\u00a0from 'Pre Menu' onlyPress *Thanks for calling Rogers Bank. To return to the previous menu, press star. Or, you can hang up if you have no further inquiries.PreMenu",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-759837204",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\19\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/19/01",
+        "mimeType": "image/png",
+        "displayName": "section_019_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "SECURITY"
+    ],
+    "metadata": {
+      "parent_section": "Change PIN Flow",
+      "audit_tags": [
+        "SECURITY"
+      ],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-ChangePINFlow",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\19\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/19/01",
+          "mimeType": "image/png",
+          "displayName": "section_019_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 20,
+    "level": 1,
+    "heading": "Phone Number Module",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-PhoneNumberModule",
+    "content": "Phone Number Module\n\tvalidatePhone\n\tPlease enter your phone number, starting with the area code.\u00a0Timeout\u00a0to fewResultSorry, that was an invalid entry.Sorry, we did not receive any input.Yes\u00a0No\u00a0Valid<3>3attmPHONE NUMBER\u00a0VALIDATIONReturnphoneValidated\u00a0Else\u00a0Validate Phone\u00a0number(XP - Contact Detail )startPhone validated =\u00a0TruePhone validated =\u00a0FalseAccId, CustID",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-759837211",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\20\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/20/01",
+        "mimeType": "image/png",
+        "displayName": "section_020_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Phone Number Module",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-PhoneNumberModule",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\20\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/20/01",
+          "mimeType": "image/png",
+          "displayName": "section_020_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 21,
+    "level": 1,
+    "heading": "Legends",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-Legends",
+    "content": "Legends\n\tLegnds\n\tAttribute UpdatesCall\u00a0to\u00a0ModuleDecisionCaller Interaction(Prompt & Get Input)Backend\u00a0Lookup(Service call)Play PromptTransfer to\u00a0External Number/CSR",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-813217691",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\21\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/21/01",
+        "mimeType": "image/png",
+        "displayName": "section_021_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Legends",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-Legends",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\21\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/21/01",
+          "mimeType": "image/png",
+          "displayName": "section_021_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 22,
+    "level": 1,
+    "heading": "Rules",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-Rules",
+    "content": "Rules\n\tRules\n\tCX Rule 1General Menu BehaviorDTMFRepeat#Main Menu9Previous Menu*CSR0CX Rule 2Error HandlingValueMaximum Attempts, Use configuration/attr - MaxAttempt3Default timeout, Use attr - TimeOut?On Timeout Return to Current Menu?On MaxAttempt, Transfer to AgentInner digit Timeout, TimeOutDigit5s?Business Rule 1CORPORATE CARD IVRDifferent entry pointsSubset/Scale down version of main IVRIf pin verification fails, it takes soft lock and put in fraud QueueCX Rule 3FlowAfter sucessful self-serve move to Previous Menu or Main Menu?System failure should move to agent or terminate the call with message? (after retry)Auth failures should move to agent or terminal call with message? (after retry)Business Rule 2Authenticationhttps://reqcentral.com/wiki/display/FES/IVR+Authentication+Service+-+Fraud+Prevention",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-813217696",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\22\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/22/01",
+        "mimeType": "image/png",
+        "displayName": "section_022_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "SECURITY"
+    ],
+    "metadata": {
+      "parent_section": "Rules",
+      "audit_tags": [
+        "SECURITY"
+      ],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-Rules",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\22\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/22/01",
+          "mimeType": "image/png",
+          "displayName": "section_022_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 23,
+    "level": 1,
+    "heading": "Self-Service",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-Self-Service",
+    "content": "Self-Service\n\tSelf-Service\n\tOn Error\u00a0Or\u00a0RequestOr IVR TransferCSRQueueQueueCallBackPostCall SurveyPreMenuLost\u00a0n\u00a0StolenAccount SummaryChange/Set PINActivate CardAccount StatusOfferCredit Limit ChangeAccount SummaryInfoMain MenuRewardsTransactionsPhone number (TFN/DID)855-775-2265 - Pre-Menu855-275-2216 - Activate Card855-224-9782\u00a0- Activate Card (Fido)855-275-2218 - Pin Change\u00a0888-514-6845 -\u00a0Corporate CardAgent TransferDestinationEnglishFrenchHoursMWF (days)TT (days)CP Insurance866-249-0515866-249-0516NCRVOTHER855-553-4541855-553-4541NAIC CSR 1877-425-7858877-425-7858Y12pm-9pm EST9am-9pm ESTAIC CSR 2877-505-0413877-505-0413Y12pm-9pm EST9am-9pm ESTAIC CSR 3877-505-0417877-505-0417Y12pm-9pm EST9am-9pm ESTNew Accounts833-403-3926833-403-3927NFIDO888-481-3436\u00a0888-481-3436NChtr888-481-3436\u00a0888-481-3436\u00a0NRCI888-481-3436888-481-3436NDestinationHours of OperationApplicationStatus24/7/365BackOfficeM-F 8am to 5pm excludingCanadian HolidaysCardActivateFail24/7/365Collections24/7/365CorporateCard24/7/365CustomerService24/7/365DisclaimernaDisputesM-F 8am to 5pm excludingCanadian HolidaysElevated7-11 7 days a weekFraudM-F 8am to 5pm excludingCanadian HolidaysLostStolen24/7/365PINChange24/7/365PIN VALIDATEONE TIME CODE855-775-2265855-275-2216855-275-2218888-514-6845CCR IVR DESIGN OVERVIEWCorporate CardActivate CardPin ChangeNon-Corporate CardSome menus are restrictedQuick connectsTypeDestinationIn Call Pin ValidationQueueCustomerService_ENInCall Step Up AuthenticationQueueCustomerService_ENFraud\u00a0QueueFraud_FRCredit BureauQueue+18006639980Disclosure/privacy\u00a0QueueDisclaimer_ENLegal DisclaimerQueuedisclaimersAIC ( PD01 - PD07 )Queue+18774257858Canadian Premier Insurancephone number+18662490515Canadian Premier Insurance (Enrolllment)phone number+18554535685Sigma Info Protectorphone number+18665146655Allianz Glbl Asst Trvlphone number+18443101578ElevationsQueueElevated_ENRCI (Rogers communications )phone number+18887643771RCI (Rogers communications ) Fraudphone number+18003832080Disputes InvestigationsQueueDisputeInvestigator_ENRogers Prepaid MasterCard\u00a0phone number+18887053388TMS Credit Inbound Existing Applicationsphone number+18552752215DisclaimersQueueDisclaimer_ENTMS PIN change only IVRphonenumber+18552752218DisputesQueueDisputes_ENFraud InvestigationsQueueFraudInvestigator_ENMy Friendly Lawyerphone number+18449533354Cyberscoutphone number+18338615910",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-813217702",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\23\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/23/01",
+        "mimeType": "image/png",
+        "displayName": "section_023_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "SECURITY",
+      "INTEGRATION"
+    ],
+    "metadata": {
+      "parent_section": "Self-Service",
+      "audit_tags": [
+        "SECURITY",
+        "INTEGRATION"
+      ],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-Self-Service",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\23\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/23/01",
+          "mimeType": "image/png",
+          "displayName": "section_023_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 24,
+    "level": 1,
+    "heading": "Fraud ANI",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-FraudANI",
+    "content": "Fraud ANI\n\tFraud ANI\n\tStartFRAUD ANI\u00a0Not Found\u00a0\u00a0Found\u00a0Fraud DatabaseANIReturnFraudFraud =TrueFraud = FalseResultThis will return to\u00a0'Language Selection' FlowThis is currenty called\u00a0from 'Language Selection' Flow",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-813217708",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\24\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/24/01",
+        "mimeType": "image/png",
+        "displayName": "section_024_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Fraud ANI",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-FraudANI",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\24\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/24/01",
+          "mimeType": "image/png",
+          "displayName": "section_024_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 25,
+    "level": 1,
+    "heading": "Change Existing PIN Module",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-ChangeExistingPINModule",
+    "content": "Change Existing PIN Module\n\tChange Existing PIN Module\n\tSorry, we cannot process your request at this time\u00a0Timeout\u00a0Enter a new 4 digit PIN.NoYesValid\u00a0Length< 3> 3\u00a0AttemptsFor verification, re-enter your new 4 digit PIN.NoMatch< 3\u00a0> 3\u00a0AttemptsNoThe PINs you entered did not match.Change Pin(TSYS - Change PIN)Weak Pin\u00a0ResultSorry, what you entered is not secure enough. Avoid using repetitive or sequential numbers, such as <say-as interpret-as = \"digits\">1111, or 1234.</say-as> Please try again using a different PIN.CHANGE EXISTING\u00a0 PINReturnchangePINStartSorry, that was an invalid entry.Sorry, we did not receive any input.YesYesSame\u00a0PINYou have entered a PIN that was previously used.< 3> 3AttemptsSuccesschangePIN = TruechangePIN = FalsechangePIN = FalseAccId, CustIDVerify PIN(Weak pin check)AccId, CustIDTo use your card, you must set up a four-digit PIN. Keep this number confidential, and don't select something easy to guess, such as your birth year.",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-813217714",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\25\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/25/01",
+        "mimeType": "image/png",
+        "displayName": "section_025_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Change Existing PIN Module",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-ChangeExistingPINModule",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\25\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/25/01",
+          "mimeType": "image/png",
+          "displayName": "section_025_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 26,
+    "level": 1,
+    "heading": "Step Up Module",
+    "numbering": null,
+    "types": [
+      "text",
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-StepUpModule",
+    "content": "Step Up ModuleStartTimeout and LongFor your security, we have sent a 6 digit code to the phone number we have on the file ending in XXXXSuccessFail\u00a0Timeout = 20 sec\u00a0to few / invalid OTC\u00a0Verified\u00a0\u00a0ResultSorry, that was an invalid entry.Sorry, we did not receive any input.\u00a0>3< 3\u00a0attmAlready Verifiedcheck OTC verifiedReturnStepUp = TrueNot verifiedSTEP UP MODULEReturnStepUp = TrueGet registered Number(xp - getcontactpreferences)ReturnStepUp = FalseReturnStepUp = FalseVerify OTCcheck mobile/Landline(Amazon Pinpoint API)sendOTC\u00a0not mobile number\u00a0Please hold, while we send your one-time code to your number on fileWait Block\u00a03 SecondsSuccess LambdaPress 1Please Press one if once you receive your one time code, If you have not received it yet,\u00a0 please hold or press zero to speak with an agent.2CSRCustomer ANI=Number on fileIf you do not have access to the phone number, please press 9 to speak to an agent, or you can call back when you have access to the phone number on file.Press 9YesNoYesNoMobile\n\tStep Up OTC Module",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-1177197512",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\26\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/26/01",
+        "mimeType": "image/png",
+        "displayName": "section_026_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "INTEGRATION"
+    ],
+    "metadata": {
+      "parent_section": "Step Up Module",
+      "audit_tags": [
+        "INTEGRATION"
+      ],
+      "types": [
+        "text",
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-StepUpModule",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\26\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/26/01",
+          "mimeType": "image/png",
+          "displayName": "section_026_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 27,
+    "level": 1,
+    "heading": "Authentication",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-Authentication",
+    "content": "Authentication\n\tAuthentication\n\tStartPIN validationNoPhone number ModuleAUTHENTICATIONNoPin validated?Yes\u00a0DOB\u00a0ValidatedDOB?No / undefined / ForceYes\u00a0Verification\u00a0= GreenFalseTrueStep Up/ MFAReturnbasic_AuthpinValidatedDOBvalidatedphoneValidatedYes\u00a0Set Verification green\u00a0basic_Auth = TruepinValidated\u00a0= FalsepinValidated\u00a0= TrueStep Up\u00a0ModuleReturnbasic_AuthpinValidatedDOBvalidated +StepUp =TrueInputs : StepUp/MFAVerificationForceDOBValidated\u00a0= TrueDOBValidated\u00a0= FalseTrueDOB ModuleReturnbasic_AuthpinValidatedDOBvalidatedphoneValidatedR or SNewReissueReasonphoneValidatedFalse",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-813217719",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\27\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/27/01",
+        "mimeType": "image/png",
+        "displayName": "section_027_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "SECURITY"
+    ],
+    "metadata": {
+      "parent_section": "Authentication",
+      "audit_tags": [
+        "SECURITY"
+      ],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-Authentication",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\27\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/27/01",
+          "mimeType": "image/png",
+          "displayName": "section_027_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 28,
+    "level": 1,
+    "heading": "Pre Menu Corporate",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-PreMenuCorporate",
+    "content": "Pre Menu Corporate\n\tPre Menu Corporate\n\tTo access your account, press 1.To change your PIN, press 2.To report your card lost or stolen, press 3.To hear these options again, press the pound key.To speak with a customer service representative, press 0.Press 3Press 0Press 2OptionsOk, connecting you with a customer service\u00a0representative.\u00a0StartPRE MENU CORPORATEChange PinLost & StolenNote: This visio only mentions the differences between corporate card and main flowAccount StatusCorporate CardPreMenuPress 1",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-813217737",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\28\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/28/01",
+        "mimeType": "image/png",
+        "displayName": "section_028_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Pre Menu Corporate",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-PreMenuCorporate",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\28\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/28/01",
+          "mimeType": "image/png",
+          "displayName": "section_028_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 29,
+    "level": 1,
+    "heading": "Main Menu Corporate",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-MainMenuCorporate",
+    "content": "Main Menu Corporate\n\tMain Menu Corporate\n\tYesNoCard\u00a0ActiveTo activate your card, press 1.\u00a0To hear your recent transactions, press 2.\u00a0To request a replacement of your damaged card, press 3.\u00a0For your account summary, press 4.\u00a0Questions about mobile wallets? press 5.\u00a0To repeat these options, press pound.\u00a0To speak with a customer service representative, press 0.To hear your recent transactions, press 1.\u00a0To request a replacement of your damaged card, press 2.\u00a0For your account summary, press 3.\u00a0Questions about mobile wallets? press 4.\u00a0To repeat these options, press pound.\u00a0To speak with a customer service representative, press 0.Press 4Press-1Press-2OptionsFor assistance setting up or using your mobile wallet, press 1. To report unauthorized transactions or a lost and stolen mobile device press 2. To repeat menu options, press pound. To return to the previous menu, press star.Press 2OptionsStartCSRMAIN MENU CORPORATEQueue Name = FRDQueue Name = CSRTransaction FlowReplace CardMain MenuPress-5Press 3Press-2Press 0OptionsPlease hold. Your call is being transferred.Press 0Account\u00a0SummaryPress-3Press 4Press 0/1Press 1ActivateFlowReplace CardPress 1Replace Card(XP - Replace Card)accountId:<actId>customerId:<custId>Fetch Address details(XP - Address details)InputTenure Address checkTo have the card delivered to <address>. Press 1.  To have the card delivered to a different address, Press 2.No InputYour request was successful and a replacement card will arrive at <address> within 10 business days. To expedite the delivery of your card, press 1.CSRQ= Lost and\u00a0StolenPress 2\u00a0Press 1\u00a0Disconnect",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-813217750",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\29\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/29/01",
+        "mimeType": "image/png",
+        "displayName": "section_029_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "SECURITY"
+    ],
+    "metadata": {
+      "parent_section": "Main Menu Corporate",
+      "audit_tags": [
+        "SECURITY"
+      ],
+      "types": [
+        "diagram",
+        "image",
+        "text"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-MainMenuCorporate",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\29\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/29/01",
+          "mimeType": "image/png",
+          "displayName": "section_029_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 30,
+    "level": 1,
+    "heading": "Service",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-Service",
+    "content": "Service\n\tService\n\tStartNoinput valid?API callReturn(Pass/Fail) with DetailsFail?YesRetry<RetryCountYesYes\u00a0NoNo",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-813217755",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\30\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/30/01",
+        "mimeType": "image/png",
+        "displayName": "section_030_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "INTEGRATION"
+    ],
+    "metadata": {
+      "parent_section": "Service",
+      "audit_tags": [
+        "INTEGRATION"
+      ],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-Service",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\30\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/30/01",
+          "mimeType": "image/png",
+          "displayName": "section_030_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 31,
+    "level": 1,
+    "heading": "Direct Transfer",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-DirectTransfer",
+    "content": "Direct Transfer\n\tDirect Transfer\n\tAIC CSR 1/2/3Mon/We/FriTue/ThuDay of\u00a0WeekTime of DayTime of DayDirect TransferPlease hold your call is being transferred.9 AM -9PM EST877-425-7858/877-505-0413/877-505-0417112 pm-9pm ESTTransfer",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-813217761",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\31\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/31/01",
+        "mimeType": "image/png",
+        "displayName": "section_031_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Direct Transfer",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-DirectTransfer",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\31\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/31/01",
+          "mimeType": "image/png",
+          "displayName": "section_031_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 32,
+    "level": 1,
+    "heading": "Post Call Survey",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-PostCallSurvey",
+    "content": "Post Call Survey\n\tSurvey\n\tThank you for agreeing to take our five question-customer survey. Your opinion is very important to us. And we will use your answers to improve our service. Please base all your answers solely on your conversation with our agent today.Survey EnabledAgent disconnectsOn the scale of one to five, where one is not at all satisfied and five is completely satisfied, please tell us how satisfied you are with Rogers bank.On the scale of one to five, where one is strongly disagree and five is strongly agree, please tell us how much you agree with final three statements,The Representative made me feel confident that I would get what I needed.GetSurveyQuestionsThe Representative clearly explained what would happen nextMy questions were answered, or issues were resolved to my satisfaction on this call.inputinputinputinputOn the scale of one to five, where one is, i definitely would not recommend and five is, i definitely would recommend, please tell us how likely you are to recommend Rogers bank to your friends and family.inputpress 1-5press 1-5press 1-5press 1-5press 1-5Thank you for taking the time to complete the survey, have a great day.Call disconnectsYour response was not understood, Please try again.Your response was not understood, Please try again.Error HandlerError HandlerRetry?ReturnRetry=YesReturnRetry=NoattmInvalid<3>=3Error HandlerRetry?InvalidError HandlerRetry?InvalidError HandlerRetry?InvalidRetry?InvalidYesYesYesYesYesNoNoError HandlerNo",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-813217775",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\32\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/32/01",
+        "mimeType": "image/png",
+        "displayName": "section_032_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Post Call Survey",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image",
+        "text"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-PostCallSurvey",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\32\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/32/01",
+          "mimeType": "image/png",
+          "displayName": "section_032_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 33,
+    "level": 1,
+    "heading": "In-Queue Callback",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-In-QueueCallback",
+    "content": "In-Queue Callback\n\tCallBack\n\tPress 2FalseNo ResponseAll our agents are busy assisting other customers. Your estimated wait time is X minutes {time}.\u00a0To receive a callback, press 1.\u00a0Otherwise, please hold for the next available agent.To receive a call back at the number you called from,\u00a0Press 1 To receive a call back\u00a0at a different phone number, Press 2.\u00a0you have entered {Number}, Please press 1 to confirm or Press 2 to re-enter again.Number which you have entered\u00a0is not Canadian or US Number.\u00a0Please enter your Canadian or\u00a0US number to receive a call back\u00a0Please hold while we connect you to the next available agentTrueAverage Wait\u00a0Time\u00a0 >= 5 MinYour callback request has been recorded.We will call you back in the order\u00a0in which your call was recieved.\u00a0\u00a0Thank you, GoodbyeQueue(same position)Number of Loops :3FailNumber ValidationQueueQueueYour callback request has been recorded.We will call you back in the order\u00a0in which your call was recieved.\u00a0\u00a0Thank you, GoodbyePlease enter your 10-digit phone number.Call disconnectsSorry, that was an invalid entry.Sorry, we did not receive any input.Sorry, that was an invalid entry.Number of Loops :3Sorry, we did not receive any input.Please hold while we connect you to the next available agentNote :Once customer opt in call back, \u00a0Agentwill receive call first then call will hit to customer\u00a0Press 1InputAll of our agents are assisting other\u00a0 customers . Your call is very important to us. Please stay on the line and your call will be answered in the order it was received.Check Number FormatTimeout / EmptyInvalidInputValidationInvalidTimeout / EmptyPress 2InputPress 1Sorry, that was an invalid entry.Sorry, we did not receive any input.Loop<3Loop=3Number of Loops :3Please hold while we connect you to the next available agentInputValidationInvalidTimeout / EmptyTimeout/InvalidNoPIN ValidationQueueQueueQueueNo\u00a0US or\u00a0\u00a0CanadaNumber ?NOYESLoop ==2Loop 2Please hold while we connect you to the next available agentPlease hold, your call is being transfered.Your call including any time spent on hold will be recorded for quality and training purposes. If your call requires any written confirmation from us regarding your concern, you are consenting that we may send it by email unless you tell us otherwise. We would appreciate your feedback. Please remain on the line after your call is completed, to complete a quick 5-question survey.agent ?ActoryesThank you for patience, all our agents are currently assisting other callers.\u00a0Please continue to hold, and we will answer your call, as soon as possible.Hold Music :30 SeccbOffercbOfferedAvgWaitYEScbOffer = truecbOffered = truePress eventcbOffer &cbOfferedNoYescbOffer=TruecbOffered=FalseAvgWait>5minKeypresscbOffered = truePress 1Are we going to place the customer back to same queue position?",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-813217781",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\33\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/33/01",
+        "mimeType": "image/png",
+        "displayName": "section_033_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "In-Queue Callback",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-In-QueueCallback",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\33\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/33/01",
+          "mimeType": "image/png",
+          "displayName": "section_033_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 34,
+    "level": 1,
+    "heading": "Pre-Queue Callback",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-Pre-QueueCallback",
+    "content": "Pre-Queue Callback\n\tIn-Queue Callback\n\tPress 1Call disconnectsCall disconnectsYesCompleted Press 2CompletedPress 1To Previous MenuAll our agents are busy assisting other customers. Your estimated wait time is X minutes {time}.\u00a0To receive a callback, press 1.\u00a0Otherwise, please hold for the next available agent.To receive a call back at the number you called from, Press 1.\u00a0To receive a call back at a different phone number, Press 2.You have entered $.Attributes.phoneNumber\u00a0Press 1 to confirm or press 2 to re-enter your phone numberThe phone number entered is not a Canadian or US number.Please enter a Canadian or US number to receive a call back.Sorry, that was an invalid entry.Sorry, we did not receive any input.you have reached Maximum number of attempts, please call us again.you have reached Maximum number of attempts, please call us again.Number of Loops :3Your callback request has been recorded.We will call you back in the order\u00a0in which your call was recieved.\u00a0\u00a0Thank you, GoodbyeYou have reached Maximum number of attempts, please call us again.Number of Loops :3Number ValidationNumber of Loops :3QueueQueueCall disconnectsPlease enter your 10-digit phone number.Call disconnectsSorry, that was an invalid entry.Sorry, we did not receive any input.Sorry, that was an invalid entry.Number of Loops :3Call disconnectsSorry, we did not receive any input.you have reached Maximum number of attempts, please call us again.Call disconnectsInputCheck Number FormatTimeout / EmptyInvalidInputValidationInvalidTimeout / EmptyInputValidationInvalidTimeout / EmptyInputPress 1Press 2FalseTrueCheck StaffingQueueYour callback request has been recorded.We will call you back in the order\u00a0in which your call was recieved.\u00a0\u00a0Thank you, Goodbye",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-852750578",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\34\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/34/01",
+        "mimeType": "image/png",
+        "displayName": "section_034_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Pre-Queue Callback",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-Pre-QueueCallback",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\34\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/34/01",
+          "mimeType": "image/png",
+          "displayName": "section_034_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 35,
+    "level": 1,
+    "heading": "VoiceMail",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image",
+      "text"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-VoiceMail",
+    "content": "VoiceMail\n\tVoiceMail\n\tIf you know the extension of the agent,\u00a0you wish to speak with, please press 1.\u00a0To continue the call without an extension, press 0.Noif agent Available\u00a0 \u00a0 \u00a0 \u00a0 To\u00a0 Agent\u00a0invoke VoiceMailModuleQueuePress 1InputyesTextTextTextYesNocheck staffingCustomer Experience\u00a0Back Office Team (BOT) - Number not confirmed yetFraud Team\u00a0 \u00a0- 1-855-836-1472Disputes Team -\u00a01-855-275-2217Designation Level\u00a0Complaints Team - Number not confirmed yetElevation Team\u00a0 -\u00a0 Number Not confirmedElevations Support - Number Not confirmed\u00a0Thanks for calling Rogers Bank. Sorry, that was an invalid entry.Sorry, we did not receive any input.Number of Loops\u00a0:3InputValidationInvalidTimeout / EmptyYou have reached Maximum number of attempts. Please call us again.DisconnectPlease enter the agent's extension\u00a0number and then press pound.The extension number you entered is $.Attributes.AgentExtensionnumber.Please press 1 to confirm, press 2 to re-enter the number.Press 1InputAll our agents are currently unavailable.\u00a0To leave a voicemail for one of our agents,\u00a0please record your message after the beep.\u00a0You have up to 60 seconds.Number of Loops\u00a0:3press 2You have reached Maximum number of attempts. Please call us again.DisconnectYesThe extension number you entered is invalid.Check Hours operationOut of office hoursTrueFalseVoicemail EnabledThank you for calling Rogers Bank, Our office is now closed, please call back during regular business hour..End callVoicemail EnabledTrueThe agent you are trying to reach is unavailable. Please try again later.FalseDisconnectOthersFor service in English, press 1. For Service in French, press\u00a0 2.In office hoursComplaintsQueuePress 0OthersElevation Advisor /\u00a0Dispute Investigator/Fraud InvestigatorQueueIf you know the extension of the agent you wish to speak with Press 1. If you do not and wish to leave a queue level voicemail press 2Press 1Press 2Inputinvoke VoiceMailModuleVoiceMailModuleThank you for calling Rogers Bank. Our office is now closed.\u00a0 Please call back during regular business hours or you can leave a message after the tone.Start Media Streaming(Recording)Stop Media Streaming(Recording)End call",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-852750588",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\35\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/35/01",
+        "mimeType": "image/png",
+        "displayName": "section_035_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "VoiceMail",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image",
+        "text"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-VoiceMail",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\35\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/35/01",
+          "mimeType": "image/png",
+          "displayName": "section_035_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 36,
+    "level": 1,
+    "heading": "Queue Config",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-QueueConfig",
+    "content": "Queue Config\n\tUntitled Diagram-1750838986355\n\tStartPhone NumberCheck\u00a0Transfer TypeTransfer to Phone NumberGet Queue Routing DataSet Working QueueCheck\u00a0HolidayCheck\u00a0Opening\u00a0Hoursis VIP ?Prioritize CallGet Queue MetricsTrueFalseIs Call Recording enabledSet Call RecordingIs\u00a0Screen Recording EnabledSet Screen RecordingSet Customer Queue FlowTrueFalseFalseTrueSet Agent Whisper FlowSet Customer Whisper FlowCheck\u00a0StaffingSurvey\u00a0EnabledQueueNameElseCollectCall /CorporateCardYour call including any time spent on hold will be recorded for quality and training purposes. If your call requires any written confirmation from us regarding your concern, you are consenting that we may send it by email unless you tell us otherwise. We would appreciate your feedback. Please remain on the line after your call is completed, to complete a quick 5-question survey.Set Disconnect Flow (Survey)Is VIPSet Routing CriteriaTrueTransfer To QueueFalseTrueFalseCollect MessageCallback Enabled?Pin\u00a0Validated?FalseTrueTrueAll our agents are busy assisting other customers. Your estimated wait time is X minutes {time}.\u00a0To receive a callback, press 1.\u00a0Otherwise, please hold for the next available agent.TrueFalseFalseInputCallbackPress 1ElseThank you for calling Rogers Bank. The team you are trying to reach is closed for the day. Please try again tomorrow.OpenOpenClosedThank you for calling Rogers bank. Our office is closed for the holiday.\u00a0 GoodbyeDisconnectHolidayCollect Message is not yet Confirmed. In current implementation it is playing a random message.Queue ConfigSelectQueueModule",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-864040382",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\36\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/36/01",
+        "mimeType": "image/png",
+        "displayName": "section_036_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Queue Config",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-QueueConfig",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\36\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/36/01",
+          "mimeType": "image/png",
+          "displayName": "section_036_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 37,
+    "level": 1,
+    "heading": "CNX_DID-Collect_Flow",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image",
+      "text",
+      "table"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-CNX_DID-Collect_Flow",
+    "content": "CNX_DID-Collect_Flow\n\tUntitled Diagram-1750958962164\n\tStartQuebecElseareacodeMerci d'avoir appel\u00e9 la Banque Rogers.For English, please, press 1.Thank you for calling Rogers Bank. pour passer en francais, appuyez sur1.InputInputNo inputPress 1Press 1No InputUse frenchUse EnglishGet ParamsDialled Number= 7055227412Please be advised that Rogers Bank accepts collect calls to this number.\u00a0\u00a0YesHas AdvisoryNoPlay Advisory\u00a0Has Advisory DiscDisconnectYesYesCheck Avg. Wait TimeAll our Agents are busy assisting other customers. Your estimated wait time is <EWT> Minutes.> 5 minTransfer To Agent< 5 minAll of our agents are assisting other callers at this time. Your call is very important to us. Please stay on the line and your call will be answered, in the order it was received.QueueAgent AvailableIs Call Recording enabledSet Call RecordingTrueFalseFalseTrueOpenAgents configured in the below mentioned Routing Profiles Will receive the Call :1. From ApplicationStatus Queue:-P_RogersBank_Credit/ADM/KYC_ENP_RogersBank_Credit/ADM/KYC_FRP_RogersBank_Elevations_ENP_RogersBank_Elevations_FRP_RogersBank_Fraud & Dispute_ENP_RogersBank_Fraud & Dispute_FR2. From CollectCall, LostStolen and CorporateCard Queue:-P_RogersBank_Credit/ADM/KYC_ENP_RogersBank_Credit/ADM/KYC_FRP_RogersBank_CS_ENP_RogersBank_CS_FRP_RogersBank_Fraud & Dispute_ENP_RogersBank_Fraud & Dispute_FR3. From Disputes and Fraud Queue :-P_RogersBank_Elevations_ENP_RogersBank_Elevations_FRP_RogersBank_Fraud & Dispute_ENP_RogersBank_Fraud & Dispute_FRSet Working Queue = QueueNameCheck\u00a0HolidayCheck\u00a0Opening\u00a0HoursThank you for calling Rogers Bank. The team you are trying to reach is closed for the day. Please try again tomorrow.OpenThank you for calling Rogers bank, today we are closed for the holiday. \u00a0Goodbye.DisconnectHolidayNoClosedFor Dialed No. =\u00a07055227412, Transfer to Pre Menu, Similarly9054402838 = CorporateCard Queue9054402839 = CorporateCard Queue8552752215/8646036964 = ApplicationStatus Queue8552752217/8646036961 = Disputes Queue8552752230/8646036963 = Lost/Stolen Queue18558361472/8646036960 = Fraud QueueSet \"Queue Name\" using Dialed NumberResultFraud Q/CSRYesFraud ANI checkIs\u00a0Screen Recording EnabledSet Screen RecordingDialled Number= 7055227412Pre MenuYesNoNoNoCheck\u00a0Staffing(Agent Available)YesQueueNameElseCollectCall /CorporateCardYour call including any time spent on hold will be recorded for quality and training purposes. If your call requires any written confirmation from us, regarding your concern. Your consenting that we may send it by email unless you tell us otherwise. We would appreciate your feedback. Please remain on the line after your call is completed, to complete the quick 5 questions survey.Collect MessageCollect Message is not yet Confirmed. In current implementation it is playing a random message.Get Queue MetricsNoThe agent you are trying to reach is unavailable. Please try again later.Disconnect",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-861361617",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\37\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/37/01",
+        "mimeType": "image/png",
+        "displayName": "section_037_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "CNX_DID-Collect_Flow",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image",
+        "text",
+        "table"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-CNX_DID-Collect_Flow",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\37\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/37/01",
+          "mimeType": "image/png",
+          "displayName": "section_037_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 38,
+    "level": 1,
+    "heading": "VIP OOP Call Flow",
+    "numbering": null,
+    "types": [
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-VIPOOPCallFlow",
+    "content": "VIP OOP Call Flow\n\tUntitled Diagram-1755699882119\n\tStartCheck\u00a0Dialed\u00a0NumberSet Working Queue(OOP_EN)Set Working Queue(OOP_FR)Fraud\u00a0ANI checkResultFraud Queue / CSRYesCheck\u00a0HolidayCheck\u00a0Opening\u00a0HoursThank you for calling Rogers Bank. The team you are trying to reach is closed for the day. Please try again tomorrow.OpenThank you for calling Rogers bank. Our office is closed for the holiday.\u00a0 GoodbyeDisconnectHolidayClosedIs Call Recording enabledSet Call RecordingIs\u00a0Screen Recording EnabledSet Screen RecordingTrueFalseFalseTrueCheck\u00a0Staffing(Agent Available)YesNoPlease hang up and try calling back at a later time. Thank you. GoodbyeDisconnectOpenSet Queue Routing PrioritySet Routing CriteriaCall will route to those Agents configured with Predefined Attributes (skills) as ADM and IPTransfer To Agent83394301728339430173Agents configured in the below mentioned Routing Profiles Will receive the VIP Calls :P_RogersBank_Credit/ADM/KYC_ENP_RogersBank_Elevations_ENP_RogersBank_Credit/ADM/KYC_FRP_RogersBank_Elevations_FRNote : Call will be routed only to the Agents configured with predefined Attributes (skills) as ADM and IPVIP OOP Call Flow",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-895321719",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\38\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/38/01",
+        "mimeType": "image/png",
+        "displayName": "section_038_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "VIP OOP Call Flow",
+      "audit_tags": [],
+      "types": [
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-VIPOOPCallFlow",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\38\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/38/01",
+          "mimeType": "image/png",
+          "displayName": "section_038_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 39,
+    "level": 1,
+    "heading": "Pre Menu SMB",
+    "numbering": null,
+    "types": [
+      "text",
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-PreMenuSMB",
+    "content": "Pre Menu SMBWhen a customer calls the SMB TFN number, SMB pre-menu options are presented. When option 0 is opted, call is routed to SMB queue. IVR behavior will be similar to consumer card IVR.\n\tPre Menu SMB\n\tTo access your account, press 1.\u00a0To change your PIN, press 2.\u00a0To report your card lost or stolen, press 3.\u00a0To check the status of an application, press 4.To hear these options again, press pound.\u00a0To speak with a customer service representative, press 0.Press 3Press 2OptionsOk, connecting you with a customer service\u00a0representative.\u00a0StartPRE MENU SMBChange PinLost & StolenAccount StatusqueueName=SMBPress 1Press 0Press 4NewAccounts\u00a0CSRQueue Name\u00a0=\u00a0applicationStatus",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-930492393",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\39\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/39/01",
+        "mimeType": "image/png",
+        "displayName": "section_039_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Pre Menu SMB",
+      "audit_tags": [],
+      "types": [
+        "text",
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-PreMenuSMB",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\39\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/39/01",
+          "mimeType": "image/png",
+          "displayName": "section_039_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 40,
+    "level": 1,
+    "heading": "Main Menu SMB",
+    "numbering": null,
+    "types": [
+      "text",
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-MainMenuSMB",
+    "content": "Main Menu SMBWhen a customer calls the SMB TFN, the corresponding SMB main menu and subsequent benefit & insurance menu options are presented. Call is routed to SMB queue, when option 0 is opted. IVR behavior will be similar to consumer card IVR.\n\tSMB Main Menu\n\tCardActive,PrimaryPress 5Press 7Press 4Press 1Press 3To activate your card, press 1. To hear your rewards details, press 2. To request a replacement of your damaged card, press 3. To hear your recent transactions, press 4. For assistance with the Rogers Bank app, online banking or mobile wallet, press 5.\u00a0 For Equal Payment Plans, press 6.For cardholder benefits and insurance, press 7.\u00a0For a summary of your account information, press 8. To repeat these options, press pound. To speak with a customer service representative, press 0.To hear your Available Credit, press 1. To request a replacement of your damaged card, press 2. To hear your recent transactions, press 3. To ask a question about your mobile wallet, press 4. To repeat these options, press pound. To speak with a customer service representative, press 0.Press 1Press 2To hear your rewards details, press 1. To request a replacement of your damaged card, press 2. To hear your recent transactions, press 3. For assistance with the Rogers Bank app, online Banking\u00a0 or mobile wallet, press 4.\u00a0 For Equal Payment Plans, press 5.\u00a0 For cardholder benefits and Balance Protection Insurance, press 6.\u00a0\u00a0 For a summary of your account information, press 7. To repeat these options, press pound.\u00a0 To speak with a customer service representative, press 0.Press 2To activate your card, press 1. To hear your Available Credit, press 2. To request a replacement of your damaged card, press 3. To hear your recent transactions, press 4. To ask a question about your mobile wallet, press 5. To repeat these options, press pound. To speak with a customer service representative, press 0.CardActive=No, Primary=YesCardActive=Yes, Primary=NoCardActive=No, Primary=NoReplace CardAPP MenuBenefit & Insurance MenuAccount Summary InfoSMB Main MenuTransactionsAPP MenuBenefit & Insurance MenuAccount Summary InfoCardActive=Yes, Primary=YesActivate Card11Press 6CSRCSRTransactionsRewardsPress 2Press 6Replace cardReplace CardPress 1Replace Card(XP - Replace Card)accountId:<actId>customerId:<custId>Fetch Address details(XP - Address details)InputTenure Address checkTo have the card delivered to <address>, Press 1.\u00a0\u00a0To have the card delivered to a different address, Press 2No InputYour request was successful and a replacement card will arrive at <address> within 10 business days. To expedite the delivery of your card, Press 1.LostStolen CSRqueueName= LostStolenPress 2\u00a0Press 1\u00a0DisconnectPrimaryTextAuthCustomer TypeLostStolenCSRReplace CardReplace CardReplace CardqueueName=LostStolenFor assistance setting up or using your mobile wallet, press 1. To report unauthorized transactions or a lost or stolen mobile device, press 2. To repeat these options, press pound. To return to the previous menu, press star.queueName=FRDCSRPress 2Fraud CSRMobile Wallet MenuPress 1queueName=CSRAPP MenuPress 2Press 3For assistance with online banking, press 1. For assistance with the Rogers Bank app, press 2. For assistance with your mobile wallet, press 3. To Return to the Main Menu, Press 9.queueName=CSRqueueName=CSRCSRCSRPress 1Mobile Wallet MenuBenefit & Insurance MenuPress 2For information about cardholder benefits, press 1.\u00a0 For information related to My Friendly Lawyer, Press 2.\u00a0 For CyberScout, Press 3.queueName=CSRExternal Transfer/ Friendly LawyerqueueName = 844-953-3354CSRqueueName = 833-861-5910External Transfer/\u00a0Cyber ScoutPress 3Press 1RewardsPress 3Press 4Press 5Press 1Press 3Credit limitReplace CardTransactionsMobile Wallet MenuPress 4Press 2Press 1Activate CardCredit limitTransactionsMobile Wallet MenuPress 5Press 4Replace CardPress 3CSRPress 0CSRPress 0CSRPress 0CSRPress 0queueName=SMBqueueName=SMBqueueName=SMBqueueName=SMBqueueName=CSRPress 7Press 8queueName=CSR",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-930786115",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\40\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/40/01",
+        "mimeType": "image/png",
+        "displayName": "section_040_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [
+      "SECURITY"
+    ],
+    "metadata": {
+      "parent_section": "Main Menu SMB",
+      "audit_tags": [
+        "SECURITY"
+      ],
+      "types": [
+        "text",
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-MainMenuSMB",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\40\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/40/01",
+          "mimeType": "image/png",
+          "displayName": "section_040_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 41,
+    "level": 1,
+    "heading": "SelectQueue Module",
+    "numbering": null,
+    "types": [
+      "text",
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-SelectQueueModule",
+    "content": "SelectQueue ModuleSelectQueue ModuleStartVendor CheckCheck Staffing\u00a0(Agents Staffed-Q1)Check Staffing(Agents Staffed-Q2)\u00a0FalseCheck Staffing(Agents Staffed-Q2)TrueFalseTrueCheck Staffing(Agents Available-Q1)Check Staffing(Agents Available-Q2)Check Staffing(Agents Available-Q2)FalseFalseGet Queue MetricsLambda ResponseQueue=Q1Queue=Q2Return QueueQueue=Q1Queue=Q2FalseReturn QueueReturn QueueFalseReturn QueueReturn QueueTrueTrueTrueTrueQueue Selected=Q1Queue Selected=Q2Vendor 1 onlyQueue=Q1Queue=Q2Vendor 2 OnlySelectQueueLogic\n\tSelectQueue Module",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-1031270198",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\41\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/41/01",
+        "mimeType": "image/png",
+        "displayName": "section_041_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "SelectQueue Module",
+      "audit_tags": [],
+      "types": [
+        "text",
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-SelectQueueModule",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\41\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/41/01",
+          "mimeType": "image/png",
+          "displayName": "section_041_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  },
+  {
+    "id": 42,
+    "level": 1,
+    "heading": "Customer Queue",
+    "numbering": null,
+    "types": [
+      "text",
+      "diagram",
+      "image"
+    ],
+    "placeholderCount": 0,
+    "status": "ok",
+    "domId": "IVRFlowsMVP-CustomerQueue",
+    "content": "Customer QueueStartPlay MusicYour call including any time spent on hold will be recorded for quality and training purposes. If your call requires any written confirmation from us regarding your concern, you are consenting that we may send it by email unless you tell us otherwise. We would appreciate your feedback. Please remain on the line after your call is completed, to complete a quick 5-question survey.VendorRoutingRoutedEnableFalseContinueDisableStaffing > 0TrueFalseTransfer to\u00a0Alternate QueueSet Routed = TrueMulti Vendor QueueFalseTrueTrueIn Queue RoutingCurrent\u00a0Queue\u00a0= cnxcnxCurrent\u00a0Queue= gsgsbothContinueFalseFalseTrueTrueQueue 2\u00a0Staffing > 0FalseTrueCustomerQueue\n\tUntitled Diagram-1775581580510\n\t\n\t\n\n\n                \n        \n    \n        \n        \n            \n        \n        \n      \n        \n        \n            Filter table dataCreate a pivot tableCreate a chart from data series\n        \n    \n        \n        \n            Configure buttons visibility",
+    "visualElements": [
+      {
+        "tag": "svg",
+        "domId": null,
+        "className": "",
+        "alt": null,
+        "title": null,
+        "assetCandidates": [],
+        "iframeSrc": null
+      },
+      {
+        "tag": "img",
+        "domId": "comments-icon-1052183055",
+        "className": "",
+        "alt": null,
+        "title": "Show Comments",
+        "assetCandidates": [],
+        "iframeSrc": null
+      }
+    ],
+    "visual_evidence": [
+      {
+        "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\42\\visual_01.png",
+        "url": "/api/hld/visual/c516c7f4f6aa94a9/42/01",
+        "mimeType": "image/png",
+        "displayName": "section_042_visual_01.png",
+        "sourceTag": "svg",
+        "captureMethod": "rendered-screenshot"
+      }
+    ],
+    "visual_review_available": true,
+    "visual_review_analyzed": false,
+    "audit_tags": [],
+    "metadata": {
+      "parent_section": "Customer Queue",
+      "audit_tags": [],
+      "types": [
+        "text",
+        "diagram",
+        "image"
+      ],
+      "status": "ok",
+      "level": 1,
+      "numbering": null,
+      "placeholderCount": 0,
+      "domId": "IVRFlowsMVP-CustomerQueue",
+      "visual_evidence": [
+        {
+          "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\c516c7f4f6aa94a9\\42\\visual_01.png",
+          "url": "/api/hld/visual/c516c7f4f6aa94a9/42/01",
+          "mimeType": "image/png",
+          "displayName": "section_042_visual_01.png",
+          "sourceTag": "svg",
+          "captureMethod": "rendered-screenshot"
+        }
+      ],
+      "visual_review_available": true,
+      "visual_review_analyzed": false
+    }
+  }
+]
