@@ -581,7 +581,7 @@ TYPE_LABELS = {
     "unresolved-macro": "Unresolved macro",
 }
 
-MATRIX_SCHEMA_VERSION = 6
+MATRIX_SCHEMA_VERSION = 5
 HLD_VISUAL_CACHE_DIR = Path(__file__).resolve().parent / "hld_visual_cache"
 
 # Lazy OCR reader used only on the small top strip of exported interactive diagrams.
@@ -1265,12 +1265,8 @@ def build_hld_review_plan(payload: HLDReviewPlanRequest):
 
     total_words = sum(_section_word_count(c) for c in eligible)
     section_count = len(eligible)
-    scope_count = max(1, len(scopes))
-    # AI review now runs one isolated Copilot session per section + scope so that
-    # actual usage can be attributed exactly. The plan therefore scales the
-    # estimate by the number of selected scopes as well.
-    estimated_prompt_tokens = int(round((total_words * 1.35 + section_count * 220) * scope_count))
-    estimated_completion_tokens = section_count * scope_count * max(300, 160 + 70)
+    estimated_prompt_tokens = int(round(total_words * 1.35 + section_count * (220 + 35 * len(scopes))))
+    estimated_completion_tokens = section_count * max(300, 160 + 70 * max(1, len(scopes)))
 
     return {
         "success": True,
@@ -1286,7 +1282,6 @@ def build_hld_review_plan(payload: HLDReviewPlanRequest):
         "estimated_prompt_tokens": estimated_prompt_tokens,
         "estimated_completion_tokens": estimated_completion_tokens,
         "estimated_total_tokens": estimated_prompt_tokens + estimated_completion_tokens,
-        "estimated_model_calls": section_count * max(1, len(scopes)),
         "estimate_note": "Planning estimate only. Actual model/SDK usage should be captured during execution.",
     }
 
@@ -1338,25 +1333,6 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
         "ivr_flow_requirements": []
     }
 
-    aggregated_blueprint["ai_consumption"] = {
-        "by_section": [],
-        "by_scope": {},
-        "by_model": {},
-        "totals": {
-            "model_calls": 0,
-            "input_tokens": 0,
-            "output_tokens": 0,
-            "total_tokens": 0,
-            "reasoning_tokens": 0,
-            "cache_read_tokens": 0,
-            "cache_write_tokens": 0,
-            "duration_ms": 0,
-            "total_nano_aiu": 0,
-            "ai_credits_from_nano_aiu": 0.0,
-            "premium_request_cost": 0,
-        }
-    }
-
     try:
         proc = get_live_copilot_process()
         
@@ -1371,197 +1347,114 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
             
             visual_evidence = chunk.get("visual_evidence") or (chunk.get("metadata") or {}).get("visual_evidence") or []
             visual_scopes = {"architecture", "security", "vulnerability", "integration", "ivr", "documentation", "reliability", "performance"}
+            should_attach_visuals = bool(visual_evidence) and bool(set(review_scopes).intersection(visual_scopes))
+
+            # Copilot SDK image attachments use absolute file paths. We pass the
+            # attachment metadata to the Node reviewer; it should attach these files
+            # to session.send()/sendAndWait() when visual review is enabled.
             content_types = metadata.get("types") or chunk.get("types") or []
+            script_payload = {
+                "relativePath": f"{payload.document_title} -> {header_context}",
+                "source": chunk.get("content", ""),
+                "diagramType": "HLD_SEGMENTATION_MODE",
+                "reviewScopes": review_scopes or ["ALL"],
+                "contentTypes": content_types,
+                "sectionId": int(chunk.get("id", idx + 1)),
+                "sectionHeading": header_context,
+                "visualReviewRequired": should_attach_visuals,
+                "visualEvidence": visual_evidence if should_attach_visuals else [],
+            }
 
-            # Run one isolated Copilot session per review scope. This is intentional:
-            # it makes the SDK-reported usage attributable to exactly one section + one scope,
-            # rather than attempting to divide a combined multi-scope model call.
-            scopes_to_run = review_scopes or ["architecture"]
-            for review_scope in scopes_to_run:
-                should_attach_visuals = bool(visual_evidence) and review_scope in visual_scopes
+            proc.stdin.write(json.dumps(script_payload) + "\n")
+            proc.stdin.flush()
+            
+            stdout_line = proc.stdout.readline()
+            if not stdout_line:
+                raise Exception("Copilot background daemon disconnected.")
+                
+            response_data = json.loads(stdout_line.strip())
 
-                script_payload = {
-                    "relativePath": f"{payload.document_title} -> {header_context}",
-                    "source": chunk.get("content", ""),
-                    "diagramType": "HLD_SEGMENTATION_MODE",
-                    "reviewScopes": [review_scope],
-                    "contentTypes": content_types,
-                    "sectionId": int(chunk.get("id", idx + 1)),
-                    "sectionHeading": header_context,
-                    "visualReviewRequired": should_attach_visuals,
-                    "visualEvidence": visual_evidence if should_attach_visuals else [],
-                }
+            print(
+                f"[HLD REVIEW DEBUG] Node response keys: "
+                f"{list(response_data.keys())}"
+            )
 
+            if not response_data.get("success"):
                 print(
-                    f"   ↳ Reviewing section {idx+1}/{len(matrix_chunks)} "
-                    f"[{header_context}] scope={review_scope}"
+                    f"[HLD REVIEW ERROR] Node reviewer returned failure: "
+                    f"{response_data.get('error')}"
+                )
+                continue
+
+            raw_payload = response_data.get("mermaid_string")
+
+            print(
+                f"[HLD REVIEW DEBUG] mermaid_string type="
+                f"{type(raw_payload).__name__}"
+            )
+
+            if isinstance(raw_payload, dict):
+                chunk_blueprint = raw_payload
+
+            elif isinstance(raw_payload, str):
+                raw_json_str = raw_payload.strip()
+
+                raw_json_str = re.sub(
+                    r'^```(?:json)?\s*',
+                    '',
+                    raw_json_str,
+                    flags=re.IGNORECASE
                 )
 
-                proc.stdin.write(json.dumps(script_payload) + "\n")
-                proc.stdin.flush()
+                raw_json_str = re.sub(
+                    r'\s*```$',
+                    '',
+                    raw_json_str
+                ).strip()
 
-                stdout_line = proc.stdout.readline()
-                if not stdout_line:
-                    raise Exception("Copilot background daemon disconnected.")
-
-                response_data = json.loads(stdout_line.strip())
-                print(
-                    f"[HLD REVIEW DEBUG] Node response keys: "
-                    f"{list(response_data.keys())}"
-                )
-
-                if not response_data.get("success"):
+                try:
+                    chunk_blueprint = json.loads(raw_json_str)
+                except json.JSONDecodeError as parse_error:
                     print(
-                        f"[HLD REVIEW ERROR] Node reviewer returned failure: "
-                        f"section={chunk.get('id')} scope={review_scope} "
-                        f"error={response_data.get('error')}"
+                        f"[HLD REVIEW ERROR] JSON parse failed for "
+                        f"[{header_context}]: {parse_error}"
+                    )
+                    print(
+                        f"[HLD REVIEW DEBUG] Raw payload preview: "
+                        f"{raw_json_str[:2000]}"
                     )
                     continue
 
-                # Capture exact SDK usage returned by the Node reviewer.
-                usage = response_data.get("usage")
-                if usage:
-                    # Backward-compatible fallback if the response is wrapped differently.
-                    usage_list = [usage]
-                else:
-                    usage_wrapper = response_data.get("ai_consumption", {}).get("section", {})
-                    usage_list = usage_wrapper.get("usageByScope", []) if usage_wrapper else []
-
-                for usage_item in usage_list:
-                    usage_item = dict(usage_item)
-                    usage_item.setdefault("sectionId", int(chunk.get("id", idx + 1)))
-                    usage_item.setdefault("sectionHeading", header_context)
-                    usage_item.setdefault("reviewScope", review_scope)
-                    aggregated_blueprint["ai_consumption"]["by_section"].append(usage_item)
-
-                    totals = aggregated_blueprint["ai_consumption"]["totals"]
-                    for source_key, target_key in (
-                        ("modelCalls", "model_calls"),
-                        ("inputTokens", "input_tokens"),
-                        ("outputTokens", "output_tokens"),
-                        ("totalTokens", "total_tokens"),
-                        ("reasoningTokens", "reasoning_tokens"),
-                        ("cacheReadTokens", "cache_read_tokens"),
-                        ("cacheWriteTokens", "cache_write_tokens"),
-                        ("durationMs", "duration_ms"),
-                        ("totalNanoAiu", "total_nano_aiu"),
-                        ("aiCreditsFromNanoAiu", "ai_credits_from_nano_aiu"),
-                        ("premiumRequestCost", "premium_request_cost"),
-                    ):
-                        try:
-                            totals[target_key] += usage_item.get(source_key, 0) or 0
-                        except (TypeError, ValueError):
-                            pass
-
-                    scope_bucket = aggregated_blueprint["ai_consumption"]["by_scope"].setdefault(
-                        review_scope,
-                        {
-                            "model_calls": 0,
-                            "input_tokens": 0,
-                            "output_tokens": 0,
-                            "total_tokens": 0,
-                            "reasoning_tokens": 0,
-                            "cache_read_tokens": 0,
-                            "cache_write_tokens": 0,
-                            "duration_ms": 0,
-                            "total_nano_aiu": 0,
-                            "ai_credits_from_nano_aiu": 0.0,
-                            "premium_request_cost": 0,
-                        },
-                    )
-                    for source_key, target_key in (
-                        ("modelCalls", "model_calls"),
-                        ("inputTokens", "input_tokens"),
-                        ("outputTokens", "output_tokens"),
-                        ("totalTokens", "total_tokens"),
-                        ("reasoningTokens", "reasoning_tokens"),
-                        ("cacheReadTokens", "cache_read_tokens"),
-                        ("cacheWriteTokens", "cache_write_tokens"),
-                        ("durationMs", "duration_ms"),
-                        ("totalNanoAiu", "total_nano_aiu"),
-                        ("aiCreditsFromNanoAiu", "ai_credits_from_nano_aiu"),
-                        ("premiumRequestCost", "premium_request_cost"),
-                    ):
-                        try:
-                            scope_bucket[target_key] += usage_item.get(source_key, 0) or 0
-                        except (TypeError, ValueError):
-                            pass
-
-                    # Aggregate model-level metrics returned by the Copilot SDK.
-                    # These are exact for this isolated section+scope session.
-                    model_breakdown = usage_item.get("modelBreakdown") or {}
-                    for model, metrics in model_breakdown.items():
-                        model_bucket = aggregated_blueprint["ai_consumption"]["by_model"].setdefault(
-                            model,
-                            {
-                                "calls": 0,
-                                "input_tokens": 0,
-                                "output_tokens": 0,
-                                "reasoning_tokens": 0,
-                                "total_nano_aiu": 0,
-                                "ai_credits_from_nano_aiu": 0.0,
-                            },
-                        )
-                        for source_key, target_key in (
-                            ("calls", "calls"),
-                            ("inputTokens", "input_tokens"),
-                            ("outputTokens", "output_tokens"),
-                            ("reasoningTokens", "reasoning_tokens"),
-                            ("totalNanoAiu", "total_nano_aiu"),
-                            ("aiCreditsFromNanoAiu", "ai_credits_from_nano_aiu"),
-                        ):
-                            try:
-                                model_bucket[target_key] += metrics.get(source_key, 0) or 0
-                            except (TypeError, ValueError):
-                                pass
-
-
-                raw_payload = response_data.get("mermaid_string")
-                if isinstance(raw_payload, dict):
-                    chunk_blueprint = raw_payload
-                elif isinstance(raw_payload, str):
-                    raw_json_str = raw_payload.strip()
-                    raw_json_str = re.sub(r'^```(?:json)?\s*', '', raw_json_str, flags=re.IGNORECASE)
-                    raw_json_str = re.sub(r'\s*```$', '', raw_json_str).strip()
-                    try:
-                        chunk_blueprint = json.loads(raw_json_str)
-                    except json.JSONDecodeError as parse_error:
-                        print(
-                            f"[HLD REVIEW ERROR] JSON parse failed for "
-                            f"[{header_context}] scope={review_scope}: {parse_error}"
-                        )
-                        print(f"[HLD REVIEW DEBUG] Raw payload preview: {raw_json_str[:2000]}")
-                        continue
-                else:
-                    print(
-                        f"[HLD REVIEW ERROR] Unexpected mermaid_string type: "
-                        f"{type(raw_payload).__name__}"
-                    )
-                    continue
-
+            else:
                 print(
-                    f"[HLD REVIEW DEBUG] Parsed section [{header_context}] scope={review_scope} -> "
-                    f"findings={len(chunk_blueprint.get('findings', []))}, "
-                    f"passes={len(chunk_blueprint.get('passed_checks', []))}, "
-                    f"manual={len(chunk_blueprint.get('manual_review', []))}"
+                    f"[HLD REVIEW ERROR] Unexpected mermaid_string type: "
+                    f"{type(raw_payload).__name__}"
                 )
+                continue
 
-                for key in (
-                    "findings",
-                    "passed_checks",
-                    "manual_review",
-                    "review_required_sections",
-                    "ivr_flow_requirements",
-                ):
-                    values = chunk_blueprint.get(key)
-                    if isinstance(values, list):
-                        aggregated_blueprint[key].extend(values)
+            print(
+                f"[HLD REVIEW DEBUG] Parsed section "
+                f"[{header_context}] -> "
+                f"findings={len(chunk_blueprint.get('findings', []))}, "
+                f"passes={len(chunk_blueprint.get('passed_checks', []))}, "
+                f"manual={len(chunk_blueprint.get('manual_review', []))}"
+            )
 
-                if should_attach_visuals:
-                    aggregated_blueprint["review_summary"]["visual_sections_reviewed"] += 1
+            for key in (
+                "findings",
+                "passed_checks",
+                "manual_review",
+                "review_required_sections",
+                "ivr_flow_requirements",
+            ):
+                values = chunk_blueprint.get(key)
+                if isinstance(values, list):
+                    aggregated_blueprint[key].extend(values)
+
+            if should_attach_visuals:
+                aggregated_blueprint["review_summary"]["visual_sections_reviewed"] += 1
 
         finding_count = len(aggregated_blueprint["findings"])
-
         pass_count = len(aggregated_blueprint["passed_checks"])
         manual_count = len(aggregated_blueprint["manual_review"])
         overall_status = "FINDINGS" if finding_count else ("MANUAL_REVIEW" if manual_count else "PASS")
