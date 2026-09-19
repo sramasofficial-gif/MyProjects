@@ -120,6 +120,8 @@ export default function HLDAnalyzer() {
     const [selectedReviewScopes, setSelectedReviewScopes] = useState(DEFAULT_REVIEW_SCOPES);
     const [reviewPlan, setReviewPlan] = useState(null);
     const [activeTab, setActiveTab] = useState("inventory");
+    const [exportingExcel, setExportingExcel] = useState(false);
+    const [excelExportError, setExcelExportError] = useState("");
 
     function handleURLChange(e) {
         setWikiURL(e.target.value);
@@ -386,6 +388,37 @@ export default function HLDAnalyzer() {
             await navigator.clipboard.writeText(text);
         } catch (err) {
             setError("Unable to copy selected headings to the clipboard.");
+        }
+    }
+
+    async function downloadExcelReport() {
+        if (!analysisResult || !wikiURL) return;
+        setExportingExcel(true);
+        setExcelExportError("");
+        try {
+            const response = await fetch(`${BACKEND_API_BASE}/api/hld/export-excel`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    document_title: wikiURL,
+                    review_result: analysisResult,
+                    selected_section_ids: Array.from(selectedIds),
+                }),
+            });
+            if (!response.ok) throw new Error(await response.text() || "Failed to generate Excel report.");
+            const blob = await response.blob();
+            const disposition = response.headers.get("content-disposition") || "";
+            const match = disposition.match(/filename="?([^";]+)"?/i);
+            const filename = match?.[1] || "HLD_Review.xlsx";
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click(); a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            setExcelExportError(err.message || "Failed to generate Excel report.");
+        } finally {
+            setExportingExcel(false);
         }
     }
 
@@ -680,11 +713,12 @@ export default function HLDAnalyzer() {
                             ["plan", "Review Plan"],
                             ["review", "AI Review"],
                             ["findings", "Findings"],
+                            ["telemetry", "Telemetry"],
                         ].map(([id, label]) => (
                             <button
                                 key={id}
                                 onClick={() => setActiveTab(id)}
-                                disabled={(id === "findings" && !analysisResult) || (id === "review" && !verificationMatrix)}
+                                disabled={((id === "findings" || id === "telemetry") && !analysisResult) || (id === "review" && !verificationMatrix)}
                                 style={{
                                     flex: 1,
                                     minWidth: 0,
@@ -695,8 +729,8 @@ export default function HLDAnalyzer() {
                                     color: activeTab === id ? "#fff" : REPORT.inkSoft,
                                     fontSize: 12.5,
                                     fontWeight: activeTab === id ? 700 : 600,
-                                    cursor: ((id === "findings" && !analysisResult) || (id === "review" && !verificationMatrix)) ? "not-allowed" : "pointer",
-                                    opacity: (id === "findings" && !analysisResult) ? 0.45 : 1,
+                                    cursor: (((id === "findings" || id === "telemetry") && !analysisResult) || (id === "review" && !verificationMatrix)) ? "not-allowed" : "pointer",
+                                    opacity: ((id === "findings" || id === "telemetry") && !analysisResult) ? 0.45 : 1,
                                     whiteSpace: "nowrap",
                                 }}
                             >
@@ -1765,6 +1799,47 @@ export default function HLDAnalyzer() {
                                         </section>
                                     </>
                                 );
+                            })()}
+                        </div>
+                    </div>
+                )}
+                {activeTab === "telemetry" && analysisResult && !loading && (
+                    <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", paddingRight: 6, scrollbarGutter: "stable" }}>
+                        <div style={{ background: REPORT.panel, border: `1px solid ${REPORT.line}`, borderRadius: 8, padding: 22 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 14, marginBottom: 16 }}>
+                                <div>
+                                    <h2 style={{ margin: 0, color: REPORT.accent, fontSize: 25 }}>AI Consumption & Telemetry</h2>
+                                    <p style={{ margin: "6px 0 0", color: REPORT.inkSoft, fontSize: 12.5 }}>Final workflow step. Review actual Copilot usage and request/context diagnostics.</p>
+                                </div>
+                                <button onClick={downloadExcelReport} disabled={exportingExcel} style={{ background: REPORT.accent, color: "#fff", border: "none", borderRadius: 7, padding: "10px 16px", fontWeight: 700, cursor: exportingExcel ? "not-allowed" : "pointer", opacity: exportingExcel ? 0.65 : 1, whiteSpace: "nowrap" }}>
+                                    {exportingExcel ? "Building Excel..." : "Download Excel Report"}
+                                </button>
+                            </div>
+                            {excelExportError && <div style={{ marginBottom: 12, padding: 10, borderRadius: 6, background: REPORT.issueBg, color: REPORT.issue, fontSize: 12 }}>{excelExportError}</div>}
+                            {(() => {
+                                const c = analysisResult.ai_consumption || {};
+                                const t = c.totals || {};
+                                const secs = c.by_section || [];
+                                const scopes = Object.entries(c.by_scope || {});
+                                const models = Object.entries(c.by_model || {});
+                                const fmt = v => Number(v || 0).toLocaleString();
+                                const credits = v => Number(v || 0).toFixed(6);
+                                return <>
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0,1fr))", gap: 10, marginBottom: 18 }}>
+                                        {[["Model calls",t.model_calls],["Input tokens",t.input_tokens],["Output tokens",t.output_tokens],["Reasoning tokens",t.reasoning_tokens],["SDK AI credits",credits(t.ai_credits_from_nano_aiu)]].map(([label,value]) => <div key={label} style={{ background: REPORT.emptyBg, border: `1px solid ${REPORT.line}`, borderRadius: 7, padding: 12 }}><div style={{ fontSize: 20, fontWeight: 750 }}>{typeof value === "string" ? value : fmt(value)}</div><div style={{ marginTop: 3, fontSize: 10.5, color: REPORT.inkSoft }}>{label}</div></div>)}
+                                    </div>
+                                    <div style={{ overflowX: "auto", marginBottom: 18 }}>
+                                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+                                            <thead><tr style={{ background: REPORT.emptyBg }}>{["Section","Scopes","Model","Input","Output","Reasoning","AI credits","Src est.","Prompt est.","Attachments","Context","Status"].map(h=><th key={h} style={{ padding: "7px 8px", textAlign: ["Input","Output","Reasoning","AI credits","Src est.","Prompt est.","Attachments","Context"].includes(h)?"right":"left", borderBottom:`1px solid ${REPORT.line}`, color:REPORT.inkSoft }}>{h}</th>)}</tr></thead>
+                                            <tbody>{secs.map((item,idx)=>{const d=item.diagnostics||{}; const ci=item.contextInfo||{}; return <tr key={`${item.sectionId}-${idx}`}><td style={{padding:"7px 8px",borderBottom:`1px solid ${REPORT.line}`}}>{item.sectionHeading||`Section ${item.sectionId}`}</td><td style={{padding:"7px 8px",borderBottom:`1px solid ${REPORT.line}`}}>{(item.reviewScopes||[]).join(", ")}</td><td style={{padding:"7px 8px",borderBottom:`1px solid ${REPORT.line}`}}>{(item.models||[]).join(", ")||"-"}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.inputTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.outputTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.reasoningTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{credits(item.aiCreditsFromNanoAiu)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(d.sourceEstimatedTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(d.promptEstimatedTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(d.attachmentCount)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(ci.totalTokens)}</td><td style={{padding:"7px 8px",borderBottom:`1px solid ${REPORT.line}`}}>{item.turnStatus||"-"}</td></tr>})}</tbody>
+                                        </table>
+                                    </div>
+                                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:18 }}>
+                                        <div><h3 style={{margin:"0 0 8px",fontSize:15}}>Scope coverage</h3><table style={{width:"100%",borderCollapse:"collapse",fontSize:11.5}}><thead><tr style={{background:REPORT.emptyBg}}><th style={{padding:7,textAlign:"left"}}>Scope</th><th style={{padding:7,textAlign:"right"}}>Sections</th><th style={{padding:7,textAlign:"right"}}>Shared calls</th></tr></thead><tbody>{scopes.map(([scope,item])=><tr key={scope}><td style={{padding:7,borderBottom:`1px solid ${REPORT.line}`}}>{scope}</td><td style={{padding:7,textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.sections_reviewed)}</td><td style={{padding:7,textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.shared_model_calls)}</td></tr>)}</tbody></table></div>
+                                        <div><h3 style={{margin:"0 0 8px",fontSize:15}}>Model usage</h3><table style={{width:"100%",borderCollapse:"collapse",fontSize:11.5}}><thead><tr style={{background:REPORT.emptyBg}}><th style={{padding:7,textAlign:"left"}}>Model</th><th style={{padding:7,textAlign:"right"}}>Calls</th><th style={{padding:7,textAlign:"right"}}>Input</th><th style={{padding:7,textAlign:"right"}}>AI credits</th></tr></thead><tbody>{models.map(([model,item])=><tr key={model}><td style={{padding:7,borderBottom:`1px solid ${REPORT.line}`}}>{model}</td><td style={{padding:7,textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.calls)}</td><td style={{padding:7,textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.input_tokens)}</td><td style={{padding:7,textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{credits(item.ai_credits_from_nano_aiu)}</td></tr>)}</tbody></table></div>
+                                    </div>
+                                    <div style={{marginTop:16,padding:10,background:REPORT.accentSoft,border:`1px solid ${REPORT.line}`,borderRadius:6,color:REPORT.inkSoft,fontSize:11.5,lineHeight:1.45}}>Actual model usage comes from Copilot SDK telemetry. Source/prompt estimates are diagnostics only. A shared section-level call is not artificially split across review scopes.</div>
+                                </>;
                             })()}
                         </div>
                     </div>

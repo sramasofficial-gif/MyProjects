@@ -14,6 +14,7 @@ import asyncio # 🟢 Ensure this is imported at the top of server.py
 import threading  # 🟢 NEW: Import native thread locking module
 import hashlib
 from pathlib import Path
+from datetime import datetime
 
 from pydantic import BaseModel
 from typing import Optional
@@ -583,6 +584,8 @@ TYPE_LABELS = {
 
 MATRIX_SCHEMA_VERSION = 5
 HLD_VISUAL_CACHE_DIR = Path(__file__).resolve().parent / "hld_visual_cache"
+HLD_REPORTS_DIR = Path(__file__).resolve().parent / "hld_reports"
+HLD_REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Lazy OCR reader used only on the small top strip of exported interactive diagrams.
 # It is intentionally initialized on first use so normal HLD scraping does not pay
@@ -653,6 +656,12 @@ REVIEW_SCOPE_DEFINITIONS = {
         "keywords": ["ivr", "contact flow", "amazon connect", "lambda", "lex", "queue", "caller", "prompt", "dtmf", "transfer", "disconnect", "contact center", "agent"],
     },
 }
+
+class HLDExcelExportRequest(BaseModel):
+    document_title: str
+    review_result: dict
+    selected_section_ids: list[int] = []
+
 
 class HLDReviewPlanRequest(BaseModel):
     document_title: str
@@ -1555,6 +1564,185 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
     except Exception as e:
         print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def _safe_report_filename(document_title: str) -> str:
+    base = str(document_title or "HLD_Review").split("#", 1)[0]
+    base = os.path.basename(base).strip() or "HLD_Review"
+    base = re.sub(r"[^A-Za-z0-9._-]+", "_", base)
+    return f"{base}_HLD_Review.xlsx"
+
+
+def _excel_text(value):
+    if value is None:
+        return ""
+    if isinstance(value, (dict, list)):
+        return json.dumps(value, ensure_ascii=False)
+    return value
+
+
+def _format_excel_sheet(ws, widths=None, freeze="A2"):
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    from openpyxl.utils import get_column_letter
+
+    ws.sheet_view.showGridLines = False
+    for cell in ws[1]:
+        cell.font = Font(bold=True, color="FFFFFF")
+        cell.fill = PatternFill("solid", fgColor="2A5B8C")
+        cell.alignment = Alignment(vertical="center", wrap_text=True)
+    ws.row_dimensions[1].height = 28
+    thin = Side(style="thin", color="D9E0E7")
+    for row in ws.iter_rows(min_row=2):
+        for cell in row:
+            cell.border = Border(bottom=thin)
+            cell.alignment = Alignment(vertical="top", wrap_text=True)
+    ws.freeze_panes = freeze
+    if widths:
+        for idx, width in widths.items():
+            ws.column_dimensions[get_column_letter(idx)].width = width
+
+
+def _write_sheet(ws, headers, rows):
+    ws.append(headers)
+    for row in rows:
+        ws.append([_excel_text(v) for v in row])
+    if headers:
+        ws.auto_filter.ref = f"A1:{chr(64 + min(len(headers), 26))}{max(1, ws.max_row)}"
+
+
+@app.post("/api/hld/export-excel")
+def export_hld_review_excel(payload: HLDExcelExportRequest):
+    """Create a polished multi-sheet Excel report from a completed HLD review."""
+    try:
+        from openpyxl import Workbook
+        from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+        from openpyxl.utils import get_column_letter
+
+        result = payload.review_result or {}
+        metadata = result.get("document_metadata") or {}
+        summary = result.get("review_summary") or {}
+        findings = result.get("findings") or []
+        passes = result.get("passed_checks") or []
+        manual = result.get("manual_review") or []
+        errors = result.get("review_errors") or []
+        consumption = result.get("ai_consumption") or {}
+        totals = consumption.get("totals") or {}
+        by_section = consumption.get("by_section") or []
+        by_scope = consumption.get("by_scope") or {}
+        by_model = consumption.get("by_model") or {}
+
+        wb = Workbook()
+        summary_ws = wb.active
+        summary_ws.title = "Executive Summary"
+        summary_ws.sheet_view.showGridLines = False
+        summary_ws.merge_cells("A1:F1")
+        summary_ws["A1"] = "IVR SDLC Automated Analyst Platform - HLD Review"
+        summary_ws["A1"].font = Font(size=18, bold=True, color="FFFFFF")
+        summary_ws["A1"].fill = PatternFill("solid", fgColor="16324F")
+        summary_ws["A3"] = "Document"
+        summary_ws["B3"] = metadata.get("title") or payload.document_title
+        summary_ws["A4"] = "Review status"
+        summary_ws["B4"] = summary.get("overall_status") or ""
+        summary_ws["A5"] = "Sections reviewed"
+        summary_ws["B5"] = metadata.get("sections_reviewed", 0)
+        summary_ws["A6"] = "Findings"
+        summary_ws["B6"] = "=COUNTA(Findings!A:A)-1"
+        summary_ws["A7"] = "Passed checks"
+        summary_ws["B7"] = "=COUNTA('Passed Checks'!A:A)-1"
+        summary_ws["A8"] = "Manual review"
+        summary_ws["B8"] = "=COUNTA('Manual Review'!A:A)-1"
+        summary_ws["A9"] = "Review errors"
+        summary_ws["B9"] = "=COUNTA('Review Errors'!A:A)-1"
+        summary_ws["A11"] = "Actual model calls"
+        summary_ws["B11"] = totals.get("model_calls", 0)
+        summary_ws["A12"] = "Actual input tokens"
+        summary_ws["B12"] = totals.get("input_tokens", 0)
+        summary_ws["A13"] = "Actual output tokens"
+        summary_ws["B13"] = totals.get("output_tokens", 0)
+        summary_ws["A14"] = "Actual reasoning tokens"
+        summary_ws["B14"] = totals.get("reasoning_tokens", 0)
+        summary_ws["A15"] = "SDK AI credits"
+        summary_ws["B15"] = totals.get("ai_credits_from_nano_aiu", 0)
+        for r in list(range(3,10)) + list(range(11,16)):
+            summary_ws[f"A{r}"].font = Font(bold=True, color="4A5A6B")
+            summary_ws[f"A{r}"].fill = PatternFill("solid", fgColor="EEF1F4")
+            summary_ws[f"B{r}"].alignment = Alignment(vertical="top", wrap_text=True)
+        summary_ws["B15"].number_format = "0.000000"
+        for c,w in {1:28,2:78,3:18,4:18,5:18,6:18}.items():
+            summary_ws.column_dimensions[get_column_letter(c)].width=w
+
+        fws = wb.create_sheet("Findings")
+        _write_sheet(fws,
+            ["Finding ID","Scope","Category","Severity","Title","Finding","Evidence - Text","Evidence - Visual","Impact","Recommendation","Confidence","Section Reference","Visual Reviewed"],
+            [[f.get("finding_id"),f.get("scope"),f.get("category"),f.get("severity"),f.get("title"),f.get("finding"),(f.get("evidence") or {}).get("text"),(f.get("evidence") or {}).get("visual_observation"),f.get("impact"),f.get("recommendation"),f.get("confidence"),f.get("section_reference"),"Yes" if f.get("visual_reviewed") else "No"] for f in findings])
+        _format_excel_sheet(fws,{1:14,2:16,3:22,4:13,5:40,6:60,7:45,8:55,9:50,10:55,11:12,12:60,13:15})
+        sev_fill={"Critical":"F4CCCC","High":"FCE4D6","Medium":"FBEAD9","Low":"FFF2CC","Informational":"EDEDED"}
+        for row in range(2,fws.max_row+1):
+            fill=sev_fill.get(str(fws.cell(row,4).value))
+            if fill: fws.cell(row,4).fill=PatternFill("solid",fgColor=fill)
+
+        pws=wb.create_sheet("Passed Checks")
+        _write_sheet(pws,["Scope","Category","Check","Evidence","Section Reference","Visual Reviewed"],[[p.get("scope"),p.get("category"),p.get("check"),p.get("evidence"),p.get("section_reference"),"Yes" if p.get("visual_reviewed") else "No"] for p in passes])
+        _format_excel_sheet(pws,{1:18,2:22,3:60,4:75,5:60,6:16})
+
+        mws=wb.create_sheet("Manual Review")
+        _write_sheet(mws,["Scope","Reason","Required Action","Section Reference"],[[m.get("scope"),m.get("reason"),m.get("required_action"),m.get("section_reference")] for m in manual])
+        _format_excel_sheet(mws,{1:18,2:80,3:80,4:65})
+
+        ews=wb.create_sheet("Review Errors")
+        _write_sheet(ews,["Section ID","Section","Error","Raw Response"],[[e.get("section_id"),e.get("section"),e.get("error"),e.get("raw_response")] for e in errors])
+        _format_excel_sheet(ews,{1:12,2:50,3:85,4:80})
+
+        tws=wb.create_sheet("AI Telemetry")
+        trows=[]
+        for u in by_section:
+            d=u.get("diagnostics") or {}
+            ci=u.get("contextInfo") or {}
+            trows.append([
+                u.get("sectionId"),u.get("sectionHeading"),", ".join(u.get("reviewScopes") or []),", ".join(u.get("models") or []),
+                u.get("modelCalls",0),u.get("inputTokens",0),u.get("outputTokens",0),u.get("reasoningTokens",0),u.get("totalTokens",0),
+                u.get("aiCreditsFromNanoAiu",0),u.get("premiumRequestCost",0),"Yes" if u.get("visualReviewed") else "No",u.get("turnStatus"),
+                d.get("sourceChars",0),d.get("sourceEstimatedTokens",0),d.get("promptChars",0),d.get("promptEstimatedTokens",0),
+                d.get("systemPromptChars",0),d.get("attachmentCount",0),ci.get("totalTokens",0),ci.get("promptTokenLimit",0),
+                ci.get("systemTokens",0),ci.get("conversationTokens",0),ci.get("toolDefinitionsTokens",0)
+            ])
+        _write_sheet(tws,["Section ID","Section","Scopes","Models","Calls","Input Tokens","Output Tokens","Reasoning Tokens","Total Tokens","AI Credits","Premium Request Cost","Visual Reviewed","Turn Status","Source Chars","Source Est. Tokens","Prompt Chars","Prompt Est. Tokens","System Chars","Attachments","Context Tokens","Context Limit","Context System","Context Conversation","Context Tools"],trows)
+        _format_excel_sheet(tws,{1:12,2:42,3:34,4:28,5:10,6:14,7:15,8:17,9:14,10:14,11:20,12:16,13:14,14:14,15:16,16:14,17:16,18:14,19:12,20:14,21:15,22:14,23:20,24:16})
+
+        sws=wb.create_sheet("Scope Coverage")
+        _write_sheet(sws,["Scope","Sections Reviewed","Shared Model Calls","Attribution"],[[scope,item.get("sections_reviewed",0),item.get("shared_model_calls",0),item.get("usage_attribution","")] for scope,item in by_scope.items()])
+        _format_excel_sheet(sws,{1:24,2:18,3:20,4:32})
+
+        mw=wb.create_sheet("Model Usage")
+        _write_sheet(mw,["Model","Calls","Input Tokens","Output Tokens","Reasoning Tokens","AI Credits"],[[model,item.get("calls",0),item.get("input_tokens",0),item.get("output_tokens",0),item.get("reasoning_tokens",0),item.get("ai_credits_from_nano_aiu",0)] for model,item in by_model.items()])
+        _format_excel_sheet(mw,{1:32,2:12,3:16,4:16,5:18,6:16})
+
+        inv=wb.create_sheet("Section Inventory")
+        # Inventory isn't included in the review result, so explain that it can be added in a future version.
+        inv.append(["Note"])
+        inv.append(["The current export is built from the completed review result. Section-level review evidence and AI telemetry are included; full Phase-1 inventory can be added when required."])
+        _format_excel_sheet(inv,{1:110})
+
+        notes=wb.create_sheet("Read Me")
+        notes.append(["Report Notes"])
+        notes.append(["Actual model/token usage is sourced from Copilot SDK telemetry when available."])
+        notes.append(["Source/prompt token values marked as estimated are diagnostics only, not billing values."])
+        notes.append(["When multiple review scopes share one section-level Copilot turn, usage is reported at the section/call level and is not artificially divided across scopes."])
+        notes.append(["SDK AI credits are shown as a convenience conversion from totalNanoAiu; validate current GitHub billing semantics before using for accounting."])
+        notes.append(["Review failures are separated from findings and do not imply PASS."])
+        notes.column_dimensions["A"].width=120
+        for row in notes.iter_rows():
+            for cell in row: cell.alignment=Alignment(wrap_text=True,vertical="top")
+
+        filename=_safe_report_filename(payload.document_title)
+        stamp=datetime.now().strftime("%Y%m%d_%H%M%S")
+        out_path=HLD_REPORTS_DIR/f"{Path(filename).stem}_{stamp}.xlsx"
+        wb.save(out_path)
+        print(f"[HLD REPORT] Excel report created: {out_path}")
+        return FileResponse(out_path,media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",filename=filename)
+    except Exception as exc:
+        print(f"[HLD REPORT ERROR] {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to create Excel report: {exc}")
 
 
 @app.get("/api/hld/visual/{page_hash}/{section_id}/{visual_name}")

@@ -365,6 +365,7 @@ function waitForSessionIdle(session, timeoutMs) {
         const timer = setTimeout(() => {
             if (settled) return;
             settled = true;
+            try { session.off?.("session.idle", done); } catch (_) {}
             reject(new Error(`Timeout after ${timeoutMs}ms waiting for session.idle`));
         }, timeoutMs);
 
@@ -372,6 +373,7 @@ function waitForSessionIdle(session, timeoutMs) {
             if (settled) return;
             settled = true;
             clearTimeout(timer);
+            try { session.off?.("session.idle", done); } catch (_) {}
             resolve();
         };
 
@@ -428,7 +430,50 @@ function normalizeSessionMetrics(metrics) {
     };
 }
 
-function buildUsageSummary({ request, scopes, usageEvents, sessionMetrics, contextInfo, visualReviewed, turnStatus }) {
+function estimateTokensFromChars(value) {
+    // Diagnostic approximation only. Actual usage comes from Copilot SDK telemetry.
+    return Math.ceil(String(value || "").length / 4);
+}
+
+function getVisualAttachmentDiagnostics(attachments) {
+    return (attachments || []).map((attachment) => {
+        let bytes = 0;
+        try { bytes = fs.statSync(attachment.path).size; } catch (_) {}
+        return {
+            displayName: attachment.displayName || path.basename(attachment.path),
+            path: attachment.path,
+            bytes,
+            kilobytes: Math.round(bytes / 1024),
+        };
+    });
+}
+
+function buildRequestDiagnostics(request, prompt, attachments, systemPrompt) {
+    const sourceText = String(request.source || "");
+    const promptText = String(prompt || "");
+    const systemText = String(systemPrompt || "");
+    const attachmentInfo = getVisualAttachmentDiagnostics(attachments);
+
+    return {
+        sectionId: Number(request.sectionId || 0),
+        sectionHeading: request.sectionHeading || request.relativePath || "",
+        scopes: Array.isArray(request.reviewScopes) ? request.reviewScopes : [],
+        contentTypes: Array.isArray(request.contentTypes) ? request.contentTypes : [],
+        sourceChars: sourceText.length,
+        sourceEstimatedTokens: estimateTokensFromChars(sourceText),
+        promptChars: promptText.length,
+        promptEstimatedTokens: estimateTokensFromChars(promptText),
+        systemPromptChars: systemText.length,
+        systemPromptEstimatedTokens: estimateTokensFromChars(systemText),
+        attachmentCount: attachmentInfo.length,
+        attachments: attachmentInfo,
+        visualReviewRequested: Boolean(request.visualReviewRequired),
+        visualReviewAttached: attachmentInfo.length > 0,
+        note: "Estimated token counts are diagnostic approximations only; authoritative usage comes from Copilot SDK telemetry.",
+    };
+}
+
+function buildUsageSummary({ request, scopes, usageEvents, sessionMetrics, contextInfo, visualReviewed, turnStatus, requestDiagnostics }) {
     const eventInput = usageEvents.reduce((sum, item) => sum + item.inputTokens, 0);
     const eventOutput = usageEvents.reduce((sum, item) => sum + item.outputTokens, 0);
     const eventReasoning = usageEvents.reduce((sum, item) => sum + item.reasoningTokens, 0);
@@ -499,6 +544,7 @@ function buildUsageSummary({ request, scopes, usageEvents, sessionMetrics, conte
         contextInfo: normalizedContextInfo,
         modelBreakdown,
         apiCalls: usageEvents,
+        diagnostics: requestDiagnostics || null,
     };
 }
 
@@ -508,20 +554,21 @@ async function runOneReviewRequest(client, request, scopes, attachments) {
     let assistantMessages = [];
     let contextInfo = null;
     let turnStatus = "started";
+    let requestDiagnostics = null;
     const WAIT_TIMEOUT_MS = 180000;
 
     try {
-        session = await client.createSession({
-            streaming: true,
-            systemMessage: {
-                content: `
+        const systemPrompt = `
 You are an expert Enterprise Systems Analyst conducting evidence-based High-Level Design reviews.
 Your outputs must distinguish review findings from summaries.
 Only report defects, risks, gaps, inconsistencies, missing controls, ambiguities, or unresolved validation needs that are supported by supplied evidence.
 Never invent requirements or claim to have inspected a visual artifact unless an image attachment is actually supplied.
 Return machine-readable JSON when the caller requests JSON.
-`.trim()
-            }
+`.trim();
+
+        session = await client.createSession({
+            streaming: true,
+            systemMessage: { content: systemPrompt }
         });
 
         session.on("assistant.message", (event) => {
@@ -563,6 +610,23 @@ Return machine-readable JSON when the caller requests JSON.
 Analyze ${request.relativePath} and produce a professional Mermaid diagram from the source code.
 Output raw Mermaid syntax only.
 `.trim();
+
+        requestDiagnostics = buildRequestDiagnostics(
+            { ...request, reviewScopes: scopes },
+            specificPrompt,
+            attachments,
+            systemPrompt
+        );
+
+        process.stderr.write(
+            `[COPILOT REQUEST] section=${request.sectionId || "?"} ` +
+            `sourceChars=${requestDiagnostics.sourceChars} ` +
+            `sourceEstTokens=${requestDiagnostics.sourceEstimatedTokens} ` +
+            `promptChars=${requestDiagnostics.promptChars} ` +
+            `promptEstTokens=${requestDiagnostics.promptEstimatedTokens} ` +
+            `systemChars=${requestDiagnostics.systemPromptChars} ` +
+            `attachments=${requestDiagnostics.attachmentCount}\n`
+        );
 
         if (attachments.length > 0) {
             process.stderr.write(
@@ -654,7 +718,8 @@ Output raw Mermaid syntax only.
                     sessionMetrics,
                     contextInfo,
                     turnStatus,
-                    visualReviewed: attachments.length > 0
+                    visualReviewed: attachments.length > 0,
+                    requestDiagnostics
                 })
             };
         }
@@ -677,7 +742,8 @@ Output raw Mermaid syntax only.
                 scopes,
                 usageEvents,
                 sessionMetrics,
-                visualReviewed: attachments.length > 0
+                visualReviewed: attachments.length > 0,
+                    requestDiagnostics
             })
         };
     } finally {
