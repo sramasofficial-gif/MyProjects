@@ -119,6 +119,7 @@ export default function HLDAnalyzer() {
     const [expandedId, setExpandedId] = useState(null);
     const [selectedReviewScopes, setSelectedReviewScopes] = useState(DEFAULT_REVIEW_SCOPES);
     const [reviewPlan, setReviewPlan] = useState(null);
+    const [activeTab, setActiveTab] = useState("inventory");
 
     function handleURLChange(e) {
         setWikiURL(e.target.value);
@@ -132,6 +133,7 @@ export default function HLDAnalyzer() {
         setSelectedIds(new Set());
         setExpandedId(null);
         setReviewPlan(null);
+        setActiveTab("inventory");
     }
 
     async function triggerPhase1MatrixIngestion() {
@@ -144,6 +146,7 @@ export default function HLDAnalyzer() {
         setSelectedIds(new Set());
         setExpandedId(null);
         setReviewPlan(null);
+        setActiveTab("inventory");
 
         try {
             const data = await generateHLDMatrix(wikiURL.trim());
@@ -169,6 +172,7 @@ export default function HLDAnalyzer() {
             setSelectedIds(new Set());
             setExpandedId(null);
             setReviewPlan(null);
+            setActiveTab("inventory");
             await triggerPhase1MatrixIngestion();
         } catch (err) {
             setError(err.message || "Failed to reset backend cache matrix correctly.");
@@ -184,6 +188,7 @@ export default function HLDAnalyzer() {
             return Array.from(next);
         });
         setReviewPlan(null);
+        setActiveTab("inventory");
     }
 
     async function postHLDJson(path, body) {
@@ -218,6 +223,7 @@ export default function HLDAnalyzer() {
                 selected_section_ids: Array.from(selectedIds),
             });
             setReviewPlan(data);
+            setActiveTab("plan");
             return data;
         } catch (err) {
             setError(err.message || "Failed to build the HLD review plan.");
@@ -239,6 +245,7 @@ export default function HLDAnalyzer() {
 
         setLoading(true);
         setError("");
+        setActiveTab("review");
 
         try {
             // Always rebuild the plan at execution time so the AI review uses
@@ -262,6 +269,7 @@ export default function HLDAnalyzer() {
                 selected_section_ids: plan.eligible_section_ids,
             });
             setAnalysisResult(data.segmented_blueprint);
+            setActiveTab("findings");
         } catch (err) {
             setError(err.message || "Failed running the scoped architectural audit.");
         } finally {
@@ -387,7 +395,7 @@ export default function HLDAnalyzer() {
         setStatusFilter("");
     }
 
-    const showReport = verificationMatrix && !analysisResult && !loading;
+    const showReport = Boolean(verificationMatrix && !analysisResult && !loading && activeTab === "inventory");
 
     return (
         <section
@@ -653,6 +661,50 @@ export default function HLDAnalyzer() {
 
             {/* Report viewport */}
             <main style={{ minWidth: 0, minHeight: 0, height: "100%", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+                {verificationMatrix && (
+                    <div
+                        style={{
+                            flex: "0 0 auto",
+                            display: "flex",
+                            gap: 4,
+                            alignItems: "center",
+                            padding: 4,
+                            marginBottom: 10,
+                            background: REPORT.panel,
+                            border: `1px solid ${REPORT.line}`,
+                            borderRadius: 8,
+                        }}
+                    >
+                        {[
+                            ["inventory", "Section Inventory"],
+                            ["plan", "Review Plan"],
+                            ["review", "AI Review"],
+                            ["findings", "Findings"],
+                        ].map(([id, label]) => (
+                            <button
+                                key={id}
+                                onClick={() => setActiveTab(id)}
+                                disabled={(id === "findings" && !analysisResult) || (id === "review" && !verificationMatrix)}
+                                style={{
+                                    flex: 1,
+                                    minWidth: 0,
+                                    padding: "9px 10px",
+                                    border: "none",
+                                    borderRadius: 6,
+                                    background: activeTab === id ? REPORT.accent : "transparent",
+                                    color: activeTab === id ? "#fff" : REPORT.inkSoft,
+                                    fontSize: 12.5,
+                                    fontWeight: activeTab === id ? 700 : 600,
+                                    cursor: ((id === "findings" && !analysisResult) || (id === "review" && !verificationMatrix)) ? "not-allowed" : "pointer",
+                                    opacity: (id === "findings" && !analysisResult) ? 0.45 : 1,
+                                    whiteSpace: "nowrap",
+                                }}
+                            >
+                                {label}
+                            </button>
+                        ))}
+                    </div>
+                )}
                 {loading && (
                     <div
                         style={{
@@ -689,6 +741,87 @@ export default function HLDAnalyzer() {
                     </div>
                 )}
 
+
+                {activeTab === "plan" && verificationMatrix && !loading && (
+                    <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", paddingRight: 4, paddingBottom: 16, }}>
+{reviewPlan && (
+    <div
+        style={{
+            background: REPORT.panel,
+            border: `1px solid ${REPORT.line}`,
+            borderRadius: 8,
+            padding: "12px 14px",
+            marginBottom: 14,
+        }}
+    >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+            <div>
+                <div style={{ fontSize: 13, fontWeight: 650, color: REPORT.ink }}>
+                    Review Plan
+                </div>
+                <div style={{ fontSize: 11.5, color: REPORT.inkSoft, marginTop: 3 }}>
+                    {selectedIds.size > 0
+                        ? `${selectedIds.size} manually selected section(s), then filtered by the chosen review scopes.`
+                        : "All sections matching the selected review scopes are included; empty sections are skipped."}
+                </div>
+            </div>
+            <span
+                style={{
+                    padding: "3px 8px",
+                    borderRadius: 100,
+                    background: REPORT.accentSoft,
+                    color: REPORT.accent,
+                    fontSize: 10.5,
+                    fontWeight: 650,
+                    whiteSpace: "nowrap",
+                }}
+            >
+                Planning estimate
+            </span>
+        </div>
+
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
+            {[
+                ["Sections", reviewPlan.eligible_section_count],
+                ["Skipped", reviewPlan.skipped_section_count],
+                ["Words", reviewPlan.total_words],
+                ["Est. prompt tokens", reviewPlan.estimated_prompt_tokens],
+                ["Est. completion tokens", reviewPlan.estimated_completion_tokens],
+                ["Est. total tokens", reviewPlan.estimated_total_tokens],
+            ].map(([label, value]) => (
+                <div
+                    key={label}
+                    style={{
+                        background: "#f6f8fa",
+                        border: `1px solid ${REPORT.line}`,
+                        borderRadius: 5,
+                        padding: "7px 10px",
+                        minWidth: 100,
+                    }}
+                >
+                    <div style={{ fontWeight: 650, fontSize: 14, color: REPORT.ink }}>{Number(value).toLocaleString()}</div>
+                    <div style={{ fontSize: 9.5, color: REPORT.inkSoft, marginTop: 1 }}>{label}</div>
+                </div>
+            ))}
+        </div>
+
+        <div style={{ marginTop: 8, fontSize: 10.5, color: REPORT.inkSoft }}>
+            Scopes: {reviewPlan.review_scopes?.map((s) => s.label).join(" · ") || "—"}
+        </div>
+    </div>
+)}
+
+                    </div>
+                )}
+
+                {activeTab === "plan" && verificationMatrix && !loading && !reviewPlan && (
+                    <div style={{ flex: 1, minHeight: 0, overflow: "auto", background: REPORT.panel, border: `1px solid ${REPORT.line}`, borderRadius: 8, padding: 24 }}>
+                        <div style={{ fontSize: 20, fontWeight: 700, color: REPORT.accent }}>Review Plan</div>
+                        <div style={{ marginTop: 8, fontSize: 13, lineHeight: 1.5, color: REPORT.inkSoft }}>Select review scopes in the left panel, optionally select specific sections, then build the plan to see the estimated review workload.</div>
+                        <button onClick={buildReviewPlan} disabled={selectedReviewScopes.length === 0} style={{ marginTop: 16, background: REPORT.accent, color: "#fff", border: "none", borderRadius: 6, padding: "10px 16px", fontWeight: 650, cursor: selectedReviewScopes.length === 0 ? "not-allowed" : "pointer", opacity: selectedReviewScopes.length === 0 ? 0.6 : 1 }}>Build Review Plan</button>
+                    </div>
+                )}
+
                 {showReport && (
                     <div
                         style={{
@@ -716,73 +849,6 @@ export default function HLDAnalyzer() {
                                 {wikiURL}
                             </div>
                         </header>
-
-                        {reviewPlan && (
-                            <div
-                                style={{
-                                    background: REPORT.panel,
-                                    border: `1px solid ${REPORT.line}`,
-                                    borderRadius: 8,
-                                    padding: "12px 14px",
-                                    marginBottom: 14,
-                                }}
-                            >
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
-                                    <div>
-                                        <div style={{ fontSize: 13, fontWeight: 650, color: REPORT.ink }}>
-                                            Review Plan
-                                        </div>
-                                        <div style={{ fontSize: 11.5, color: REPORT.inkSoft, marginTop: 3 }}>
-                                            {selectedIds.size > 0
-                                                ? `${selectedIds.size} manually selected section(s), then filtered by the chosen review scopes.`
-                                                : "All sections matching the selected review scopes are included; empty sections are skipped."}
-                                        </div>
-                                    </div>
-                                    <span
-                                        style={{
-                                            padding: "3px 8px",
-                                            borderRadius: 100,
-                                            background: REPORT.accentSoft,
-                                            color: REPORT.accent,
-                                            fontSize: 10.5,
-                                            fontWeight: 650,
-                                            whiteSpace: "nowrap",
-                                        }}
-                                    >
-                                        Planning estimate
-                                    </span>
-                                </div>
-
-                                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
-                                    {[
-                                        ["Sections", reviewPlan.eligible_section_count],
-                                        ["Skipped", reviewPlan.skipped_section_count],
-                                        ["Words", reviewPlan.total_words],
-                                        ["Est. prompt tokens", reviewPlan.estimated_prompt_tokens],
-                                        ["Est. completion tokens", reviewPlan.estimated_completion_tokens],
-                                        ["Est. total tokens", reviewPlan.estimated_total_tokens],
-                                    ].map(([label, value]) => (
-                                        <div
-                                            key={label}
-                                            style={{
-                                                background: "#f6f8fa",
-                                                border: `1px solid ${REPORT.line}`,
-                                                borderRadius: 5,
-                                                padding: "7px 10px",
-                                                minWidth: 100,
-                                            }}
-                                        >
-                                            <div style={{ fontWeight: 650, fontSize: 14, color: REPORT.ink }}>{Number(value).toLocaleString()}</div>
-                                            <div style={{ fontSize: 9.5, color: REPORT.inkSoft, marginTop: 1 }}>{label}</div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div style={{ marginTop: 8, fontSize: 10.5, color: REPORT.inkSoft }}>
-                                    Scopes: {reviewPlan.review_scopes?.map((s) => s.label).join(" · ") || "—"}
-                                </div>
-                            </div>
-                        )}
 
                         {/* Stats exactly in the spirit of render_html_report */}
                         <div
@@ -1235,7 +1301,44 @@ export default function HLDAnalyzer() {
                     </div>
                 )}
 
-                {analysisResult && !loading && (
+
+                {activeTab === "review" && verificationMatrix && (
+                    <div
+                        style={{
+                            flex: 1,
+                            minHeight: 0,
+                            overflow: "auto",
+                            background: REPORT.panel,
+                            border: `1px solid ${REPORT.line}`,
+                            borderRadius: 8,
+                            padding: 24,
+                        }}
+                    >
+                        <div style={{ fontSize: 20, fontWeight: 700, color: REPORT.accent }}>AI HLD Review</div>
+                        <div style={{ marginTop: 6, color: REPORT.inkSoft, fontSize: 13, lineHeight: 1.5 }}>
+                            {loading
+                                ? "The AI review is running. Each selected section is reviewed once with all selected scopes in a single Copilot turn."
+                                : analysisResult
+                                    ? "The AI review completed successfully."
+                                    : "Start the AI review from the Section Inventory or Review Plan tab."}
+                        </div>
+                        <div style={{ marginTop: 18, height: 10, background: REPORT.emptyBg, borderRadius: 100, overflow: "hidden" }}>
+                            <div style={{ height: "100%", width: loading ? "55%" : analysisResult ? "100%" : "0%", background: REPORT.accent, transition: "width 300ms ease" }} />
+                        </div>
+                        <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 10 }}>
+                            <div style={{ border: `1px solid ${REPORT.line}`, borderRadius: 6, padding: 12, background: REPORT.emptyBg }}><strong>{selectedIds.size || "Scope based"}</strong><div style={{ fontSize: 10.5, color: REPORT.inkSoft, marginTop: 3 }}>Selected sections</div></div>
+                            <div style={{ border: `1px solid ${REPORT.line}`, borderRadius: 6, padding: 12, background: REPORT.emptyBg }}><strong>{selectedReviewScopes.length}</strong><div style={{ fontSize: 10.5, color: REPORT.inkSoft, marginTop: 3 }}>Review scopes</div></div>
+                            <div style={{ border: `1px solid ${REPORT.line}`, borderRadius: 6, padding: 12, background: REPORT.emptyBg }}><strong>{reviewPlan?.eligible_section_count ?? "—"}</strong><div style={{ fontSize: 10.5, color: REPORT.inkSoft, marginTop: 3 }}>Estimated model calls</div></div>
+                        </div>
+                        {analysisResult && !loading && (
+                            <button onClick={() => setActiveTab("findings")} style={{ marginTop: 18, background: REPORT.ok, color: "#fff", border: "none", borderRadius: 6, padding: "10px 16px", fontWeight: 650, cursor: "pointer" }}>
+                                View Findings →
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === "findings" && analysisResult && !loading && (
                     <div
                         style={{
                             flex: 1,
@@ -1283,7 +1386,7 @@ export default function HLDAnalyzer() {
                                     )}
                                 </div>
                                 <button
-                                    onClick={() => setAnalysisResult(null)}
+                                    onClick={() => { setAnalysisResult(null); setActiveTab("inventory"); }}
                                     style={{
                                         background: REPORT.emptyBg,
                                         border: `1px solid ${REPORT.line}`,
@@ -1315,7 +1418,8 @@ export default function HLDAnalyzer() {
                                     return { background: REPORT.emptyBg, color: REPORT.inkSoft };
                                 };
 
-                                const status = summary.overall_status || (findings.length ? "FINDINGS" : manual.length ? "MANUAL_REVIEW" : "PASS");
+                                const reviewErrors = Array.isArray(analysisResult.review_errors) ? analysisResult.review_errors : [];
+                                const status = summary.overall_status || (reviewErrors.length ? "REVIEW_INCOMPLETE" : findings.length ? "FINDINGS" : manual.length ? "MANUAL_REVIEW" : "PASS");
                                 const statusStyle = status === "FINDINGS"
                                     ? { background: "#fff7ed", color: "#c2410c" }
                                     : status === "MANUAL_REVIEW"
@@ -1353,6 +1457,31 @@ export default function HLDAnalyzer() {
                                             ))}
                                         </div>
 
+                                        {reviewErrors.length > 0 && (
+                                            <section
+                                                style={{
+                                                    marginBottom: 20,
+                                                    border: "1px solid #fecaca",
+                                                    borderRadius: 7,
+                                                    background: "#fff7f7",
+                                                    padding: 14,
+                                                }}
+                                            >
+                                                <h4 style={{ margin: 0, color: "#b91c1c", fontSize: 18 }}>Review Errors</h4>
+                                                <div style={{ marginTop: 6, fontSize: 11.5, color: REPORT.inkSoft }}>
+                                                    These sections did not complete successfully and are not counted as PASS.
+                                                </div>
+                                                <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
+                                                    {reviewErrors.map((item, idx) => (
+                                                        <div key={idx} style={{ border: "1px solid #fecaca", borderRadius: 6, padding: 10, background: "#fff" }}>
+                                                            <div style={{ fontWeight: 700, color: REPORT.ink }}>{item.section || `Section ${item.section_id || "?"}`}</div>
+                                                            <div style={{ marginTop: 4, fontSize: 11.5, color: "#991b1b", whiteSpace: "pre-wrap" }}>{item.error || "Unknown review error"}</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </section>
+                                        )}
+
                                         {(() => {
                                             const consumption = analysisResult.ai_consumption || {};
                                             const totals = consumption.totals || {};
@@ -1379,7 +1508,7 @@ export default function HLDAnalyzer() {
                                                         <div>
                                                             <h4 style={{ margin: 0, color: REPORT.accent, fontSize: 18 }}>AI Consumption</h4>
                                                             <div style={{ marginTop: 3, fontSize: 11.5, color: REPORT.inkSoft }}>
-                                                                Actual Copilot SDK usage captured per isolated section + review-scope session.
+                                                                Actual Copilot SDK usage captured per section. One Copilot turn covers all selected scopes for that section; usage is not artificially split by scope.
                                                             </div>
                                                         </div>
                                                         <div style={{ fontSize: 10.5, color: REPORT.inkSoft, textAlign: "right" }}>
@@ -1409,14 +1538,48 @@ export default function HLDAnalyzer() {
                                                         ))}
                                                     </div>
 
+                                                    {bySection.length > 0 && (
+                                                        <div style={{ marginTop: 14 }}>
+                                                            <div style={{ fontSize: 12.5, fontWeight: 700, color: REPORT.ink, marginBottom: 6 }}>Per-section usage details</div>
+                                                            <div style={{ overflowX: "auto" }}>
+                                                                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11.2 }}>
+                                                                    <thead>
+                                                                        <tr style={{ background: REPORT.emptyBg }}>
+                                                                            {["Section", "Models", "Input", "Output", "Reasoning", "AI credits", "Context"].map((label) => (
+                                                                                <th key={label} style={{ textAlign: label === "Section" ? "left" : "right", padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, color: REPORT.inkSoft }}>{label}</th>
+                                                                            ))}
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {bySection.map((item, idx) => {
+                                                                            const ci = item.contextInfo || {};
+                                                                            return (
+                                                                                <tr key={`${item.sectionId || idx}-${idx}`}>
+                                                                                    <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, fontWeight: 650, textAlign: "left" }}>{item.sectionHeading || `Section ${item.sectionId || "?"}`}</td>
+                                                                                    <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{Array.isArray(item.models) ? item.models.join(", ") : "-"}</td>
+                                                                                    <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{fmt(item.inputTokens)}</td>
+                                                                                    <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{fmt(item.outputTokens)}</td>
+                                                                                    <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{fmt(item.reasoningTokens)}</td>
+                                                                                    <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{fmtCredit(item.aiCreditsFromNanoAiu)}</td>
+                                                                                    <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{ci.totalTokens ? `${fmt(ci.totalTokens)} / ${fmt(ci.promptTokenLimit)}` : "-"}</td>
+                                                                                </tr>
+                                                                            );
+                                                                        })}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
                                                     {scopeEntries.length > 0 && (
                                                         <div style={{ marginTop: 14 }}>
-                                                            <div style={{ fontSize: 12.5, fontWeight: 700, color: REPORT.ink, marginBottom: 6 }}>By review scope</div>
+                                                            <div style={{ fontSize: 12.5, fontWeight: 700, color: REPORT.ink, marginBottom: 6 }}>Review scope coverage</div>
+                                                            <div style={{ marginBottom: 7, fontSize: 10.5, color: REPORT.inkSoft }}>Tokens and AI credits are not split across scopes because the model receives all selected scopes in one section-level turn.</div>
                                                             <div style={{ overflowX: "auto" }}>
                                                                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11.5 }}>
                                                                     <thead>
                                                                         <tr style={{ background: REPORT.emptyBg }}>
-                                                                            {[["Scope", "left"], ["Calls", "right"], ["Input", "right"], ["Output", "right"], ["Reasoning", "right"], ["Total", "right"], ["AI credits", "right"]].map(([label, align]) => (
+                                                                            {[["Scope", "left"], ["Sections", "right"], ["Shared calls", "right"]].map(([label, align]) => (
                                                                                 <th key={label} style={{ textAlign: align, padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, color: REPORT.inkSoft }}>{label}</th>
                                                                             ))}
                                                                         </tr>
@@ -1425,12 +1588,8 @@ export default function HLDAnalyzer() {
                                                                         {scopeEntries.map(([scope, item]) => (
                                                                             <tr key={scope}>
                                                                                 <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, fontWeight: 650 }}>{scope}</td>
-                                                                                <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{fmt(item.model_calls)}</td>
-                                                                                <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{fmt(item.input_tokens)}</td>
-                                                                                <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{fmt(item.output_tokens)}</td>
-                                                                                <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{fmt(item.reasoning_tokens)}</td>
-                                                                                <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{fmt(item.total_tokens)}</td>
-                                                                                <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{fmtCredit(item.ai_credits_from_nano_aiu)}</td>
+                                                                                <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{fmt(item.sections_reviewed)}</td>
+                                                                                <td style={{ padding: "7px 8px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{fmt(item.shared_model_calls)}</td>
                                                                             </tr>
                                                                         ))}
                                                                     </tbody>
@@ -1470,7 +1629,7 @@ export default function HLDAnalyzer() {
 
                                                     {bySection.length > 0 && (
                                                         <details style={{ marginTop: 14 }}>
-                                                            <summary style={{ cursor: "pointer", fontSize: 12.5, fontWeight: 700, color: REPORT.accent }}>Per-section / per-scope details ({bySection.length})</summary>
+                                                            <summary style={{ cursor: "pointer", fontSize: 12.5, fontWeight: 700, color: REPORT.accent }}>Exact per-section usage ({bySection.length})</summary>
                                                             <div style={{ marginTop: 8, overflowX: "auto" }}>
                                                                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
                                                                     <thead>
@@ -1484,7 +1643,7 @@ export default function HLDAnalyzer() {
                                                                         {bySection.map((item, idx) => (
                                                                             <tr key={`${item.sectionId}-${item.reviewScope}-${idx}`}>
                                                                                 <td style={{ padding: "6px 7px", borderBottom: `1px solid ${REPORT.line}`, maxWidth: 280 }}>{item.sectionHeading || `Section ${item.sectionId}`}</td>
-                                                                                <td style={{ padding: "6px 7px", borderBottom: `1px solid ${REPORT.line}` }}>{item.reviewScope || "—"}</td>
+                                                                                <td style={{ padding: "6px 7px", borderBottom: `1px solid ${REPORT.line}` }}>{Array.isArray(item.reviewScopes) ? item.reviewScopes.join(", ") : (item.reviewScope || "—")}</td>
                                                                                 <td style={{ padding: "6px 7px", borderBottom: `1px solid ${REPORT.line}` }}>{Array.isArray(item.models) ? item.models.join(", ") : "—"}</td>
                                                                                 <td style={{ padding: "6px 7px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{fmt(item.inputTokens)}</td>
                                                                                 <td style={{ padding: "6px 7px", borderBottom: `1px solid ${REPORT.line}`, textAlign: "right" }}>{fmt(item.outputTokens)}</td>
