@@ -1,0 +1,2098 @@
+{
+  "job_id": "1d596bc7d16f51470571fc7e",
+  "review_signature": "ba9ea82a085921dc163a789b0c91ee17ffbde591e46ef016d7ee726b85e7ac9a",
+  "document_title": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention",
+  "review_scopes": [
+    "architecture",
+    "security",
+    "integration",
+    "ivr"
+  ],
+  "selected_section_ids": [
+    7,
+    8,
+    19,
+    20,
+    21,
+    22,
+    23,
+    25,
+    26
+  ],
+  "eligible_section_ids": [
+    7,
+    8,
+    19,
+    20,
+    21,
+    22,
+    23,
+    25,
+    26
+  ],
+  "project_scope": "IVR Context Validation",
+  "status": "COMPLETED",
+  "created_at": "2026-09-20T16:46:05Z",
+  "started_at": "2026-09-20T16:46:05Z",
+  "updated_at": "2026-09-20T16:51:00Z",
+  "progress": {
+    "total_sections": 9,
+    "completed_sections": 9,
+    "completed_section_ids": [
+      7,
+      8,
+      19,
+      20,
+      21,
+      22,
+      23,
+      25,
+      26
+    ],
+    "remaining_sections": 0,
+    "current_section_id": 26,
+    "current_section_heading": "CDE AWS Account\nTSYS\nFirewall\nOpen APIs\nTCS Portal\nPCI use cases:\n1. GetAccountByCard\n2. Set/Update PIN\n3. Verify PIN\nNon-PCI use cases\nCDE VPC\n\n\nX- PLATFORM\nCustomer\nAWS Control plane\nIT Admins,\nDevelopers\nAWS Control plane\nAWS Console\nAWS Console\nRBConnect Context Diagram\nPCI use cases: \n4. GetAccountByANI\nCreate TSYS Interaction\nCNX, GS\nDynatrace\nRCI Egress + Firewall\nTech Support\nIT Admins,\nDevelopers\nNo Change\nNew Integration\nExisting\nNew Integration \n(PCI)\nSeparate HLD\nOut of Scope\nNew\n  Citrix Cloud\nRCI MPLS Switch & Firewall\nlFirewall\nVendors\n(CNX, GS)\n\nAgents\nRB\nCSR\nRB\nOps Mgr\nUtility functions\n(Report, Routiing, HR-Feed)\nAmazon Connect\nRogers Bank Default AWS Account\nHIYA Call branding\nHIYA\nCCReport+HRFeed\nHR-Feed\nLegends\nEmail\nOffice 365\nEmail\nVerification Lambda (Dob, OTC, Phone, PAN)\nLex\nAthena\nQuickSight\nDatalake\nRB\nOps Mgr\nOther-sources",
+    "last_section_status": "COMPLETED",
+    "stage": "COMPLETED"
+  },
+  "usage": {
+    "model_calls": 9,
+    "input_tokens": 213680,
+    "output_tokens": 29407,
+    "total_tokens": 243087,
+    "reasoning_tokens": 1187,
+    "cache_read_tokens": 91320,
+    "cache_write_tokens": 122342,
+    "duration_ms": 269169,
+    "total_nano_aiu": 61822500000,
+    "ai_credits_from_nano_aiu": 61.8225,
+    "premium_request_cost": 9
+  },
+  "review_errors": [],
+  "result": {
+    "success": true,
+    "segmented_blueprint": {
+      "document_metadata": {
+        "title": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention",
+        "segments_found": 69,
+        "review_scopes": [
+          "architecture",
+          "security",
+          "integration",
+          "ivr"
+        ],
+        "sections_reviewed": 9
+      },
+      "review_summary": {
+        "overall_status": "FINDINGS",
+        "finding_count": 31,
+        "pass_count": 10,
+        "manual_review_count": 28,
+        "review_error_count": 0,
+        "visual_sections_reviewed": 1
+      },
+      "findings": [
+        {
+          "finding_id": "F-001",
+          "scope": "integration",
+          "category": "External Dependency",
+          "severity": "Medium",
+          "title": "Amazon QuickSightâ€“Connect integration lacks interface detail",
+          "finding": "R1 states 'Amazon QuickSight and Amazon Connect integration' as Compliant with no description of the integration mechanism (data source, API, CTR/agent event stream, refresh cadence, or connection method).",
+          "evidence": {
+            "text": "R1 | Amazon QuickSight and Amazon Connect integration | Yes",
+            "visual_observation": ""
+          },
+          "impact": "Without defined interface/payload details, downstream design and testing teams cannot validate data contracts, refresh SLAs, or error handling for the reporting integration.",
+          "recommendation": "Document the specific integration pattern (e.g., S3 export + QuickSight dataset, Connect CTR data lake, API-based refresh) including payload schema and refresh frequency.",
+          "confidence": 0.7,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.2 Project Objectives",
+          "content_types": [
+            "text",
+            "table"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-002",
+          "scope": "security",
+          "category": "Data Protection",
+          "severity": "Medium",
+          "title": "No data protection controls specified for cost/customer detail reporting",
+          "finding": "R2 introduces 'Amazon Connect Customer Detail Cost Reporting in Amazon QuickSight' marked Compliant, but no access control, encryption, or data classification details are given for customer detail data flowing into a BI/reporting tool.",
+          "evidence": {
+            "text": "R2 | Amazon Connect Customer Detail Cost Reporting in Amazon Quick Sight | Yes",
+            "visual_observation": ""
+          },
+          "impact": "Customer detail data exposed in a reporting layer without documented access/encryption controls could result in unauthorized data exposure.",
+          "recommendation": "Specify IAM/row-level security in QuickSight, encryption at rest/in transit, and access scoping for customer detail cost reports.",
+          "confidence": 0.65,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.2 Project Objectives",
+          "content_types": [
+            "text",
+            "table"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-003",
+          "scope": "architecture",
+          "category": "Design Consistency",
+          "severity": "Low",
+          "title": "Requirement Compliance marked 'Yes' with no Remarks or supporting rationale",
+          "finding": "Both R1 and R2 list Compliance as 'Yes' but the 'Remarks' column is empty for both, and no acceptance criteria or validation evidence is included in this section.",
+          "evidence": {
+            "text": "Requirement ID | Description | Compliance | Remarks -- R1 ... Yes [blank]; R2 ... Yes [blank]",
+            "visual_observation": ""
+          },
+          "impact": "Unsubstantiated compliance claims reduce traceability and make it difficult to audit whether the requirement was actually verified.",
+          "recommendation": "Populate Remarks with verification method/date or reference to design evidence supporting the 'Yes' compliance status.",
+          "confidence": 0.6,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.2 Project Objectives",
+          "content_types": [
+            "text",
+            "table"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-004",
+          "scope": "architecture",
+          "category": "Architecture",
+          "severity": "Low",
+          "title": "Project Objectives section scope narrower than stated purpose",
+          "finding": "The narrative claims the document consolidates 'end-to-end business and technical requirements' as the 'single source of truth for scope, priorities, and success criteria,' yet only two narrow reporting-related requirements (R1, R2) are listed with no IVR, security, or broader integration objectives.",
+          "evidence": {
+            "text": "\"single source of truth for scope, priorities, and success criteria contact center program\" followed by only R1 and R2 in the Requirement Table",
+            "visual_observation": ""
+          },
+          "impact": "A stated comprehensive objectives set with only two narrow requirements suggests the table is incomplete for this excerpt, risking misalignment on program scope if treated as exhaustive.",
+          "recommendation": "Confirm whether additional objectives exist elsewhere in the document/table (pagination) or update the narrative to reflect the actual scope of this excerpt.",
+          "confidence": 0.55,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.2 Project Objectives",
+          "content_types": [
+            "text",
+            "table"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-001",
+          "scope": "architecture",
+          "category": "Data Flow",
+          "severity": "Medium",
+          "title": "Two conflicting data pipelines described without clarifying relationship",
+          "finding": "The section describes two separate data flow paths for Connect analytics: (1) Amazon Connect data lake -> Amazon Quick Sight described as 'zero-ETL', and (2) AWS Data export -> CUR 2.0 report -> S3 -> Athena -> Amazon Quick Sight. The text does not clarify whether these are alternative options, complementary paths for different data types, or a phased approach, creating ambiguity in the target data architecture.",
+          "evidence": {
+            "text": "the amazon connect data lake is single source for all connect data with zero-ETL... The AWS Data export will allow export of CUR 2.0 report to a S3 bucket, which can be visualized using Athena and Amazon Quick Sight.",
+            "visual_observation": ""
+          },
+          "impact": "Ambiguity in the data flow architecture can lead to inconsistent implementation, duplicated dashboard efforts, or unclear ownership of the analytics pipeline.",
+          "recommendation": "Clarify in the HLD whether the data lake path and the CUR 2.0/Athena export path serve different data domains (e.g., operational Connect data vs. cost/usage data) or are alternative solutions, and document the relationship/decision criteria.",
+          "confidence": 0.7,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.3 Solution Summary",
+          "content_types": [
+            "text",
+            "table"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-002",
+          "scope": "architecture",
+          "category": "Design Consistency",
+          "severity": "Low",
+          "title": "Ambiguous acronym reference 'CUR 2.0'",
+          "finding": "The text references 'CUR 2.0 report' without defining the acronym or its relevance/source system in the context of the described Connect/Quick Sight architecture, creating an unresolved terminology gap.",
+          "evidence": {
+            "text": "The AWS Data export will allow export of CUR 2.0 report to a S3 bucket",
+            "visual_observation": ""
+          },
+          "impact": "Readers unfamiliar with the term cannot verify whether this refers to AWS Cost and Usage Report or a Connect-specific report, risking misinterpretation of the architecture.",
+          "recommendation": "Define 'CUR 2.0' on first use and confirm its applicability to Connect data export versus AWS billing/cost data.",
+          "confidence": 0.6,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.3 Solution Summary",
+          "content_types": [
+            "text"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-003",
+          "scope": "security",
+          "category": "Data Protection",
+          "severity": "Medium",
+          "title": "No access control or encryption details for Connect data lake, S3 export, or Quick Sight access",
+          "finding": "The section describes storage and visualization of Connect data (data lake, S3 bucket for CUR 2.0, Athena, Quick Sight) but includes no mention of encryption at rest/in transit, IAM permissions, or access boundaries for these components.",
+          "evidence": {
+            "text": "Amazon Connect data lake is centralized repository for data generated by Amazon Connect... The AWS Data export will allow export of CUR 2.0 report to a S3 bucket, which can be visualized using Athena and Amazon Quick Sight.",
+            "visual_observation": ""
+          },
+          "impact": "Absence of documented security controls for centralized data repositories handling potentially sensitive Connect data (call metadata, customer interactions) is a control gap that could expose data to unauthorized access.",
+          "recommendation": "Document encryption (at rest/in transit), IAM roles/policies, and access boundaries for the Connect data lake, S3 export bucket, Athena, and Quick Sight in the HLD or a linked security section.",
+          "confidence": 0.65,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.3 Solution Summary",
+          "content_types": [
+            "text"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-004",
+          "scope": "integration",
+          "category": "External Dependency",
+          "severity": "Low",
+          "title": "Referenced document 'Cyber STAR' has TBD date/version",
+          "finding": "The linked documents table lists 'Cyber STAR' with location 'TBD' and no date or version populated, indicating an incomplete dependency reference within an otherwise dated reference table.",
+          "evidence": {
+            "text": "Cyber STAR | RTBD | | (Use Case)",
+            "visual_observation": ""
+          },
+          "impact": "Incomplete traceability of referenced governance/security documentation may hinder verification of compliance or security review prerequisites tied to this HLD.",
+          "recommendation": "Complete the location, date, and version fields for the Cyber STAR reference or remove it if not applicable to this release.",
+          "confidence": 0.75,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.3 Solution Summary",
+          "content_types": [
+            "table"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-005",
+          "scope": "architecture",
+          "category": "Design Consistency",
+          "severity": "Low",
+          "title": "Document reference table lacks version/date values for most entries",
+          "finding": "The referenced documents table (Requirements Matrix, Use Case, HLD v1 Non-PCI, HLD v1 PCI) shows location placeholders ('Requirements - All Documents', 'HLD version 1', 'HLD version 1 (PCI)') without distinct date or version values populated, reducing traceability of which document versions this HLD depends on.",
+          "evidence": {
+            "text": "Requirements Matrix (RM) Including the IT responses to requirements* | Requirements - All Documents | | ... HLD v1 (Non-PCI) | HLD version 1 | | ... HLD v1 (PCI) | HLD version 1 (PCI) | |",
+            "visual_observation": ""
+          },
+          "impact": "Without explicit dates/versions, reviewers cannot confirm this HLD summary is aligned with the current version of dependent requirements or prior HLD baselines.",
+          "recommendation": "Populate the Date and Version columns for each referenced document row to establish clear traceability.",
+          "confidence": 0.6,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.3 Solution Summary",
+          "content_types": [
+            "table"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-001",
+          "scope": "security",
+          "category": "Authorization",
+          "severity": "Medium",
+          "title": "Vendor-managed roles lack change/impact detail for IAM implications",
+          "finding": "The table lists multiple Vendor-group entities (CC Agent CSR, CC Supervisor, Workforce Manager, Collections Agent, RTM Specialist) as 'BAU' with no description of what access, systems, or data these external/vendor personnel touch, nor whether their access controls change under this solution.",
+          "evidence": {
+            "text": "CC Agent CSR | Vendor | BAU; CC Supervisor | Vendor | BAU; Workforce Manager | Vendor+Rogers Bank | Yes; Collections Agent | Vendor | BAU; RTM Specialist | Vendor | BAU",
+            "visual_observation": ""
+          },
+          "impact": "Without clarity on whether vendor role access/entitlements change, reviewers cannot confirm least-privilege or third-party access boundaries are maintained under the new solution.",
+          "recommendation": "Document explicit access/IAM impact per vendor role, or confirm 'BAU' means no change to entitlements, roles, or data access scope.",
+          "confidence": 0.6,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.6 Business Processes/Considerations",
+          "content_types": [
+            "text",
+            "table"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-002",
+          "scope": "architecture",
+          "category": "Design Consistency",
+          "severity": "Low",
+          "title": "Ambiguous 'Group' column values mixing organizational and impact semantics",
+          "finding": "The 'Group' column entry 'Vendor+Rogers Bank' for Workforce Manager mixes two organizational owners in one cell, inconsistent with all other rows that list a single group, creating ambiguity about which entity owns the change.",
+          "evidence": {
+            "text": "Workforce Manager | Vendor+Rogers Bank | Yes",
+            "visual_observation": ""
+          },
+          "impact": "Ambiguous ownership can lead to unclear accountability for training, communications, or process changes tied to this role.",
+          "recommendation": "Clarify whether the impact applies to Vendor, Rogers Bank, or both, and split into separate rows if both are independently affected.",
+          "confidence": 0.55,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.6 Business Processes/Considerations",
+          "content_types": [
+            "text",
+            "table"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-003",
+          "scope": "architecture",
+          "category": "Dependency",
+          "severity": "Medium",
+          "title": "Impacted roles marked 'Yes' lack described change detail",
+          "finding": "Workforce Manager and Operations Manager rows are marked 'Yes' (impacted) but no accompanying description of the specific process, training, or communication change is provided in the supplied content, unlike the section's stated intent to 'record the changes driven by the solution.'",
+          "evidence": {
+            "text": "Workforce Manager | Vendor+Rogers Bank | Yes; Operations Manager | RB | Yes. Section instruction: 'Record the changes driven by the solution that the business may need to address in their processes, training, communications etc.'",
+            "visual_observation": ""
+          },
+          "impact": "Without the actual change description, downstream teams cannot plan training or communication updates for the two roles identified as impacted, undermining the stated purpose of this section.",
+          "recommendation": "Add explicit change/impact narrative for each row marked 'Yes' describing the specific process, training, or communication change required.",
+          "confidence": 0.7,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.6 Business Processes/Considerations",
+          "content_types": [
+            "text",
+            "table"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-001",
+          "scope": "architecture",
+          "category": "Design Consistency",
+          "severity": "High",
+          "title": "Deployment approach section lacks substantive content",
+          "finding": "The section retains the template placeholder instruction ('Describe how you are going to deploy and test the solution') and provides only a single table row with no actual component list, environment description, or deployment sequence narrative.",
+          "evidence": {
+            "text": "1.7 Deployment Approach<<Describe how you are going to deploy and test the solution>>Phase/Single DropComponents includedPVT (Y/N)PETBRT (Y/N)Drop 1 YNN",
+            "visual_observation": ""
+          },
+          "impact": "Without a described deployment approach, reviewers cannot assess rollout risk, environment sequencing, rollback strategy, or which components/services are affected in this drop, undermining traceability between design and release execution.",
+          "recommendation": "Replace the placeholder with a narrative describing deployment phases, environments, cutover/rollback plan, and populate the 'Components included' column with actual component names.",
+          "confidence": 0.9,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7 Deployment Approach",
+          "content_types": [
+            "text",
+            "table"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-002",
+          "scope": "architecture",
+          "category": "Data Flow",
+          "severity": "Medium",
+          "title": "Components included column left blank",
+          "finding": "The 'Components included' column for 'Drop 1' contains no value, so the scope of the deployment (which architectural components, services, or IVR flows are part of this drop) is undefined.",
+          "evidence": {
+            "text": "Phase/Single DropComponents includedPVT (Y/N)PETBRT (Y/N)Drop 1 YNN",
+            "visual_observation": ""
+          },
+          "impact": "Ambiguity on which components ship in Drop 1 makes it impossible to validate dependency ordering or impact on integration/IVR components in this release.",
+          "recommendation": "Populate the 'Components included' field with the specific components, services, or contact flows delivered in Drop 1.",
+          "confidence": 0.85,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7 Deployment Approach",
+          "content_types": [
+            "table"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-003",
+          "scope": "integration",
+          "category": "Integration Error Handling",
+          "severity": "Medium",
+          "title": "PET/BRT testing marked 'N' with no rationale",
+          "finding": "The table indicates PET (Performance/Environment Testing, unclear) = N and BRT (Business Readiness/Regression Testing, unclear) = N for Drop 1, with no explanation for why these test types are excluded.",
+          "evidence": {
+            "text": "Drop 1 YNN (interpreted as PVT=Y, PET=N, BRT=N)",
+            "visual_observation": ""
+          },
+          "impact": "Skipping performance and business readiness/regression testing without documented justification is a risk for integration points (APIs, Lambda, external dependencies) that may not be validated before release, especially given no components are specified for this drop.",
+          "recommendation": "Document rationale for excluding PET and BRT for Drop 1, or confirm these test types are not applicable and record the compensating validation approach.",
+          "confidence": 0.6,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7 Deployment Approach",
+          "content_types": [
+            "table"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-001",
+          "scope": "architecture",
+          "category": "Design Consistency",
+          "severity": "High",
+          "title": "Deployment units table contains only headers, no data",
+          "finding": "The supplied section presents only the table column headers (Unit Type, Description, Runtime Version, New/Modified, Account, VPC/NoVPC, Cross Account Data Access, Monitoring) with no populated rows describing actual deployment units for Prod/UT/QA/Dev environments.",
+          "evidence": {
+            "text": "1.7.1 Deployment Units (Prod/UT/QA/Dev)#Unit TypeDescriptionRuntime VersionNew / ModifiedAccountVPC/NoVPCCross Account Data AccessMonitoring",
+            "visual_observation": ""
+          },
+          "impact": "Without populated data, no assessment can be made of architecture, security (VPC/account boundaries, cross-account access), integration, or IVR-related deployment characteristics for this section, preventing verification of environment segregation, monitoring coverage, and cross-account data controls.",
+          "recommendation": "Provide the completed deployment units table with actual entries for each environment (Prod/UT/QA/Dev), including account IDs, VPC configuration, cross-account access details, and monitoring setup, then resubmit for review.",
+          "confidence": 0.9,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.1 Deployment Units (Prod/UT/QA/Dev)",
+          "content_types": [
+            "table",
+            "text"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-001",
+          "scope": "architecture",
+          "category": "Design Consistency",
+          "severity": "Medium",
+          "title": "Deployment method table lacks module scope and detail for all listed items",
+          "finding": "The table lists three modules (Amazon Connect, S3, CloudWatch log stream) with deployment methods (TFM+Manual, TFM, TFM) but the 'Details' column is empty for all rows, leaving no evidence of what is deployed via Terraform vs. manually, or why manual steps are needed for Amazon Connect.",
+          "evidence": {
+            "text": "1 Amazon Connect TFM+Manual [Details blank] 4 S3 TFM [Details blank] 5 CloudWatch log stream TFM [Details blank]",
+            "visual_observation": ""
+          },
+          "impact": "Without details on what specifically requires manual deployment for Amazon Connect, reviewers cannot assess deployment risk, repeatability, or drift potential between environments.",
+          "recommendation": "Populate the Details column specifying exact manual steps for Amazon Connect and confirm scope of Terraform-managed resources for each module.",
+          "confidence": 0.75,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.2 Deployment Method",
+          "content_types": [
+            "table",
+            "text"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-002",
+          "scope": "architecture",
+          "category": "Dependency",
+          "severity": "Low",
+          "title": "Non-sequential/incomplete item numbering in deployment table",
+          "finding": "Table rows are numbered 1, 4, 5 with no rows 2 and 3 present in the supplied content, suggesting missing modules or an extraction/formatting gap.",
+          "evidence": {
+            "text": "1 Amazon Connect TFM+Manual ... 4 S3 TFM ... 5 CloudWatch log stream TFM",
+            "visual_observation": ""
+          },
+          "impact": "If modules 2 and 3 exist but are omitted, the deployment method inventory is incomplete, risking undocumented deployment paths for those components.",
+          "recommendation": "Verify against the source document whether rows 2 and 3 exist and, if so, include their module names and deployment methods.",
+          "confidence": 0.55,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.2 Deployment Method",
+          "content_types": [
+            "table",
+            "text"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-003",
+          "scope": "security",
+          "category": "IAM",
+          "severity": "Medium",
+          "title": "Manual deployment step for Amazon Connect lacks access control and change tracking evidence",
+          "finding": "The 'Manual' component of Amazon Connect's TFM+Manual deployment method is not described with any accompanying access control, approval, or audit trail information.",
+          "evidence": {
+            "text": "1 Amazon Connect TFM+Manual [no further detail provided]",
+            "visual_observation": ""
+          },
+          "impact": "Manual deployment steps without documented access controls or audit logging increase risk of unauthorized or untracked configuration changes to a customer-facing contact center system.",
+          "recommendation": "Document the IAM roles/permissions required for the manual step, and specify audit logging or change approval process covering that manual action.",
+          "confidence": 0.6,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.2 Deployment Method",
+          "content_types": [
+            "table",
+            "text"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-004",
+          "scope": "integration",
+          "category": "External Dependency",
+          "severity": "Low",
+          "title": "No description of dependencies between deployment methods across modules",
+          "finding": "The table does not describe any sequencing, dependency, or integration order between deploying Amazon Connect, S3, and CloudWatch log stream, despite these being interrelated (e.g., log stream likely depends on Connect instance existing).",
+          "evidence": {
+            "text": "1 Amazon Connect TFM+Manual ... 4 S3 TFM ... 5 CloudWatch log stream TFM",
+            "visual_observation": ""
+          },
+          "impact": "Absence of deployment order/dependency information could lead to failed or inconsistent deployments if modules are provisioned out of order.",
+          "recommendation": "Add deployment sequencing or dependency notes (e.g., CloudWatch log stream configuration depends on Connect instance ARN) to the Details column.",
+          "confidence": 0.5,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.2 Deployment Method",
+          "content_types": [
+            "table",
+            "text"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-001",
+          "scope": "security",
+          "category": "Data Protection",
+          "severity": "High",
+          "title": "PII flagged True with no protection controls referenced",
+          "finding": "The tagging table declares PII = True and Data Classification = Restricted, but no encryption, masking, access control, or data handling mechanism is referenced anywhere in this section to protect the identified PII.",
+          "evidence": {
+            "text": "PII ... Values: True, False -> True; Data Classification ... Values: restricted, confidential, internal, public -> Restricted",
+            "visual_observation": ""
+          },
+          "impact": "Without documented controls tied to the PII/Restricted tags, there is no traceability from classification to actual protective measures (encryption, access restriction, masking), increasing risk of non-compliant handling of sensitive data.",
+          "recommendation": "Cross-reference this tagging section to the specific security controls (encryption at rest/in transit, access policies) applied to resources tagged PII=True and Restricted, either in this section or via explicit pointer to the controlling section.",
+          "confidence": 0.7,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.3 Tagging",
+          "content_types": [
+            "table",
+            "text"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-002",
+          "scope": "security",
+          "category": "Data Protection",
+          "severity": "Medium",
+          "title": "PCI compliance flag lacks corresponding control mapping",
+          "finding": "Compliance is tagged as PCI, but the section provides no reference to PCI-specific controls (e.g., cardholder data handling, segmentation, retention limits) applicable to this resource.",
+          "evidence": {
+            "text": "Compliance ... Values: SOX, PCI, Both, None -> PCI",
+            "visual_observation": ""
+          },
+          "impact": "Absence of a control mapping for a PCI-tagged resource creates a compliance traceability gap that could surface in an audit.",
+          "recommendation": "Add a reference linking this PCI tag to the section(s) documenting PCI DSS control implementation for this resource.",
+          "confidence": 0.6,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.3 Tagging",
+          "content_types": [
+            "table",
+            "text"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-003",
+          "scope": "architecture",
+          "category": "Design Consistency",
+          "severity": "Low",
+          "title": "Application Name value inconsistent with description",
+          "finding": "The 'Application Name' field description states the value should be the 'Assigned Application Long Name as per the Rogers CMDB records' with example value 'oneview', but the actual populated value shown is 'RBCONNECT', which reads as an abbreviation/short code rather than a long name, and it is unclear whether it matches CMDB records.",
+          "evidence": {
+            "text": "Application Name ... Values: oneviewRBCONNECT",
+            "visual_observation": ""
+          },
+          "impact": "If the populated value does not match the CMDB long name convention, downstream tooling relying on this tag for CMDB reconciliation, cost allocation, or ownership lookup could fail to resolve correctly.",
+          "recommendation": "Confirm 'RBCONNECT' matches the CMDB-registered Application Long Name; if it is a short code, correct the tag value or clarify the naming convention.",
+          "confidence": 0.5,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.3 Tagging",
+          "content_types": [
+            "table",
+            "text"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-004",
+          "scope": "architecture",
+          "category": "Design Consistency",
+          "severity": "Low",
+          "title": "Application Owner value shows two names with no delimiter or single accountable owner",
+          "finding": "The Application Owner field expects a single 'FirstName.LastName@rci.rogers.ca' value per its own description, but the populated value concatenates two names ('Jackie SloatSpencer') without clear delimiter, email format, or indication of which individual is the accountable SPOC.",
+          "evidence": {
+            "text": "Application Owner ... Values: FirstName.LastName@rci.rogers.ca -> Jackie SloatSpencer",
+            "visual_observation": ""
+          },
+          "impact": "Ambiguous ownership data could delay incident response or review engagement since it is unclear who the single accountable contact is.",
+          "recommendation": "Clarify and reformat the Application Owner field to a single unambiguous contact (or explicitly list co-owners with proper delimiters) in the required email format.",
+          "confidence": 0.55,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.3 Tagging",
+          "content_types": [
+            "table",
+            "text"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-001",
+          "scope": "architecture",
+          "category": "Design Consistency",
+          "severity": "Low",
+          "title": "Invocation-direction arrows may be misread as data flow",
+          "finding": "The text explicitly clarifies that diagram arrows represent invocation direction (caller to responder), not data flow or network routing, and notes these may sometimes coincide but not always. Without the visual, this creates a documented ambiguity risk for any reader relying on the diagram to infer actual data flow or routing paths.",
+          "evidence": {
+            "text": "the arrows represent the direction of invocation ... They do not represent the data flow or the actual network routing paths, although in some case, the logical direction of invocation may align with the physical data path.",
+            "visual_observation": ""
+          },
+          "impact": "Downstream reviewers or implementers could misinterpret data flow, network segmentation, or security boundaries based on arrow direction alone, leading to incorrect assumptions in security or integration design reviews.",
+          "recommendation": "Add an explicit legend or separate data-flow diagram distinguishing invocation direction from actual data/network path where they diverge.",
+          "confidence": 0.55,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 2.1 Project Context",
+          "content_types": [
+            "text"
+          ],
+          "visual_reviewed": false
+        },
+        {
+          "finding_id": "F-001",
+          "scope": "security",
+          "category": "Network Security",
+          "severity": "High",
+          "title": "PCI use case GetAccountByANI bypasses CDE VPC boundary",
+          "finding": "PCI use case 4 (GetAccountByANI) is listed adjacent to Amazon Connect/Lex but its flow line does not route through the 'CDE VPC' box like PCI use cases 1-3 (GetAccountByCard, Set/Update PIN, Verify PIN). Instead it appears to route toward 'Create TSYS Interaction' outside the CDE VPC boundary before reaching TSYS.",
+          "evidence": {
+            "text": "PCI use cases: 4. GetAccountByANI ... Create TSYS Interaction",
+            "visual_observation": "The GetAccountByANI label sits outside the CDE VPC box, and its connector is a plain black arrow (matching 'Existing' legend style) rather than the red 'New Integration (PCI)' style used elsewhere, while it flows toward Create TSYS Interaction outside CDE VPC."
+          },
+          "impact": "If a PCI-scoped call flow (card lookup by ANI) does not traverse the CDE VPC, cardholder data or PAN-adjacent identifiers may transit outside the defined PCI boundary, creating potential PCI-DSS scope violations.",
+          "recommendation": "Clarify and correct the diagram to explicitly route GetAccountByANI through the CDE VPC, and confirm connector color/legend classification (PCI vs Existing) matches actual data flow.",
+          "confidence": 0.6,
+          "section_reference": "RBConnect Context Diagram - CDE AWS Account / PCI use cases",
+          "visual_reviewed": false,
+          "content_types": [
+            "diagram",
+            "image"
+          ]
+        },
+        {
+          "finding_id": "F-002",
+          "scope": "architecture",
+          "category": "Single Point of Failure",
+          "severity": "Medium",
+          "title": "Single shared egress/firewall node serves multiple critical integrations",
+          "finding": "Non-PCI use cases, Create TSYS Interaction, HIYA Call branding, and Utility functions (Report, Routing, HR-Feed) all converge through a single 'RCI Egress + Firewall' node before reaching CNX/GS, Dynatrace, HIYA, and TSYS.",
+          "evidence": {
+            "text": "RCI Egress + Firewall",
+            "visual_observation": "Multiple independent flows (Non-PCI use cases, Create TSYS Interaction, HIYA Call branding, Utility functions) all funnel into one 'RCI Egress + Firewall' box before fanning out to external systems."
+          },
+          "impact": "A failure or misconfiguration in the single shared egress/firewall component could simultaneously disrupt TSYS interactions, branding, reporting/routing utilities, and vendor connectivity, with no redundancy shown.",
+          "recommendation": "Document failover/redundancy design for the RCI Egress + Firewall component, or confirm resiliency is addressed in a separate infrastructure HLD.",
+          "confidence": 0.55,
+          "section_reference": "RBConnect Context Diagram - RCI Egress + Firewall",
+          "visual_reviewed": false,
+          "content_types": [
+            "diagram",
+            "image"
+          ]
+        },
+        {
+          "finding_id": "F-003",
+          "scope": "security",
+          "category": "Data Protection",
+          "severity": "Medium",
+          "title": "Datalake ingestion path crosses account/PCI boundary without visible data classification control",
+          "finding": "A green connector runs from within the CDE/Amazon Connect area (and 'Other-sources') into Datalake -> Athena -> QuickSight -> RB Ops Mgr, without any labeled control (e.g., masking, tokenization, PCI exclusion) distinguishing PCI vs non-PCI data entering the Datalake.",
+          "evidence": {
+            "text": "CCReport+HRFeed ... Datalake, Athena, QuickSight",
+            "visual_observation": "Green lines originate from inside the CDE AWS Account boundary (near Amazon Connect) and other sources, converging into Datalake with no annotated data classification or filtering control before reaching Athena/QuickSight/RB Ops Mgr."
+          },
+          "impact": "Without an explicit control indicating exclusion or masking of PCI-scoped data, reporting/analytics pipelines risk inadvertently ingesting sensitive cardholder data outside the CDE, expanding PCI scope.",
+          "recommendation": "Add explicit labeling or a control point confirming PCI data is excluded/masked before ingestion into Datalake/Athena/QuickSight.",
+          "confidence": 0.5,
+          "section_reference": "RBConnect Context Diagram - Datalake/Athena/QuickSight flow",
+          "visual_reviewed": false,
+          "content_types": [
+            "diagram",
+            "image"
+          ]
+        },
+        {
+          "finding_id": "F-004",
+          "scope": "integration",
+          "category": "Interface",
+          "severity": "Low",
+          "title": "Inconsistent firewall labeling between text and diagram (iFirewall vs lFirewall)",
+          "finding": "The raw text content lists 'lFirewall' near TCS Portal, while the rendered diagram shows the label as 'iFirewall'. This is a minor naming inconsistency between the extracted text and the visual artifact.",
+          "evidence": {
+            "text": "lFirewall",
+            "visual_observation": "Diagram shows a box labeled 'iFirewall' positioned between TCS Portal and Open APIs within the TSYS box."
+          },
+          "impact": "Naming inconsistency could cause confusion when cross-referencing this component in related documentation or configuration inventories.",
+          "recommendation": "Standardize the firewall component label across text extraction and diagram source to avoid ambiguity.",
+          "confidence": 0.4,
+          "section_reference": "RBConnect Context Diagram - TSYS / TCS Portal firewall label",
+          "visual_reviewed": false,
+          "content_types": [
+            "diagram",
+            "image"
+          ]
+        },
+        {
+          "finding_id": "F-005",
+          "scope": "ivr",
+          "category": "Caller Experience",
+          "severity": "Low",
+          "title": "No retry, disconnect, or transfer-failure handling depicted for IVR/Lex flow",
+          "finding": "The diagram shows Amazon Connect routing to Lex and Verification Lambda, and outward to TSYS/CDE VPC use cases, but no error handling, retry, or disconnect paths are depicted for failed verification or failed TSYS interaction scenarios.",
+          "evidence": {
+            "text": "Amazon Connect ... Lex ... Verification Lambda (Dob, OTC, Phone, PAN)",
+            "visual_observation": "Arrows show a linear flow from Amazon Connect to Lex/Verification Lambda and onward to CDE VPC/TSYS with no branch, retry, or fallback path indicated in the context diagram."
+          },
+          "impact": "Absence of depicted error/retry/disconnect handling in this context-level diagram may indicate such behavior is undocumented at this level, risking unclear caller experience expectations for failed verification.",
+          "recommendation": "Confirm whether retry/disconnect/transfer-on-failure behavior is documented in a detailed contact flow diagram; this context diagram alone is insufficient to validate IVR error handling.",
+          "confidence": 0.35,
+          "section_reference": "RBConnect Context Diagram - Amazon Connect/Lex/Verification Lambda flow",
+          "visual_reviewed": false,
+          "content_types": [
+            "diagram",
+            "image"
+          ]
+        },
+        {
+          "finding_id": "F-006",
+          "scope": "architecture",
+          "category": "Design Consistency",
+          "severity": "Low",
+          "title": "CDE VPC box rendered with dashed/grayed styling distinct from CDE AWS Account boundary",
+          "finding": "The 'CDE VPC' inner box is rendered with a lighter/dashed pink border and grayed text, differing visually from the solid red 'CDE AWS Account' outer boundary and other solid-bordered components, without a legend entry explaining this distinct styling.",
+          "evidence": {
+            "text": "CDE VPC",
+            "visual_observation": "The CDE VPC box uses a faded/dashed pink outline and grey internal text, visually distinct from other solid black-bordered boxes, but no legend item defines this style."
+          },
+          "impact": "Undefined visual styling for a security-relevant boundary (CDE VPC) creates ambiguity about whether this represents a placeholder, an out-of-scope element, or an active enforced boundary.",
+          "recommendation": "Add a legend entry clarifying the CDE VPC box styling, or make its border consistent with other in-scope boundary elements.",
+          "confidence": 0.4,
+          "section_reference": "RBConnect Context Diagram - CDE VPC box styling",
+          "visual_reviewed": false,
+          "content_types": [
+            "diagram",
+            "image"
+          ]
+        }
+      ],
+      "passed_checks": [
+        {
+          "scope": "architecture",
+          "category": "Component Boundary",
+          "check": "Requirement table structure is well-formed with consistent columns (Requirement ID, Description, Compliance, Remarks) across both listed entries.",
+          "evidence": "R1 and R2 both follow identical column structure with populated ID, Description, and Compliance fields.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.2 Project Objectives",
+          "visual_reviewed": false
+        },
+        {
+          "scope": "integration",
+          "category": "External Dependency",
+          "check": "Verified whether data visualization pipeline components (Athena, S3, Quick Sight) are named consistently with their described roles across the text",
+          "evidence": "Text consistently identifies Athena as the query engine over S3, and Amazon Quick Sight as the BI/visualization layer for both the data lake and CUR export paths, with no contradictory role assignment.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.3 Solution Summary",
+          "visual_reviewed": false
+        },
+        {
+          "scope": "architecture",
+          "category": "Component Boundary",
+          "check": "Verified all entity/actor rows have a Group classification (External, Vendor, RB, RCI) distinguishing organizational ownership boundaries.",
+          "evidence": "Every row in the table (Customer, CC Agent CSR, CC Supervisor, Workforce Manager, Operations Manager, In-house agent-like CSR, In-house CC Supervisor, Collections Agent, RTM Specialist, Amazon Connect Administrator, Technical Support, IT Admin, InfoSec) has a populated Group value.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.6 Business Processes/Considerations",
+          "visual_reviewed": false
+        },
+        {
+          "scope": "architecture",
+          "category": "Component Boundary",
+          "check": "Verify that each listed module has an identifiable deployment method",
+          "evidence": "Each of the three listed modules (Amazon Connect, S3, CloudWatch log stream) has a non-empty Method value (TFM+Manual, TFM, TFM).",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.2 Deployment Method",
+          "visual_reviewed": false
+        },
+        {
+          "scope": "architecture",
+          "category": "Design Consistency",
+          "check": "Application ID format compliance with CMDB 4-digit requirement",
+          "evidence": "Application ID description states 'should be 4 digits as per CMDB' and the populated value is '3333', which is 4 digits, consistent with the stated requirement.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.3 Tagging",
+          "visual_reviewed": false
+        },
+        {
+          "scope": "architecture",
+          "category": "Design Consistency",
+          "check": "Business Criticality value conforms to defined enumeration",
+          "evidence": "Business Criticality/Application Classification defines Values: Vital, Critical, Important, Productivity, and the populated value 'Vital' is a valid member of that enumeration.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.3 Tagging",
+          "visual_reviewed": false
+        },
+        {
+          "scope": "architecture",
+          "category": "Design Consistency",
+          "check": "Verified that the section provides an explicit naming convention and legend description for the Project Context Diagram",
+          "evidence": "The naming convention is: Project Number â€“ Project Name â€“ PCD â€“ Work Package Number; new changes are shown in green line.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 2.1 Project Context",
+          "visual_reviewed": false
+        },
+        {
+          "scope": "architecture",
+          "category": "Component Boundary",
+          "check": "Verified separation between CDE AWS Account and Rogers Bank Default AWS Account boundaries",
+          "evidence": "Diagram clearly delineates a red-bordered 'CDE AWS Account' region nested within an orange-bordered 'Rogers Bank Default AWS Account' region, consistent with the text listing CDE AWS Account and Rogers Bank Default AWS Account separately.",
+          "section_reference": "RBConnect Context Diagram - account boundaries",
+          "visual_reviewed": true
+        },
+        {
+          "scope": "integration",
+          "category": "External Dependency",
+          "check": "Confirmed labeling of new vs existing integrations via legend",
+          "evidence": "Legend defines No Change, New Integration, Existing, New Integration (PCI), Separate HLD, Out of Scope, and New, and these styles are consistently applied to connectors such as Datalake/Athena/QuickSight (green/New) and TSYS/Open APIs (black/existing-style).",
+          "section_reference": "RBConnect Context Diagram - Legends",
+          "visual_reviewed": true
+        },
+        {
+          "scope": "security",
+          "category": "IAM",
+          "check": "Verified administrative access to both AWS accounts is routed through AWS Console/Control Plane rather than direct resource access",
+          "evidence": "Both the top ('IT Admins, Developers' -> AWS Console -> AWS Control plane -> CDE AWS Account) and bottom ('IT Admins, Developers' -> AWS Console -> AWS Control plane -> Rogers Bank Default AWS Account) admin paths show console-mediated access.",
+          "section_reference": "RBConnect Context Diagram - AWS Console/Control Plane paths",
+          "visual_reviewed": true
+        }
+      ],
+      "manual_review": [
+        {
+          "scope": "ivr",
+          "reason": "No IVR contact flow, prompt, queue, Lambda, or Lex content is present in this excerpt to evaluate against IVR scope objectives.",
+          "required_action": "Confirm whether IVR-specific requirements exist in adjacent sections and route them for IVR scope review separately.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.2 Project Objectives"
+        },
+        {
+          "scope": "security",
+          "reason": "No authentication, authorization, IAM, encryption, or network boundary details are present for the QuickSight/Connect integration described.",
+          "required_action": "Obtain the security architecture section covering IAM roles, encryption, and access boundaries for this integration and re-review.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.2 Project Objectives"
+        },
+        {
+          "scope": "integration",
+          "reason": "The section references a full document structure (e.g., '2.6.2 Data Lifecycle and Retention') but the supplied raw content only covers 1.2 Project Objectives; no visual/diagram was supplied to validate any architecture or integration flow implied by the linked page.",
+          "required_action": "Retrieve and review the referenced diagrams/sections (e.g., data lifecycle, integration architecture diagrams) directly from the source page for complete validation.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.2 Project Objectives"
+        },
+        {
+          "scope": "architecture",
+          "reason": "No diagram was supplied to validate the described data flow (Connect -> data lake -> Quick Sight; and Connect -> Data export -> S3 -> Athena -> Quick Sight) against an actual architecture visual.",
+          "required_action": "Review the associated architecture diagram (if any) to confirm component boundaries and data flow direction match this text description.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.3 Solution Summary"
+        },
+        {
+          "scope": "security",
+          "reason": "No security controls, encryption, or IAM details are present in this section to evaluate against enterprise security requirements.",
+          "required_action": "Locate and review the dedicated security section of the HLD (if it exists) or request supplemental security architecture documentation for the data lake/S3/Quick Sight components.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.3 Solution Summary"
+        },
+        {
+          "scope": "integration",
+          "reason": "The 'Cyber STAR' referenced document location is marked TBD, preventing verification of its content or applicability to this HLD.",
+          "required_action": "Confirm the final location and completion status of the Cyber STAR document before sign-off.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.3 Solution Summary"
+        },
+        {
+          "scope": "ivr",
+          "reason": "This section contains no content related to Amazon Connect contact flows, prompts, queues, Lambda/Lex integration, or caller experience; IVR-specific behavior cannot be assessed from this evidence.",
+          "required_action": "Review a section of the HLD specifically covering contact flow design if IVR/Contact Center scope validation is required.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.3 Solution Summary"
+        },
+        {
+          "scope": "security",
+          "reason": "No detail is provided on InfoSec (RCI, BAU) role's specific involvement or whether security review/sign-off processes change under this solution.",
+          "required_action": "Confirm with InfoSec stakeholders whether any new controls, reviews, or approval gates are introduced by this solution beyond BAU.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.6 Business Processes/Considerations"
+        },
+        {
+          "scope": "integration",
+          "reason": "The section lists an 'Amazon Connect Administrator' role but provides no detail on integration touchpoints, APIs, or systems this role interacts with, and no visual/architecture diagram was supplied to validate boundaries.",
+          "required_action": "Review the referenced architecture/integration diagrams (not supplied here) to validate the Amazon Connect Administrator's system interfaces and confirm no undocumented integration impact.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.6 Business Processes/Considerations"
+        },
+        {
+          "scope": "architecture",
+          "reason": "No deployment topology, environment sequence, or rollback approach is described in the supplied text to validate architectural deployment risk.",
+          "required_action": "Obtain the completed deployment approach narrative and component list from the design author for review.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7 Deployment Approach"
+        },
+        {
+          "scope": "security",
+          "reason": "No content in this section addresses authentication, authorization, encryption, or secrets management, and no security-relevant evidence is present to assess.",
+          "required_action": "Confirm whether deployment approach includes any security-related steps (e.g., secrets rotation, credential provisioning) in a completed version of this section.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7 Deployment Approach"
+        },
+        {
+          "scope": "ivr",
+          "reason": "No IVR/Contact Center-specific content (contact flows, prompts, queues, Lambda/Lex) is present in this section to review.",
+          "required_action": "Verify in a completed deployment plan whether Drop 1 includes any Amazon Connect contact flow or IVR component changes requiring specific test coverage.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7 Deployment Approach"
+        },
+        {
+          "scope": "architecture",
+          "reason": "Table headers reference Account, VPC/NoVPC, and Cross Account Data Access columns, but no row data is present to evaluate account/VPC boundaries or component deployment topology.",
+          "required_action": "Obtain the fully populated deployment units table and re-assess environment isolation and account/VPC boundaries.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.1 Deployment Units (Prod/UT/QA/Dev)"
+        },
+        {
+          "scope": "security",
+          "reason": "A 'Cross Account Data Access' column is defined but contains no values, so cross-account access controls, encryption in transit, or IAM boundary configurations cannot be evaluated.",
+          "required_action": "Provide populated data for the Cross Account Data Access and VPC/NoVPC columns to validate network segmentation and access control posture.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.1 Deployment Units (Prod/UT/QA/Dev)"
+        },
+        {
+          "scope": "integration",
+          "reason": "No unit-level data is present to identify which deployment units correspond to APIs, Lambda functions, or external integration points, or how they map across Prod/UT/QA/Dev.",
+          "required_action": "Supply completed table rows identifying integration-related deployment units and their runtime versions per environment.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.1 Deployment Units (Prod/UT/QA/Dev)"
+        },
+        {
+          "scope": "ivr",
+          "reason": "No data is available identifying any Amazon Connect, Lambda, or Lex-related deployment units, so no IVR/Contact Center specific assessment can be made from this section.",
+          "required_action": "Provide populated deployment unit entries relevant to Contact Flow, Lambda, or Lex components for IVR-specific review.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.1 Deployment Units (Prod/UT/QA/Dev)"
+        },
+        {
+          "scope": "ivr",
+          "reason": "The provided content only lists deployment methods and does not describe IVR contact flows, prompts, queues, Lambda/Lex integration, or caller experience behavior.",
+          "required_action": "Obtain and review the actual contact flow design artifacts to assess IVR-specific behavior; none is present in this section.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.2 Deployment Method"
+        },
+        {
+          "scope": "architecture",
+          "reason": "No diagram or visual attachment was supplied to confirm the deployment topology or any implied dependencies between Amazon Connect, S3, and CloudWatch beyond the table text.",
+          "required_action": "Review the associated architecture/deployment diagram (if one exists in the source page) to validate topology and confirm no components are missing.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.2 Deployment Method"
+        },
+        {
+          "scope": "security",
+          "reason": "The section tags this resource as PII=True, Restricted, and PCI-compliant, but no linked security control documentation (encryption, access control, audit logging) is present in the supplied evidence to validate that classification is backed by implemented controls.",
+          "required_action": "Review the security/encryption/access-control sections of the HLD (or supporting artifacts) to confirm controls exist and are implemented for this PII/PCI/Restricted-tagged resource.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.3 Tagging"
+        },
+        {
+          "scope": "architecture",
+          "reason": "The 'Expiration Date' field description implies it is only applicable to temporary infrastructure, and the value is 'NA', but there is no evidence confirming whether this resource is temporary or permanent, so it cannot be conclusively determined whether 'NA' is the correct value.",
+          "required_action": "Confirm with the resource owner whether this infrastructure is intended to be permanent, validating that 'NA' is the correct Expiration Date designation.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.7.3 Tagging"
+        },
+        {
+          "scope": "architecture",
+          "reason": "The Project Context diagram itself (components, boundaries, dependencies, data flow, deployment topology) was not supplied as a visual attachment; only descriptive text about the diagram's conventions is available.",
+          "required_action": "Obtain and review the actual Project Context Diagram image to validate component boundaries, dependencies, and consistency with the text description.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 2.1 Project Context"
+        },
+        {
+          "scope": "security",
+          "reason": "No security-relevant content (authentication, authorization, encryption, network boundaries) is present in this text section to assess.",
+          "required_action": "Review the actual diagram and any linked security sections for IAM, encryption, and network boundary controls between the depicted components.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 2.1 Project Context"
+        },
+        {
+          "scope": "integration",
+          "reason": "No API, event, payload, or interface details are present in this text section; the diagram (not supplied) is the primary source for invocation relationships between systems.",
+          "required_action": "Review the diagram to identify APIs/interfaces represented by the invocation arrows and validate payload/contract details elsewhere in the HLD.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 2.1 Project Context"
+        },
+        {
+          "scope": "ivr",
+          "reason": "No IVR/Contact Center-specific content (contact flows, prompts, queues, Lambda/Lex integration) is present in this text section.",
+          "required_action": "Review the diagram and related contact flow sections to validate IVR component representation and behavior.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 2.1 Project Context"
+        },
+        {
+          "scope": "security",
+          "reason": "No encryption, TLS/mTLS, or authentication mechanism is labeled on any connector in the context diagram, so it cannot be determined whether data-in-transit protections exist between components.",
+          "required_action": "Review lower-level design or security architecture documents to validate encryption and authentication controls on inter-component connections (e.g., Amazon Connect to Lex, CDE VPC to TSYS).",
+          "section_reference": "RBConnect Context Diagram - overall connector set"
+        },
+        {
+          "scope": "integration",
+          "reason": "The diagram references 'Separate HLD' as a legend category but does not indicate which specific connectors/components use that classification within this image.",
+          "required_action": "Identify which flows are marked 'Separate HLD' and confirm those companion HLDs exist and are consistent with this context diagram.",
+          "section_reference": "RBConnect Context Diagram - Legends (Separate HLD)"
+        },
+        {
+          "scope": "ivr",
+          "reason": "Contact flow-level details (queues, prompts, transfer logic, retry counts) are not present in this context-level diagram.",
+          "required_action": "Obtain and review the detailed Amazon Connect contact flow diagrams to validate IVR-specific behavior (queueing, prompts, transfers, retries, disconnects).",
+          "section_reference": "RBConnect Context Diagram - Amazon Connect node"
+        },
+        {
+          "scope": "architecture",
+          "reason": "The role and data boundary of 'X-PLATFORM' relative to Non-PCI use cases and RCI Egress + Firewall is not explained in the supplied text or diagram.",
+          "required_action": "Obtain component-level documentation defining X-PLATFORM's function and its data handling scope.",
+          "section_reference": "RBConnect Context Diagram - X-PLATFORM node"
+        }
+      ],
+      "review_errors": [],
+      "review_required_sections": [],
+      "ivr_flow_requirements": [],
+      "ai_consumption": {
+        "attribution_mode": "exact-by-section-shared-across-selected-scopes",
+        "note": "SDK usage is exact for each section/turn. A single combined turn covers all selected scopes, so tokens and credits are not artificially split between scopes.",
+        "by_section": [
+          {
+            "sectionId": 7,
+            "sectionHeading": "1.2 Project Objectives",
+            "reviewScopes": [
+              "architecture",
+              "security",
+              "integration",
+              "ivr"
+            ],
+            "attributionMode": "shared-section-call",
+            "visualReviewed": false,
+            "modelCalls": 1,
+            "models": [
+              "claude-sonnet-5"
+            ],
+            "inputTokens": 23190,
+            "outputTokens": 3365,
+            "totalTokens": 26555,
+            "reasoningTokens": 0,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 23188,
+            "durationMs": 29800,
+            "totalNanoAiu": 9162400000,
+            "aiCreditsFromNanoAiu": 9.1624,
+            "premiumRequestCost": 1,
+            "usageComplete": true,
+            "turnStatus": "completed",
+            "usageSource": "session.rpc.usage.getMetrics + assistant.usage",
+            "contextInfo": null,
+            "modelBreakdown": {
+              "claude-sonnet-5": {
+                "calls": 1,
+                "inputTokens": 23190,
+                "outputTokens": 3365,
+                "reasoningTokens": 0,
+                "totalNanoAiu": 9162400000,
+                "aiCreditsFromNanoAiu": 9.1624
+              }
+            },
+            "apiCalls": [
+              {
+                "model": "claude-sonnet-5",
+                "inputTokens": 23190,
+                "outputTokens": 3365,
+                "reasoningTokens": 0,
+                "cacheReadTokens": 0,
+                "cacheWriteTokens": 23188,
+                "costMultiplier": 1,
+                "durationMs": 29800,
+                "timeToFirstTokenMs": 4107.6137,
+                "interTokenLatencyMs": 44.837522513089,
+                "reasoningEffort": null,
+                "initiator": "user",
+                "apiCallId": "msg_011CfF2iyCKYynAZgbSa8JfC",
+                "serviceRequestId": "6a29eb40-7e3f-4a19-8d6d-892cedee8301",
+                "apiEndpoint": "/v1/messages",
+                "providerCallId": "3BE7:2EC718:5173641:67256BF:6AB00DD9",
+                "finishReason": "stop",
+                "contentFilterTriggered": false,
+                "copilotUsage": {
+                  "tokenDetails": [
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 200000000000,
+                      "tokenCount": 2,
+                      "tokenType": "input"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 20000000000,
+                      "tokenCount": 0,
+                      "tokenType": "cache_read"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 250000000000,
+                      "tokenCount": 23188,
+                      "tokenType": "cache_write"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 1000000000000,
+                      "tokenCount": 3365,
+                      "tokenType": "output"
+                    }
+                  ],
+                  "totalNanoAiu": 9162400000
+                }
+              }
+            ],
+            "diagnostics": {
+              "sectionId": 7,
+              "sectionHeading": "1.2 Project Objectives",
+              "scopes": [
+                "architecture",
+                "security",
+                "integration",
+                "ivr"
+              ],
+              "contentTypes": [
+                "text",
+                "table"
+              ],
+              "sourceChars": 638,
+              "sourceEstimatedTokens": 160,
+              "promptChars": 6555,
+              "promptEstimatedTokens": 1639,
+              "systemPromptChars": 493,
+              "systemPromptEstimatedTokens": 124,
+              "attachmentCount": 0,
+              "attachments": [],
+              "visualReviewRequested": false,
+              "visualReviewAttached": false,
+              "note": "Estimated token counts are diagnostic approximations only; authoritative usage comes from Copilot SDK telemetry."
+            }
+          },
+          {
+            "sectionId": 8,
+            "sectionHeading": "1.3 Solution Summary",
+            "reviewScopes": [
+              "architecture",
+              "security",
+              "integration",
+              "ivr"
+            ],
+            "attributionMode": "shared-section-call",
+            "visualReviewed": false,
+            "modelCalls": 1,
+            "models": [
+              "claude-sonnet-5"
+            ],
+            "inputTokens": 23359,
+            "outputTokens": 4358,
+            "totalTokens": 27717,
+            "reasoningTokens": 0,
+            "cacheReadTokens": 11415,
+            "cacheWriteTokens": 11942,
+            "durationMs": 37048,
+            "totalNanoAiu": 7572200000,
+            "aiCreditsFromNanoAiu": 7.5722,
+            "premiumRequestCost": 1,
+            "usageComplete": true,
+            "turnStatus": "completed",
+            "usageSource": "session.rpc.usage.getMetrics + assistant.usage",
+            "contextInfo": null,
+            "modelBreakdown": {
+              "claude-sonnet-5": {
+                "calls": 1,
+                "inputTokens": 23359,
+                "outputTokens": 4358,
+                "reasoningTokens": 0,
+                "totalNanoAiu": 7572200000,
+                "aiCreditsFromNanoAiu": 7.5722
+              }
+            },
+            "apiCalls": [
+              {
+                "model": "claude-sonnet-5",
+                "inputTokens": 23359,
+                "outputTokens": 4358,
+                "reasoningTokens": 0,
+                "cacheReadTokens": 11415,
+                "cacheWriteTokens": 11942,
+                "costMultiplier": 1,
+                "durationMs": 37048,
+                "timeToFirstTokenMs": 3826.8327999999997,
+                "interTokenLatencyMs": 45.19850190476191,
+                "reasoningEffort": null,
+                "initiator": "user",
+                "apiCallId": "msg_011CfF2mK8vYvehkH9jKWcse",
+                "serviceRequestId": "48ef8128-9128-4eb7-acd6-e89f1567b78a",
+                "apiEndpoint": "/v1/messages",
+                "providerCallId": "98F0:296364:553082A:6ADFE4A:6AB00DF9",
+                "finishReason": "stop",
+                "contentFilterTriggered": false,
+                "copilotUsage": {
+                  "tokenDetails": [
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 200000000000,
+                      "tokenCount": 2,
+                      "tokenType": "input"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 20000000000,
+                      "tokenCount": 11415,
+                      "tokenType": "cache_read"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 250000000000,
+                      "tokenCount": 11942,
+                      "tokenType": "cache_write"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 1000000000000,
+                      "tokenCount": 4358,
+                      "tokenType": "output"
+                    }
+                  ],
+                  "totalNanoAiu": 7572200000
+                }
+              }
+            ],
+            "diagnostics": {
+              "sectionId": 8,
+              "sectionHeading": "1.3 Solution Summary",
+              "scopes": [
+                "architecture",
+                "security",
+                "integration",
+                "ivr"
+              ],
+              "contentTypes": [
+                "text",
+                "table"
+              ],
+              "sourceChars": 1025,
+              "sourceEstimatedTokens": 257,
+              "promptChars": 6932,
+              "promptEstimatedTokens": 1733,
+              "systemPromptChars": 493,
+              "systemPromptEstimatedTokens": 124,
+              "attachmentCount": 0,
+              "attachments": [],
+              "visualReviewRequested": false,
+              "visualReviewAttached": false,
+              "note": "Estimated token counts are diagnostic approximations only; authoritative usage comes from Copilot SDK telemetry."
+            }
+          },
+          {
+            "sectionId": 19,
+            "sectionHeading": "1.6 Business Processes/Considerations",
+            "reviewScopes": [
+              "architecture",
+              "security",
+              "integration",
+              "ivr"
+            ],
+            "attributionMode": "shared-section-call",
+            "visualReviewed": false,
+            "modelCalls": 1,
+            "models": [
+              "claude-sonnet-5"
+            ],
+            "inputTokens": 23297,
+            "outputTokens": 2833,
+            "totalTokens": 26130,
+            "reasoningTokens": 0,
+            "cacheReadTokens": 11415,
+            "cacheWriteTokens": 11880,
+            "durationMs": 26137,
+            "totalNanoAiu": 6031700000,
+            "aiCreditsFromNanoAiu": 6.0317,
+            "premiumRequestCost": 1,
+            "usageComplete": true,
+            "turnStatus": "completed",
+            "usageSource": "session.rpc.usage.getMetrics + assistant.usage",
+            "contextInfo": null,
+            "modelBreakdown": {
+              "claude-sonnet-5": {
+                "calls": 1,
+                "inputTokens": 23297,
+                "outputTokens": 2833,
+                "reasoningTokens": 0,
+                "totalNanoAiu": 6031700000,
+                "aiCreditsFromNanoAiu": 6.0317
+              }
+            },
+            "apiCalls": [
+              {
+                "model": "claude-sonnet-5",
+                "inputTokens": 23297,
+                "outputTokens": 2833,
+                "reasoningTokens": 0,
+                "cacheReadTokens": 11415,
+                "cacheWriteTokens": 11880,
+                "costMultiplier": 1,
+                "durationMs": 26137,
+                "timeToFirstTokenMs": 3917.0565,
+                "interTokenLatencyMs": 44.979597773279366,
+                "reasoningEffort": null,
+                "initiator": "user",
+                "apiCallId": "msg_011CfF2pCdMK1ygJVUiCfR5a",
+                "serviceRequestId": "3edab2ca-b655-4aab-af5d-c289b8b1f64d",
+                "apiEndpoint": "/v1/messages",
+                "providerCallId": "6C0E:3EDD02:577A6B4:6D2BC41:6AB00E20",
+                "finishReason": "stop",
+                "contentFilterTriggered": false,
+                "copilotUsage": {
+                  "tokenDetails": [
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 200000000000,
+                      "tokenCount": 2,
+                      "tokenType": "input"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 20000000000,
+                      "tokenCount": 11415,
+                      "tokenType": "cache_read"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 250000000000,
+                      "tokenCount": 11880,
+                      "tokenType": "cache_write"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 1000000000000,
+                      "tokenCount": 2833,
+                      "tokenType": "output"
+                    }
+                  ],
+                  "totalNanoAiu": 6031700000
+                }
+              }
+            ],
+            "diagnostics": {
+              "sectionId": 19,
+              "sectionHeading": "1.6 Business Processes/Considerations",
+              "scopes": [
+                "architecture",
+                "security",
+                "integration",
+                "ivr"
+              ],
+              "contentTypes": [
+                "text",
+                "table"
+              ],
+              "sourceChars": 763,
+              "sourceEstimatedTokens": 191,
+              "promptChars": 6755,
+              "promptEstimatedTokens": 1689,
+              "systemPromptChars": 493,
+              "systemPromptEstimatedTokens": 124,
+              "attachmentCount": 0,
+              "attachments": [],
+              "visualReviewRequested": false,
+              "visualReviewAttached": false,
+              "note": "Estimated token counts are diagnostic approximations only; authoritative usage comes from Copilot SDK telemetry."
+            }
+          },
+          {
+            "sectionId": 20,
+            "sectionHeading": "1.7 Deployment Approach",
+            "reviewScopes": [
+              "architecture",
+              "security",
+              "integration",
+              "ivr"
+            ],
+            "attributionMode": "shared-section-call",
+            "visualReviewed": false,
+            "modelCalls": 1,
+            "models": [
+              "claude-sonnet-5"
+            ],
+            "inputTokens": 23054,
+            "outputTokens": 2547,
+            "totalTokens": 25601,
+            "reasoningTokens": 0,
+            "cacheReadTokens": 11415,
+            "cacheWriteTokens": 11637,
+            "durationMs": 22519,
+            "totalNanoAiu": 5684950000,
+            "aiCreditsFromNanoAiu": 5.68495,
+            "premiumRequestCost": 1,
+            "usageComplete": true,
+            "turnStatus": "completed",
+            "usageSource": "session.rpc.usage.getMetrics + assistant.usage",
+            "contextInfo": null,
+            "modelBreakdown": {
+              "claude-sonnet-5": {
+                "calls": 1,
+                "inputTokens": 23054,
+                "outputTokens": 2547,
+                "reasoningTokens": 0,
+                "totalNanoAiu": 5684950000,
+                "aiCreditsFromNanoAiu": 5.68495
+              }
+            },
+            "apiCalls": [
+              {
+                "model": "claude-sonnet-5",
+                "inputTokens": 23054,
+                "outputTokens": 2547,
+                "reasoningTokens": 0,
+                "cacheReadTokens": 11415,
+                "cacheWriteTokens": 11637,
+                "costMultiplier": 1,
+                "durationMs": 22519,
+                "timeToFirstTokenMs": 2987.1231,
+                "interTokenLatencyMs": 45.304985382830644,
+                "reasoningEffort": null,
+                "initiator": "user",
+                "apiCallId": "msg_011CfF2rELbS98SRrRWQ7swK",
+                "serviceRequestId": "c6f08264-a7ed-4231-9e19-e2855d7181a1",
+                "apiEndpoint": "/v1/messages",
+                "providerCallId": "3DC1:2D634:53E5962:699CCD4:6AB00E3E",
+                "finishReason": "stop",
+                "contentFilterTriggered": false,
+                "copilotUsage": {
+                  "tokenDetails": [
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 200000000000,
+                      "tokenCount": 2,
+                      "tokenType": "input"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 20000000000,
+                      "tokenCount": 11415,
+                      "tokenType": "cache_read"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 250000000000,
+                      "tokenCount": 11637,
+                      "tokenType": "cache_write"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 1000000000000,
+                      "tokenCount": 2547,
+                      "tokenType": "output"
+                    }
+                  ],
+                  "totalNanoAiu": 5684950000
+                }
+              }
+            ],
+            "diagnostics": {
+              "sectionId": 20,
+              "sectionHeading": "1.7 Deployment Approach",
+              "scopes": [
+                "architecture",
+                "security",
+                "integration",
+                "ivr"
+              ],
+              "contentTypes": [
+                "text",
+                "table"
+              ],
+              "sourceChars": 152,
+              "sourceEstimatedTokens": 38,
+              "promptChars": 6074,
+              "promptEstimatedTokens": 1519,
+              "systemPromptChars": 493,
+              "systemPromptEstimatedTokens": 124,
+              "attachmentCount": 0,
+              "attachments": [],
+              "visualReviewRequested": false,
+              "visualReviewAttached": false,
+              "note": "Estimated token counts are diagnostic approximations only; authoritative usage comes from Copilot SDK telemetry."
+            }
+          },
+          {
+            "sectionId": 21,
+            "sectionHeading": "1.7.1 Deployment Units (Prod/UT/QA/Dev)",
+            "reviewScopes": [
+              "architecture",
+              "security",
+              "integration",
+              "ivr"
+            ],
+            "attributionMode": "shared-section-call",
+            "visualReviewed": false,
+            "modelCalls": 1,
+            "models": [
+              "claude-sonnet-5"
+            ],
+            "inputTokens": 23136,
+            "outputTokens": 2044,
+            "totalTokens": 25180,
+            "reasoningTokens": 0,
+            "cacheReadTokens": 11415,
+            "cacheWriteTokens": 11719,
+            "durationMs": 18517,
+            "totalNanoAiu": 5202450000,
+            "aiCreditsFromNanoAiu": 5.20245,
+            "premiumRequestCost": 1,
+            "usageComplete": true,
+            "turnStatus": "completed",
+            "usageSource": "session.rpc.usage.getMetrics + assistant.usage",
+            "contextInfo": null,
+            "modelBreakdown": {
+              "claude-sonnet-5": {
+                "calls": 1,
+                "inputTokens": 23136,
+                "outputTokens": 2044,
+                "reasoningTokens": 0,
+                "totalNanoAiu": 5202450000,
+                "aiCreditsFromNanoAiu": 5.20245
+              }
+            },
+            "apiCalls": [
+              {
+                "model": "claude-sonnet-5",
+                "inputTokens": 23136,
+                "outputTokens": 2044,
+                "reasoningTokens": 0,
+                "cacheReadTokens": 11415,
+                "cacheWriteTokens": 11719,
+                "costMultiplier": 1,
+                "durationMs": 18517,
+                "timeToFirstTokenMs": 3775.9058000000005,
+                "interTokenLatencyMs": 44.94191890243902,
+                "reasoningEffort": null,
+                "initiator": "user",
+                "apiCallId": "msg_011CfF2t45kSxoEyK3iyXuob",
+                "serviceRequestId": "7b5bd18f-8075-4fc2-8da2-5133237a5b82",
+                "apiEndpoint": "/v1/messages",
+                "providerCallId": "4D84:163272:510CB0C:66C386C:6AB00E55",
+                "finishReason": "stop",
+                "contentFilterTriggered": false,
+                "copilotUsage": {
+                  "tokenDetails": [
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 200000000000,
+                      "tokenCount": 2,
+                      "tokenType": "input"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 20000000000,
+                      "tokenCount": 11415,
+                      "tokenType": "cache_read"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 250000000000,
+                      "tokenCount": 11719,
+                      "tokenType": "cache_write"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 1000000000000,
+                      "tokenCount": 2044,
+                      "tokenType": "output"
+                    }
+                  ],
+                  "totalNanoAiu": 5202450000
+                }
+              }
+            ],
+            "diagnostics": {
+              "sectionId": 21,
+              "sectionHeading": "1.7.1 Deployment Units (Prod/UT/QA/Dev)",
+              "scopes": [
+                "architecture",
+                "security",
+                "integration",
+                "ivr"
+              ],
+              "contentTypes": [
+                "table",
+                "text"
+              ],
+              "sourceChars": 140,
+              "sourceEstimatedTokens": 35,
+              "promptChars": 6142,
+              "promptEstimatedTokens": 1536,
+              "systemPromptChars": 493,
+              "systemPromptEstimatedTokens": 124,
+              "attachmentCount": 0,
+              "attachments": [],
+              "visualReviewRequested": false,
+              "visualReviewAttached": false,
+              "note": "Estimated token counts are diagnostic approximations only; authoritative usage comes from Copilot SDK telemetry."
+            }
+          },
+          {
+            "sectionId": 22,
+            "sectionHeading": "1.7.2 Deployment Method",
+            "reviewScopes": [
+              "architecture",
+              "security",
+              "integration",
+              "ivr"
+            ],
+            "attributionMode": "shared-section-call",
+            "visualReviewed": false,
+            "modelCalls": 1,
+            "models": [
+              "claude-sonnet-5"
+            ],
+            "inputTokens": 23043,
+            "outputTokens": 3091,
+            "totalTokens": 26134,
+            "reasoningTokens": 0,
+            "cacheReadTokens": 11415,
+            "cacheWriteTokens": 11626,
+            "durationMs": 26532,
+            "totalNanoAiu": 6226200000,
+            "aiCreditsFromNanoAiu": 6.2262,
+            "premiumRequestCost": 1,
+            "usageComplete": true,
+            "turnStatus": "completed",
+            "usageSource": "session.rpc.usage.getMetrics + assistant.usage",
+            "contextInfo": null,
+            "modelBreakdown": {
+              "claude-sonnet-5": {
+                "calls": 1,
+                "inputTokens": 23043,
+                "outputTokens": 3091,
+                "reasoningTokens": 0,
+                "totalNanoAiu": 6226200000,
+                "aiCreditsFromNanoAiu": 6.2262
+              }
+            },
+            "apiCalls": [
+              {
+                "model": "claude-sonnet-5",
+                "inputTokens": 23043,
+                "outputTokens": 3091,
+                "reasoningTokens": 0,
+                "cacheReadTokens": 11415,
+                "cacheWriteTokens": 11626,
+                "costMultiplier": 1,
+                "durationMs": 26532,
+                "timeToFirstTokenMs": 3635.3302,
+                "interTokenLatencyMs": 44.97748192534382,
+                "reasoningEffort": null,
+                "initiator": "user",
+                "apiCallId": "msg_011CfF2uXChEesnkskhw16dJ",
+                "serviceRequestId": "67a09e7e-f87d-43c0-8591-d01dca54f475",
+                "apiEndpoint": "/v1/messages",
+                "providerCallId": "8424:3A630D:518F48E:674818B:6AB00E69",
+                "finishReason": "stop",
+                "contentFilterTriggered": false,
+                "copilotUsage": {
+                  "tokenDetails": [
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 200000000000,
+                      "tokenCount": 2,
+                      "tokenType": "input"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 20000000000,
+                      "tokenCount": 11415,
+                      "tokenType": "cache_read"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 250000000000,
+                      "tokenCount": 11626,
+                      "tokenType": "cache_write"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 1000000000000,
+                      "tokenCount": 3091,
+                      "tokenType": "output"
+                    }
+                  ],
+                  "totalNanoAiu": 6226200000
+                }
+              }
+            ],
+            "diagnostics": {
+              "sectionId": 22,
+              "sectionHeading": "1.7.2 Deployment Method",
+              "scopes": [
+                "architecture",
+                "security",
+                "integration",
+                "ivr"
+              ],
+              "contentTypes": [
+                "table",
+                "text"
+              ],
+              "sourceChars": 105,
+              "sourceEstimatedTokens": 27,
+              "promptChars": 6027,
+              "promptEstimatedTokens": 1507,
+              "systemPromptChars": 493,
+              "systemPromptEstimatedTokens": 124,
+              "attachmentCount": 0,
+              "attachments": [],
+              "visualReviewRequested": false,
+              "visualReviewAttached": false,
+              "note": "Estimated token counts are diagnostic approximations only; authoritative usage comes from Copilot SDK telemetry."
+            }
+          },
+          {
+            "sectionId": 23,
+            "sectionHeading": "1.7.3 Tagging",
+            "reviewScopes": [
+              "architecture",
+              "security",
+              "integration",
+              "ivr"
+            ],
+            "attributionMode": "shared-section-call",
+            "visualReviewed": false,
+            "modelCalls": 1,
+            "models": [
+              "claude-sonnet-5"
+            ],
+            "inputTokens": 23406,
+            "outputTokens": 3446,
+            "totalTokens": 26852,
+            "reasoningTokens": 0,
+            "cacheReadTokens": 11415,
+            "cacheWriteTokens": 11989,
+            "durationMs": 30951,
+            "totalNanoAiu": 6671950000,
+            "aiCreditsFromNanoAiu": 6.67195,
+            "premiumRequestCost": 1,
+            "usageComplete": true,
+            "turnStatus": "completed",
+            "usageSource": "session.rpc.usage.getMetrics + assistant.usage",
+            "contextInfo": null,
+            "modelBreakdown": {
+              "claude-sonnet-5": {
+                "calls": 1,
+                "inputTokens": 23406,
+                "outputTokens": 3446,
+                "reasoningTokens": 0,
+                "totalNanoAiu": 6671950000,
+                "aiCreditsFromNanoAiu": 6.67195
+              }
+            },
+            "apiCalls": [
+              {
+                "model": "claude-sonnet-5",
+                "inputTokens": 23406,
+                "outputTokens": 3446,
+                "reasoningTokens": 0,
+                "cacheReadTokens": 11415,
+                "cacheWriteTokens": 11989,
+                "costMultiplier": 1,
+                "durationMs": 30951,
+                "timeToFirstTokenMs": 3997.1804,
+                "interTokenLatencyMs": 45.453149747048904,
+                "reasoningEffort": null,
+                "initiator": "user",
+                "apiCallId": "msg_011CfF2wjrkEPU13FMq1KXNo",
+                "serviceRequestId": "317350a5-ad42-4e2a-9cf6-7dfe5648da0e",
+                "apiEndpoint": "/v1/messages",
+                "providerCallId": "3438:B1F22:5486253:68B79B7:6AB00E86",
+                "finishReason": "stop",
+                "contentFilterTriggered": false,
+                "copilotUsage": {
+                  "tokenDetails": [
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 200000000000,
+                      "tokenCount": 2,
+                      "tokenType": "input"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 20000000000,
+                      "tokenCount": 11415,
+                      "tokenType": "cache_read"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 250000000000,
+                      "tokenCount": 11989,
+                      "tokenType": "cache_write"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 1000000000000,
+                      "tokenCount": 3446,
+                      "tokenType": "output"
+                    }
+                  ],
+                  "totalNanoAiu": 6671950000
+                }
+              }
+            ],
+            "diagnostics": {
+              "sectionId": 23,
+              "sectionHeading": "1.7.3 Tagging",
+              "scopes": [
+                "architecture",
+                "security",
+                "integration",
+                "ivr"
+              ],
+              "contentTypes": [
+                "table",
+                "text"
+              ],
+              "sourceChars": 1135,
+              "sourceEstimatedTokens": 284,
+              "promptChars": 7007,
+              "promptEstimatedTokens": 1752,
+              "systemPromptChars": 493,
+              "systemPromptEstimatedTokens": 124,
+              "attachmentCount": 0,
+              "attachments": [],
+              "visualReviewRequested": false,
+              "visualReviewAttached": false,
+              "note": "Estimated token counts are diagnostic approximations only; authoritative usage comes from Copilot SDK telemetry."
+            }
+          },
+          {
+            "sectionId": 25,
+            "sectionHeading": "2.1 Project Context",
+            "reviewScopes": [
+              "architecture",
+              "security",
+              "integration",
+              "ivr"
+            ],
+            "attributionMode": "shared-section-call",
+            "visualReviewed": false,
+            "modelCalls": 1,
+            "models": [
+              "claude-sonnet-5"
+            ],
+            "inputTokens": 23192,
+            "outputTokens": 2073,
+            "totalTokens": 25265,
+            "reasoningTokens": 0,
+            "cacheReadTokens": 11415,
+            "cacheWriteTokens": 11775,
+            "durationMs": 19981,
+            "totalNanoAiu": 5245450000,
+            "aiCreditsFromNanoAiu": 5.24545,
+            "premiumRequestCost": 1,
+            "usageComplete": true,
+            "turnStatus": "completed",
+            "usageSource": "session.rpc.usage.getMetrics + assistant.usage",
+            "contextInfo": null,
+            "modelBreakdown": {
+              "claude-sonnet-5": {
+                "calls": 1,
+                "inputTokens": 23192,
+                "outputTokens": 2073,
+                "reasoningTokens": 0,
+                "totalNanoAiu": 5245450000,
+                "aiCreditsFromNanoAiu": 5.24545
+              }
+            },
+            "apiCalls": [
+              {
+                "model": "claude-sonnet-5",
+                "inputTokens": 23192,
+                "outputTokens": 2073,
+                "reasoningTokens": 0,
+                "cacheReadTokens": 11415,
+                "cacheWriteTokens": 11775,
+                "costMultiplier": 1,
+                "durationMs": 19981,
+                "timeToFirstTokenMs": 4835.5549,
+                "interTokenLatencyMs": 44.669544837758075,
+                "reasoningEffort": null,
+                "initiator": "user",
+                "apiCallId": "msg_011CfF2zCNkHncKCQjiS6mSq",
+                "serviceRequestId": "217d095f-fe28-4a6c-8d33-4e0d4ad84139",
+                "apiEndpoint": "/v1/messages",
+                "providerCallId": "667B:39FA0:547FFEF:6A35762:6AB00EAA",
+                "finishReason": "stop",
+                "contentFilterTriggered": false,
+                "copilotUsage": {
+                  "tokenDetails": [
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 200000000000,
+                      "tokenCount": 2,
+                      "tokenType": "input"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 20000000000,
+                      "tokenCount": 11415,
+                      "tokenType": "cache_read"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 250000000000,
+                      "tokenCount": 11775,
+                      "tokenType": "cache_write"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 1000000000000,
+                      "tokenCount": 2073,
+                      "tokenType": "output"
+                    }
+                  ],
+                  "totalNanoAiu": 5245450000
+                }
+              }
+            ],
+            "diagnostics": {
+              "sectionId": 25,
+              "sectionHeading": "2.1 Project Context",
+              "scopes": [
+                "architecture",
+                "security",
+                "integration",
+                "ivr"
+              ],
+              "contentTypes": [
+                "text"
+              ],
+              "sourceChars": 842,
+              "sourceEstimatedTokens": 211,
+              "promptChars": 6720,
+              "promptEstimatedTokens": 1680,
+              "systemPromptChars": 493,
+              "systemPromptEstimatedTokens": 124,
+              "attachmentCount": 0,
+              "attachments": [],
+              "visualReviewRequested": false,
+              "visualReviewAttached": false,
+              "note": "Estimated token counts are diagnostic approximations only; authoritative usage comes from Copilot SDK telemetry."
+            }
+          },
+          {
+            "sectionId": 26,
+            "sectionHeading": "CDE AWS Account\nTSYS\nFirewall\nOpen APIs\nTCS Portal\nPCI use cases:\n1. GetAccountByCard\n2. Set/Update PIN\n3. Verify PIN\nNon-PCI use cases\nCDE VPC\n\n\nX- PLATFORM\nCustomer\nAWS Control plane\nIT Admins,\nDevelopers\nAWS Control plane\nAWS Console\nAWS Console\nRBConnect Context Diagram\nPCI use cases: \n4. GetAccountByANI\nCreate TSYS Interaction\nCNX, GS\nDynatrace\nRCI Egress + Firewall\nTech Support\nIT Admins,\nDevelopers\nNo Change\nNew Integration\nExisting\nNew Integration \n(PCI)\nSeparate HLD\nOut of Scope\nNew\n  Citrix Cloud\nRCI MPLS Switch & Firewall\nlFirewall\nVendors\n(CNX, GS)\n\nAgents\nRB\nCSR\nRB\nOps Mgr\nUtility functions\n(Report, Routiing, HR-Feed)\nAmazon Connect\nRogers Bank Default AWS Account\nHIYA Call branding\nHIYA\nCCReport+HRFeed\nHR-Feed\nLegends\nEmail\nOffice 365\nEmail\nVerification Lambda (Dob, OTC, Phone, PAN)\nLex\nAthena\nQuickSight\nDatalake\nRB\nOps Mgr\nOther-sources",
+            "reviewScopes": [
+              "architecture",
+              "security",
+              "integration",
+              "ivr"
+            ],
+            "attributionMode": "shared-section-call",
+            "visualReviewed": true,
+            "modelCalls": 1,
+            "models": [
+              "claude-sonnet-5"
+            ],
+            "inputTokens": 28003,
+            "outputTokens": 5650,
+            "totalTokens": 33653,
+            "reasoningTokens": 1187,
+            "cacheReadTokens": 11415,
+            "cacheWriteTokens": 16586,
+            "durationMs": 57684,
+            "totalNanoAiu": 10025200000,
+            "aiCreditsFromNanoAiu": 10.0252,
+            "premiumRequestCost": 1,
+            "usageComplete": true,
+            "turnStatus": "completed",
+            "usageSource": "session.rpc.usage.getMetrics + assistant.usage",
+            "contextInfo": null,
+            "modelBreakdown": {
+              "claude-sonnet-5": {
+                "calls": 1,
+                "inputTokens": 28003,
+                "outputTokens": 5650,
+                "reasoningTokens": 1187,
+                "totalNanoAiu": 10025200000,
+                "aiCreditsFromNanoAiu": 10.0252
+              }
+            },
+            "apiCalls": [
+              {
+                "model": "claude-sonnet-5",
+                "inputTokens": 28003,
+                "outputTokens": 5650,
+                "reasoningTokens": 1187,
+                "cacheReadTokens": 11415,
+                "cacheWriteTokens": 16586,
+                "costMultiplier": 1,
+                "durationMs": 57684,
+                "timeToFirstTokenMs": 18575.2795,
+                "interTokenLatencyMs": 45.633993932322085,
+                "reasoningEffort": null,
+                "initiator": "user",
+                "apiCallId": "msg_011CfF31ogYdg3TeWn9SQFp4",
+                "serviceRequestId": "324607d7-a159-4a8b-a48b-9310cd54ccc7",
+                "apiEndpoint": "/v1/messages",
+                "providerCallId": "3C12:18E48:541EDF0:69D72AE:6AB00EBD",
+                "finishReason": "stop",
+                "contentFilterTriggered": false,
+                "copilotUsage": {
+                  "tokenDetails": [
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 200000000000,
+                      "tokenCount": 2,
+                      "tokenType": "input"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 20000000000,
+                      "tokenCount": 11415,
+                      "tokenType": "cache_read"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 250000000000,
+                      "tokenCount": 16586,
+                      "tokenType": "cache_write"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 1000000000000,
+                      "tokenCount": 5650,
+                      "tokenType": "output"
+                    }
+                  ],
+                  "totalNanoAiu": 10025200000
+                }
+              }
+            ],
+            "diagnostics": {
+              "sectionId": 26,
+              "sectionHeading": "CDE AWSÂ Account\nTSYS\nFirewall\nOpen APIs\nTCS Portal\nPCI use cases:\n1. GetAccountByCard\n2. Set/Update PIN\n3. Verify PIN\nNon-PCI use cases\nCDE VPC\n\n\nX- PLATFORM\nCustomer\nAWS Control plane\nIT Admins,\nDevelopers\nAWS Control plane\nAWS Console\nAWS Console\nRBConnect Context Diagram\nPCI use cases:Â \n4. GetAccountByANI\nCreate TSYS Interaction\nCNX, GS\nDynatrace\nRCI Egress + Firewall\nTech Support\nIT Admins,\nDevelopers\nNo Change\nNew Integration\nExisting\nNew IntegrationÂ \n(PCI)\nSeparate HLD\nOut of Scope\nNew\nÂ  Citrix Cloud\nRCI MPLS Switch & Firewall\nlFirewall\nVendors\n(CNX, GS)\n\nAgents\nRB\nCSR\nRB\nOpsÂ Mgr\nUtility functions\n(Report, Routiing, HR-Feed)\nAmazon Connect\nRogers Bank DefaultÂ AWS Account\nHIYA Call branding\nHIYA\nCCReport+HRFeed\nHR-Feed\nLegends\nEmail\nOffice 365\nEmail\nVerification Lambda (Dob, OTC, Phone, PAN)\nLex\nAthena\nQuickSight\nDatalake\nRB\nOpsÂ Mgr\nOther-sources",
+              "scopes": [
+                "architecture",
+                "security",
+                "integration",
+                "ivr"
+              ],
+              "contentTypes": [
+                "diagram",
+                "image"
+              ],
+              "sourceChars": 819,
+              "sourceEstimatedTokens": 205,
+              "promptChars": 11344,
+              "promptEstimatedTokens": 2836,
+              "systemPromptChars": 493,
+              "systemPromptEstimatedTokens": 124,
+              "attachmentCount": 1,
+              "attachments": [
+                {
+                  "displayName": "section_026_visual_01.png",
+                  "path": "C:\\Users\\ramasubramanians\\OneDrive - HCL TECHNOLOGIES LIMITED\\Documents\\HS\\Training\\MyProjects\\IVR_SDLC_Analyst_UI\\src\\backend\\hld_visual_cache\\049ffa11a7897356\\26\\visual_01.png",
+                  "bytes": 121012,
+                  "kilobytes": 118
+                }
+              ],
+              "visualReviewRequested": true,
+              "visualReviewAttached": true,
+              "note": "Estimated token counts are diagnostic approximations only; authoritative usage comes from Copilot SDK telemetry."
+            }
+          }
+        ],
+        "by_scope": {
+          "architecture": {
+            "sections_reviewed": 9,
+            "shared_model_calls": 9,
+            "usage_attribution": "shared-section-call"
+          },
+          "security": {
+            "sections_reviewed": 9,
+            "shared_model_calls": 9,
+            "usage_attribution": "shared-section-call"
+          },
+          "integration": {
+            "sections_reviewed": 9,
+            "shared_model_calls": 9,
+            "usage_attribution": "shared-section-call"
+          },
+          "ivr": {
+            "sections_reviewed": 9,
+            "shared_model_calls": 9,
+            "usage_attribution": "shared-section-call"
+          }
+        },
+        "by_model": {
+          "claude-sonnet-5": {
+            "calls": 9,
+            "input_tokens": 213680,
+            "output_tokens": 29407,
+            "reasoning_tokens": 1187,
+            "total_nano_aiu": 61822500000,
+            "ai_credits_from_nano_aiu": 61.8225
+          }
+        },
+        "totals": {
+          "model_calls": 9,
+          "input_tokens": 213680,
+          "output_tokens": 29407,
+          "total_tokens": 243087,
+          "reasoning_tokens": 1187,
+          "cache_read_tokens": 91320,
+          "cache_write_tokens": 122342,
+          "duration_ms": 269169,
+          "total_nano_aiu": 61822500000,
+          "ai_credits_from_nano_aiu": 61.8225,
+          "premium_request_cost": 9
+        }
+      }
+    }
+  }
+}

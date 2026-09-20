@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
     generateHLDMatrix,
     clearHLDMatrixCache,
@@ -122,6 +122,157 @@ export default function HLDAnalyzer() {
     const [activeTab, setActiveTab] = useState("inventory");
     const [exportingExcel, setExportingExcel] = useState(false);
     const [excelExportError, setExcelExportError] = useState("");
+    const [reviewJob, setReviewJob] = useState(null);
+    const [reviewJobId, setReviewJobId] = useState(() => localStorage.getItem("hld.activeReviewJobId"));
+    const reviewPollRef = useRef(null);
+    const reviewPollInFlightRef = useRef(false);
+    const restoringStateRef = useRef(true);
+
+    useEffect(() => {
+        const savedUrl = localStorage.getItem("hld.lastDocumentUrl");
+        const savedScopes = localStorage.getItem("hld.selectedScopes");
+        const savedIds = localStorage.getItem("hld.selectedSectionIds");
+        if (savedUrl) {
+            setWikiURL(savedUrl);
+            generateHLDMatrix(savedUrl).then((data) => {
+                setVerificationMatrix(Array.isArray(data.matrix) ? data.matrix : []);
+                setIsLoadedFromCache(Boolean(data.loaded_from_cache));
+            }).catch(() => {});
+        }
+        if (savedScopes) {
+            try {
+                const parsed = JSON.parse(savedScopes);
+                if (Array.isArray(parsed) && parsed.length) setSelectedReviewScopes(parsed);
+            } catch {}
+        }
+        if (savedIds) {
+            try {
+                const parsed = JSON.parse(savedIds);
+                if (Array.isArray(parsed)) setSelectedIds(new Set(parsed.map(Number)));
+            } catch {}
+        }
+        restoringStateRef.current = false;
+    }, []);
+
+    useEffect(() => {
+        if (restoringStateRef.current) return;
+        if (!wikiURL.trim()) return;
+        localStorage.setItem("hld.lastDocumentUrl", wikiURL.trim());
+        localStorage.setItem("hld.selectedScopes", JSON.stringify(selectedReviewScopes));
+        localStorage.setItem("hld.selectedSectionIds", JSON.stringify(Array.from(selectedIds)));
+    }, [wikiURL, selectedReviewScopes, selectedIds]);
+
+    function persistJobId(jobId) {
+        setReviewJobId(jobId || null);
+        if (jobId) localStorage.setItem("hld.activeReviewJobId", jobId);
+        else localStorage.removeItem("hld.activeReviewJobId");
+    }
+
+    async function getHLDJson(path) {
+        const url = path.startsWith("http") ? path : `${BACKEND_API_BASE}${path}`;
+        const response = await fetch(url);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.detail || `Request failed (${response.status}) for ${url}`);
+        return data;
+    }
+
+    async function refreshReviewJob(jobId) {
+        if (!jobId) return null;
+
+        const data = await getHLDJson(
+            `/api/hld/review/${encodeURIComponent(jobId)}`
+        );
+
+        const job = data.job;
+
+        if (!job) {
+            throw new Error("Review job was not returned by the backend.");
+        }
+
+        setReviewJob(job);
+
+        if (job.status === "COMPLETED") {
+            if (job.result?.segmented_blueprint) {
+                setAnalysisResult(job.result.segmented_blueprint);
+            }
+            setActiveTab("findings");
+        } else if (job.status === "FAILED") {
+            setError(
+                job.error ||
+                "The HLD review job failed."
+            );
+            setActiveTab("review");
+        } else if (
+            job.status === "RUNNING" ||
+            job.status === "QUEUED" ||
+            job.status === "CANCEL_REQUESTED" ||
+            job.status === "RECOVERY_REQUIRED"
+        ) {
+            setActiveTab("review");
+        }
+
+        return job;
+    }
+
+    useEffect(() => {
+        const jobId = reviewJobId;
+
+        if (!jobId) return undefined;
+
+        let cancelled = false;
+
+        const poll = async () => {
+            if (cancelled) return;
+
+            try {
+                const job = await refreshReviewJob(jobId);
+
+                if (cancelled) return;
+
+                if (
+                    job &&
+                    ["QUEUED", "RUNNING", "CANCEL_REQUESTED"].includes(job.status)
+                ) {
+                    reviewPollRef.current = window.setTimeout(
+                        poll,
+                        1500
+                    );
+                }
+            } catch (err) {
+                if (cancelled) return;
+
+                setError(
+                    err.message ||
+                    "Unable to update the HLD review job."
+                );
+
+                // IMPORTANT:
+                // Do not permanently stop polling because of one
+                // temporary network/request failure.
+                reviewPollRef.current = window.setTimeout(
+                    poll,
+                    3000
+                );
+            }
+        };
+
+        poll();
+
+        return () => {
+            cancelled = true;
+
+            if (reviewPollRef.current) {
+                window.clearTimeout(reviewPollRef.current);
+                reviewPollRef.current = null;
+            }
+        };
+    }, [reviewJobId]);
+
+    useEffect(() => {
+        return () => {
+            if (reviewPollRef.current) window.clearTimeout(reviewPollRef.current);
+        };
+    }, []);
 
     function handleURLChange(e) {
         setWikiURL(e.target.value);
@@ -136,6 +287,8 @@ export default function HLDAnalyzer() {
         setExpandedId(null);
         setReviewPlan(null);
         setActiveTab("inventory");
+        setReviewJob(null);
+        persistJobId(null);
     }
 
     async function triggerPhase1MatrixIngestion() {
@@ -250,8 +403,6 @@ export default function HLDAnalyzer() {
         setActiveTab("review");
 
         try {
-            // Always rebuild the plan at execution time so the AI review uses
-            // the current scope and section selection, never a stale plan.
             const plan = await postHLDJson("/api/hld/review-plan", {
                 document_title: wikiURL.trim(),
                 review_scopes: selectedReviewScopes,
@@ -263,19 +414,33 @@ export default function HLDAnalyzer() {
                 throw new Error("The current review scope and section selection produced no reviewable HLD sections.");
             }
 
-            const data = await postHLDJson("/api/hld/ingest", {
+            const response = await postHLDJson("/api/hld/review/start", {
                 document_title: wikiURL.trim(),
-                raw_content: "",
                 project_scope: "IVR Context Validation",
                 review_scopes: selectedReviewScopes,
                 selected_section_ids: plan.eligible_section_ids,
             });
-            setAnalysisResult(data.segmented_blueprint);
-            setActiveTab("findings");
+
+            const job = response.job;
+            if (!job?.job_id) throw new Error("The backend did not return a review job ID.");
+            setReviewJob(job);
+            persistJobId(job.job_id);
+            setActiveTab("review");
         } catch (err) {
-            setError(err.message || "Failed running the scoped architectural audit.");
+            setError(err.message || "Failed to start the scoped architectural audit.");
         } finally {
             setLoading(false);
+        }
+    }
+
+    async function cancelActiveReview() {
+        if (!reviewJobId) return;
+        try {
+            const data = await postHLDJson(`/api/hld/review/${encodeURIComponent(reviewJobId)}/cancel`, {});
+            setReviewJob(data.job);
+            setActiveTab("review");
+        } catch (err) {
+            setError(err.message || "Failed to request review cancellation.");
         }
     }
 
@@ -1315,7 +1480,7 @@ export default function HLDAnalyzer() {
                                     </button>
                                     <button
                                         onClick={confirmAndTriggerLLMReview}
-                                        disabled={loading || selectedReviewScopes.length === 0 || !verificationMatrix}
+                                        disabled={loading || Boolean(reviewJob && ["QUEUED", "RUNNING", "CANCEL_REQUESTED"].includes(reviewJob.status)) || selectedReviewScopes.length === 0 || !verificationMatrix}
                                         style={{
                                             background: !loading && selectedReviewScopes.length > 0 && verificationMatrix ? REPORT.ok : "#cbd5e1",
                                             color: "#fff",
@@ -1348,26 +1513,65 @@ export default function HLDAnalyzer() {
                             padding: 24,
                         }}
                     >
-                        <div style={{ fontSize: 20, fontWeight: 700, color: REPORT.accent }}>AI HLD Review</div>
-                        <div style={{ marginTop: 6, color: REPORT.inkSoft, fontSize: 13, lineHeight: 1.5 }}>
-                            {loading
-                                ? "The AI review is running. Each selected section is reviewed once with all selected scopes in a single Copilot turn."
-                                : analysisResult
-                                    ? "The AI review completed successfully."
-                                    : "Start the AI review from the Section Inventory or Review Plan tab."}
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
+                            <div>
+                                <div style={{ fontSize: 20, fontWeight: 700, color: REPORT.accent }}>AI HLD Review</div>
+                                <div style={{ marginTop: 6, color: REPORT.inkSoft, fontSize: 13, lineHeight: 1.5 }}>
+                                    The review is a backend-owned job. Browser refreshes do not interrupt it, and completed sections are preserved.
+                                </div>
+                            </div>
+                            {reviewJob && ["QUEUED", "RUNNING", "CANCEL_REQUESTED"].includes(reviewJob.status) && (
+                                <button onClick={cancelActiveReview} style={{ background: REPORT.issueBg, color: REPORT.issue, border: `1px solid ${REPORT.issue}`, borderRadius: 6, padding: "9px 13px", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+                                    Stop Review
+                                </button>
+                            )}
                         </div>
-                        <div style={{ marginTop: 18, height: 10, background: REPORT.emptyBg, borderRadius: 100, overflow: "hidden" }}>
-                            <div style={{ height: "100%", width: loading ? "55%" : analysisResult ? "100%" : "0%", background: REPORT.accent, transition: "width 300ms ease" }} />
-                        </div>
-                        <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 10 }}>
-                            <div style={{ border: `1px solid ${REPORT.line}`, borderRadius: 6, padding: 12, background: REPORT.emptyBg }}><strong>{selectedIds.size || "Scope based"}</strong><div style={{ fontSize: 10.5, color: REPORT.inkSoft, marginTop: 3 }}>Selected sections</div></div>
-                            <div style={{ border: `1px solid ${REPORT.line}`, borderRadius: 6, padding: 12, background: REPORT.emptyBg }}><strong>{selectedReviewScopes.length}</strong><div style={{ fontSize: 10.5, color: REPORT.inkSoft, marginTop: 3 }}>Review scopes</div></div>
-                            <div style={{ border: `1px solid ${REPORT.line}`, borderRadius: 6, padding: 12, background: REPORT.emptyBg }}><strong>{reviewPlan?.eligible_section_count ?? "—"}</strong><div style={{ fontSize: 10.5, color: REPORT.inkSoft, marginTop: 3 }}>Estimated model calls</div></div>
-                        </div>
-                        {analysisResult && !loading && (
-                            <button onClick={() => setActiveTab("findings")} style={{ marginTop: 18, background: REPORT.ok, color: "#fff", border: "none", borderRadius: 6, padding: "10px 16px", fontWeight: 650, cursor: "pointer" }}>
-                                View Findings →
-                            </button>
+
+                        {reviewJob ? (() => {
+                            const p = reviewJob.progress || {};
+                            const total = Number(p.total_sections || 0);
+                            const completed = Number(p.completed_sections || 0);
+                            const percent = total ? Math.min(100, Math.round(completed * 100 / total)) : (reviewJob.status === "COMPLETED" ? 100 : 0);
+                            const usage = reviewJob.usage || {};
+                            return (
+                                <div style={{ marginTop: 20 }}>
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(4,minmax(0,1fr))", gap: 10 }}>
+                                        {[
+                                            ["Status", reviewJob.status],
+                                            ["Sections", `${completed} / ${total}`],
+                                            ["Current", p.current_section_heading || "-"],
+                                            ["Model calls", Number(usage.model_calls || 0).toLocaleString()],
+                                        ].map(([label, value]) => (
+                                            <div key={label} style={{ background: REPORT.emptyBg, border: `1px solid ${REPORT.line}`, borderRadius: 7, padding: 12 }}>
+                                                <div style={{ fontSize: 17, fontWeight: 750, color: label === "Status" && reviewJob.status === "REVIEW_INCOMPLETE" ? REPORT.issue : REPORT.ink }}>{value}</div>
+                                                <div style={{ marginTop: 3, fontSize: 10.5, color: REPORT.inkSoft }}>{label}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div style={{ marginTop: 18, height: 12, background: REPORT.emptyBg, borderRadius: 100, overflow: "hidden", border: `1px solid ${REPORT.line}` }}>
+                                        <div style={{ height: "100%", width: `${percent}%`, background: REPORT.accent, transition: "width 300ms ease" }} />
+                                    </div>
+                                    <div style={{ marginTop: 7, fontSize: 11.5, color: REPORT.inkSoft }}>{percent}% complete · remaining {Math.max(0, total - completed)} section(s)</div>
+                                    {p.current_section_heading && <div style={{ marginTop: 14, padding: 11, background: REPORT.accentSoft, borderRadius: 6, fontSize: 12.5, color: REPORT.ink }}><strong>Current section:</strong> {p.current_section_heading}</div>}
+                                    {reviewJob.status === "RECOVERY_REQUIRED" && (
+                                        <div style={{ marginTop: 14, padding: 11, background: REPORT.yellowBg, color: REPORT.yellow, borderRadius: 6, fontSize: 12.5 }}>
+                                            <div>This review was interrupted by a server restart. Completed sections remain preserved.</div>
+                                            <button onClick={confirmAndTriggerLLMReview} disabled={loading} style={{ marginTop: 10, background: REPORT.accent, color: "#fff", border: "none", borderRadius: 6, padding: "9px 13px", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.65 : 1 }}>
+                                                Resume Remaining Sections →
+                                            </button>
+                                        </div>
+                                    )}
+                                    {reviewJob.error && <div style={{ marginTop: 14, padding: 11, background: REPORT.issueBg, color: REPORT.issue, borderRadius: 6, fontSize: 12.5 }}>{reviewJob.error}</div>}
+                                    {reviewJob.recovery_note && <div style={{ marginTop: 14, padding: 11, background: REPORT.emptyBg, color: REPORT.inkSoft, borderRadius: 6, fontSize: 12.5 }}>{reviewJob.recovery_note}</div>}
+                                    {reviewJob.status === "COMPLETED" && reviewJob.result?.segmented_blueprint && (
+                                        <button onClick={() => { setAnalysisResult(reviewJob.result.segmented_blueprint); setActiveTab("findings"); }} style={{ marginTop: 18, background: REPORT.ok, color: "#fff", border: "none", borderRadius: 6, padding: "10px 16px", fontWeight: 650, cursor: "pointer" }}>
+                                            View Findings →
+                                        </button>
+                                    )}
+                                </div>
+                            );
+                        })() : (
+                            <div style={{ marginTop: 18, padding: 16, background: REPORT.emptyBg, borderRadius: 6, color: REPORT.inkSoft, fontSize: 12.5 }}>No active HLD review job. Start a review from the Section Inventory tab.</div>
                         )}
                     </div>
                 )}

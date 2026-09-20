@@ -89,6 +89,13 @@ LATEST_MATRIX_CACHE_PATH = "prioritized_audit_chunks.json"
 # 🟢 Global execution pointer referencing our live background Node service thread daemon
 LIVE_CO_PROCESS = None
 
+# Persistent long-running HLD review job manager. Browser refreshes do not affect jobs.
+REVIEW_JOB_DIR = Path(__file__).resolve().parent / "review_jobs"
+REVIEW_JOB_DIR.mkdir(parents=True, exist_ok=True)
+REVIEW_JOB_LOCK = threading.RLock()
+REVIEW_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=1, thread_name_prefix="hld-review")
+REVIEW_CANCEL_EVENTS: dict[str, threading.Event] = {}
+
 # 🟢 CRITICAL DUAL-CALL LOCK PROTECTION: Global re-entrant lock structure
 GLOBAL_THREAD_LOCK = threading.RLock()
 
@@ -118,6 +125,14 @@ class HLDIngestionRequest(BaseModel):
     project_scope: Optional[str] = "IVR Context Validation"
     review_scopes: list[str] = []
     selected_section_ids: list[int] = []
+
+
+class HLDReviewStartRequest(BaseModel):
+    document_title: str
+    review_scopes: list[str] = []
+    selected_section_ids: list[int] = []
+    project_scope: Optional[str] = "IVR Context Validation"
+
 
 class DiagramGenerationRequest(BaseModel):
     file_path: str
@@ -1296,8 +1311,308 @@ def build_hld_review_plan(payload: HLDReviewPlanRequest):
     }
 
 
-@app.post("/api/hld/ingest")
-def ingest_and_segment_hld(payload: HLDIngestionRequest):
+
+
+def _job_file(job_id: str) -> Path:
+    return REVIEW_JOB_DIR / f"{job_id}.json"
+
+
+def _atomic_write_job(job: dict) -> None:
+    job["updated_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+    path = _job_file(job["job_id"])
+    temp = path.with_suffix(".tmp")
+    with REVIEW_JOB_LOCK:
+        with open(temp, "w", encoding="utf-8") as f:
+            json.dump(job, f, ensure_ascii=False, indent=2)
+        temp.replace(path)
+
+
+def _load_job(job_id: str) -> dict | None:
+    path = _job_file(job_id)
+    if not path.exists():
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as exc:
+        print(f"[REVIEW JOB] Failed to load {job_id}: {exc}")
+        return None
+
+
+def _new_review_signature(document_title: str, review_scopes: list[str], eligible_ids: list[int]) -> str:
+    payload = {
+        "document_title": str(document_title or "").strip(),
+        "matrix_schema_version": MATRIX_SCHEMA_VERSION,
+        "review_scopes": sorted(set(review_scopes)),
+        "eligible_section_ids": sorted({int(x) for x in eligible_ids}),
+    }
+    raw = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _find_latest_job_by_signature(signature: str) -> dict | None:
+    latest = None
+    with REVIEW_JOB_LOCK:
+        for path in REVIEW_JOB_DIR.glob("*.json"):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    job = json.load(f)
+                if job.get("review_signature") != signature:
+                    continue
+                if latest is None or str(job.get("updated_at", "")) > str(latest.get("updated_at", "")):
+                    latest = job
+            except Exception:
+                continue
+    return latest
+
+
+def _job_public_view(job: dict | None) -> dict | None:
+    if not job:
+        return None
+    return {
+        "job_id": job.get("job_id"),
+        "document_title": job.get("document_title"),
+        "review_scopes": job.get("review_scopes", []),
+        "selected_section_ids": job.get("selected_section_ids", []),
+        "eligible_section_ids": job.get("eligible_section_ids", []),
+        "status": job.get("status", "UNKNOWN"),
+        "created_at": job.get("created_at"),
+        "started_at": job.get("started_at"),
+        "updated_at": job.get("updated_at"),
+        "progress": job.get("progress", {}),
+        "usage": job.get("usage", {}),
+        "review_errors": job.get("review_errors", []),
+        "error": job.get("error"),
+        "recovery_note": job.get("recovery_note"),
+        "result": job.get("result"),
+    }
+
+
+def _mark_recoverable_jobs_on_startup() -> None:
+    # A process restart cannot safely continue an in-flight Copilot session.
+    # Completed section results are preserved so a later start can resume only what remains.
+    for path in REVIEW_JOB_DIR.glob("*.json"):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                job = json.load(f)
+            if job.get("status") in {"QUEUED", "RUNNING", "CANCEL_REQUESTED"}:
+                job["status"] = "RECOVERY_REQUIRED"
+                job["recovery_note"] = "Server restarted while review was active. Completed sections are preserved; restarting the same review resumes only remaining sections."
+                _atomic_write_job(job)
+        except Exception:
+            continue
+
+
+_mark_recoverable_jobs_on_startup()
+
+
+def _job_section_progress_callback(job_id: str, section_id: int, heading: str, section_status: str, aggregate: dict, eligible_ids: list[int]) -> None:
+    job = _load_job(job_id) or {"job_id": job_id}
+    progress = job.setdefault("progress", {})
+    completed = {int(x) for x in progress.get("completed_section_ids", [])}
+    if section_status == "COMPLETED":
+        completed.add(int(section_id))
+    progress.update({
+        "total_sections": len(eligible_ids),
+        "completed_sections": len(completed),
+        "completed_section_ids": sorted(completed),
+        "remaining_sections": max(0, len(eligible_ids) - len(completed)),
+        "current_section_id": int(section_id),
+        "current_section_heading": heading,
+        "last_section_status": section_status,
+        "stage": "RUNNING",
+    })
+    job["result"] = {"success": True, "segmented_blueprint": aggregate}
+    job["usage"] = (aggregate.get("ai_consumption") or {}).get("totals") or {}
+    job["review_errors"] = aggregate.get("review_errors", [])
+    _atomic_write_job(job)
+
+
+def _run_review_job_worker(job_id: str) -> None:
+    cancel_event = REVIEW_CANCEL_EVENTS.setdefault(job_id, threading.Event())
+    job = _load_job(job_id)
+    if not job:
+        return
+    payload = HLDIngestionRequest(
+        document_title=job["document_title"],
+        raw_content="",
+        project_scope=job.get("project_scope", "IVR Context Validation"),
+        review_scopes=job.get("review_scopes", []),
+        selected_section_ids=job.get("eligible_section_ids", []),
+    )
+    try:
+        completed = {int(x) for x in job.get("progress", {}).get("completed_section_ids", [])}
+        initial_result = None
+        stored_result = job.get("result") or {}
+        if isinstance(stored_result, dict) and isinstance(stored_result.get("segmented_blueprint"), dict):
+            initial_result = stored_result["segmented_blueprint"]
+        job["status"] = "RUNNING"
+        job["started_at"] = job.get("started_at") or datetime.utcnow().isoformat(timespec="seconds") + "Z"
+        job.setdefault("progress", {})["stage"] = "RUNNING"
+        _atomic_write_job(job)
+
+        result = _run_hld_review_core(
+            payload,
+            progress_callback=lambda sid, heading, status, aggregate: _job_section_progress_callback(
+                job_id, sid, heading, status, aggregate, job.get("eligible_section_ids", [])
+            ),
+            cancel_event=cancel_event,
+            resume_completed_ids=completed,
+            initial_result=initial_result,
+        )
+
+        final_job = _load_job(job_id) or job
+        final_job["result"] = {"success": True, "segmented_blueprint": result}
+        final_job["usage"] = (result.get("ai_consumption") or {}).get("totals") or {}
+        final_job["review_errors"] = result.get("review_errors", [])
+        if cancel_event.is_set():
+            final_job["status"] = "CANCELLED"
+            final_job["recovery_note"] = "Review stopped by user. Completed sections are preserved and can be resumed by starting the same review again."
+        elif final_job.get("progress", {}).get("completed_sections", 0) >= final_job.get("progress", {}).get("total_sections", 0):
+            final_job["status"] = "COMPLETED"
+        else:
+            final_job["status"] = "FAILED"
+        final_job.setdefault("progress", {})["stage"] = final_job["status"]
+        _atomic_write_job(final_job)
+    except Exception as exc:
+        traceback.print_exc()
+        final_job = _load_job(job_id) or job
+        final_job["status"] = "FAILED"
+        final_job["error"] = str(exc)
+        final_job.setdefault("progress", {})["stage"] = "FAILED"
+        _atomic_write_job(final_job)
+    finally:
+        REVIEW_CANCEL_EVENTS.pop(job_id, None)
+
+
+def _start_or_resume_review_job(request: HLDReviewStartRequest) -> dict:
+    scopes = [s for s in request.review_scopes if s in REVIEW_SCOPE_DEFINITIONS]
+    if not scopes:
+        raise HTTPException(status_code=400, detail="Select at least one valid HLD review scope.")
+    selected_ids = sorted({int(x) for x in request.selected_section_ids})
+    matrix_chunks = _load_cached_hld_matrix(request.document_title)
+    eligible = []
+    for chunk in matrix_chunks:
+        sid = int(chunk.get("id", 0))
+        status = (chunk.get("metadata") or {}).get("status") or chunk.get("status") or "ok"
+        if selected_ids and sid not in selected_ids:
+            continue
+        if status == "empty":
+            continue
+        if not _section_matches_scopes(chunk, scopes):
+            continue
+        eligible.append(chunk)
+    eligible_ids = [int(c.get("id")) for c in eligible]
+    if not eligible_ids:
+        raise HTTPException(status_code=400, detail="The current section selection and review scopes produced no reviewable sections.")
+
+    signature = _new_review_signature(request.document_title, scopes, eligible_ids)
+    existing = _find_latest_job_by_signature(signature)
+    if existing and existing.get("status") in {"RUNNING", "QUEUED", "CANCEL_REQUESTED"}:
+        return _job_public_view(existing)
+    if existing and existing.get("status") == "COMPLETED":
+        return _job_public_view(existing)
+
+    existing_completed = {int(x) for x in (existing or {}).get("progress", {}).get("completed_section_ids", [])}
+    can_resume_partial = existing and existing.get("status") in {"RECOVERY_REQUIRED", "FAILED", "CANCELLED"} and len(existing_completed) < len(eligible_ids)
+
+    if can_resume_partial:
+        job = existing
+        job["status"] = "QUEUED"
+        job["error"] = None
+        job["recovery_note"] = None
+        job["review_scopes"] = scopes
+        job["selected_section_ids"] = selected_ids
+        job["eligible_section_ids"] = eligible_ids
+        _atomic_write_job(job)
+    else:
+        job_id = hashlib.sha256(f"{signature}:{datetime.utcnow().isoformat()}".encode()).hexdigest()[:24]
+        job = {
+            "job_id": job_id,
+            "review_signature": signature,
+            "document_title": request.document_title,
+            "review_scopes": scopes,
+            "selected_section_ids": selected_ids,
+            "eligible_section_ids": eligible_ids,
+            "project_scope": request.project_scope or "IVR Context Validation",
+            "status": "QUEUED",
+            "created_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+            "started_at": None,
+            "updated_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+            "progress": {
+                "total_sections": len(eligible_ids),
+                "completed_sections": 0,
+                "completed_section_ids": [],
+                "remaining_sections": len(eligible_ids),
+                "current_section_id": None,
+                "current_section_heading": None,
+                "last_section_status": None,
+                "stage": "QUEUED",
+            },
+            "usage": {},
+            "review_errors": [],
+            "result": None,
+        }
+        _atomic_write_job(job)
+
+    job_id = job["job_id"]
+    REVIEW_EXECUTOR.submit(_run_review_job_worker, job_id)
+    return _job_public_view(job)
+
+
+@app.post("/api/hld/review/start")
+def start_hld_review(payload: HLDReviewStartRequest):
+    return {"success": True, "job": _start_or_resume_review_job(payload)}
+
+
+@app.get("/api/hld/review/active")
+def get_active_hld_review(document_title: str):
+    candidates = []
+    with REVIEW_JOB_LOCK:
+        for path in REVIEW_JOB_DIR.glob("*.json"):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    job = json.load(f)
+                if job.get("document_title") != document_title:
+                    continue
+                if job.get("status") in {"QUEUED", "RUNNING", "RECOVERY_REQUIRED", "CANCEL_REQUESTED"}:
+                    candidates.append(job)
+            except Exception:
+                continue
+    job = sorted(candidates, key=lambda j: str(j.get("updated_at", "")), reverse=True)[0] if candidates else None
+    return {"success": True, "job": _job_public_view(job)}
+
+
+@app.get("/api/hld/review/{job_id}")
+def get_hld_review_job(job_id: str):
+    job = _load_job(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="HLD review job not found.")
+    return {"success": True, "job": _job_public_view(job)}
+
+
+@app.post("/api/hld/review/{job_id}/cancel")
+def cancel_hld_review(job_id: str):
+    job = _load_job(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="HLD review job not found.")
+    if job.get("status") in {"COMPLETED", "FAILED", "CANCELLED"}:
+        return {"success": True, "job": _job_public_view(job)}
+    job["status"] = "CANCEL_REQUESTED"
+    job.setdefault("progress", {})["stage"] = "CANCEL_REQUESTED"
+    _atomic_write_job(job)
+    event = REVIEW_CANCEL_EVENTS.setdefault(job_id, threading.Event())
+    event.set()
+    return {"success": True, "job": _job_public_view(job)}
+
+
+def _run_hld_review_core(
+    payload: HLDIngestionRequest,
+    progress_callback=None,
+    cancel_event: threading.Event | None = None,
+    resume_completed_ids: set[int] | None = None,
+    initial_result: dict | None = None,
+):
     """
     Phase 2: Review each selected HLD section exactly once with one Copilot turn.
 
@@ -1326,7 +1641,7 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
     matrix_chunks = filtered_chunks
     print(f"[HLD AUDIT] Review scopes={review_scopes or ['ALL']} sections={len(matrix_chunks)}")
 
-    aggregated_blueprint = {
+    aggregated_blueprint = json.loads(json.dumps(initial_result)) if isinstance(initial_result, dict) else {
         "document_metadata": {
             "title": payload.document_title,
             "segments_found": 0,
@@ -1368,6 +1683,20 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
             },
         },
     }
+
+    aggregated_blueprint.setdefault("findings", [])
+    aggregated_blueprint.setdefault("passed_checks", [])
+    aggregated_blueprint.setdefault("manual_review", [])
+    aggregated_blueprint.setdefault("review_errors", [])
+    aggregated_blueprint.setdefault("review_required_sections", [])
+    aggregated_blueprint.setdefault("ivr_flow_requirements", [])
+    aggregated_blueprint.setdefault("ai_consumption", {
+        "attribution_mode": "exact-by-section-shared-across-selected-scopes",
+        "note": "SDK usage is exact for each section/turn. A single combined turn covers all selected scopes, so tokens and credits are not artificially split between scopes.",
+        "by_section": [], "by_scope": {}, "by_model": {},
+        "totals": {"model_calls": 0, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "reasoning_tokens": 0, "cache_read_tokens": 0, "cache_write_tokens": 0, "duration_ms": 0, "total_nano_aiu": 0, "ai_credits_from_nano_aiu": 0.0, "premium_request_cost": 0}
+    })
+    resume_completed_ids = set(resume_completed_ids or set())
 
     def add_usage_record(usage: dict, section_id: int, section_heading: str, scopes: list[str]):
         if not isinstance(usage, dict):
@@ -1436,9 +1765,14 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
         proc = get_live_copilot_process()
 
         for idx, chunk in enumerate(matrix_chunks):
+            section_id = int(chunk.get("id", idx + 1))
+            if section_id in resume_completed_ids:
+                continue
+            if cancel_event is not None and cancel_event.is_set():
+                print(f"[HLD AUDIT] Cancellation requested before section {section_id}; stopping queue.")
+                break
             metadata = chunk.get("metadata") or {}
             header_context = metadata.get("parent_section") or chunk.get("heading") or f"Section {chunk.get('id', idx + 1)}"
-            section_id = int(chunk.get("id", idx + 1))
             visual_evidence = chunk.get("visual_evidence") or metadata.get("visual_evidence") or []
             visual_scopes = {"architecture", "security", "vulnerability", "integration", "ivr", "documentation", "reliability", "performance"}
             should_attach_visuals = bool(visual_evidence) and bool(set(review_scopes).intersection(visual_scopes))
@@ -1446,6 +1780,8 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
             selected_scopes = review_scopes or ["architecture"]
 
             print(f"   ↳ Reviewing section {idx+1}/{len(matrix_chunks)}: [{header_context}] scopes={','.join(selected_scopes)}")
+            if progress_callback:
+                progress_callback(section_id, header_context, "STARTED", aggregated_blueprint)
 
             script_payload = {
                 "relativePath": f"{payload.document_title} -> {header_context}",
@@ -1488,6 +1824,8 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
                     "error": response_data.get("error", "Unknown Copilot review failure"),
                     "raw_response": response_data.get("raw_response"),
                 })
+                if progress_callback:
+                    progress_callback(section_id, header_context, "FAILED", aggregated_blueprint)
                 continue
 
             add_usage_record(response_data.get("usage"), section_id, header_context, selected_scopes)
@@ -1527,6 +1865,9 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
             if should_attach_visuals:
                 aggregated_blueprint["review_summary"]["visual_sections_reviewed"] += 1
 
+            if progress_callback:
+                progress_callback(section_id, header_context, "COMPLETED", aggregated_blueprint)
+
         finding_count = len(aggregated_blueprint["findings"])
         pass_count = len(aggregated_blueprint["passed_checks"])
         manual_count = len(aggregated_blueprint["manual_review"])
@@ -1556,14 +1897,18 @@ def ingest_and_segment_hld(payload: HLDIngestionRequest):
             f"review_errors={review_error_count}"
         )
 
-        return {
-            "success": True,
-            "document_title": payload.document_title,
-            "segmented_blueprint": aggregated_blueprint,
-        }
+        return aggregated_blueprint
     except Exception as e:
         print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@app.post("/api/hld/ingest")
+def ingest_and_segment_hld(payload: HLDIngestionRequest):
+    """Compatibility endpoint for callers that still expect a synchronous review."""
+    result = _run_hld_review_core(payload)
+    return {"success": True, "document_title": payload.document_title, "segmented_blueprint": result}
 
 
 def _safe_report_filename(document_title: str) -> str:
