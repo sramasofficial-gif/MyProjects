@@ -1,0 +1,321 @@
+{
+  "job_id": "89fa06cd4aa49e4386c1ef02",
+  "review_signature": "a84692b814b4eccbed84d2b5690930e9753d110a6d04f4281e7b589dc731b598",
+  "document_title": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention",
+  "review_scopes": [
+    "architecture",
+    "security",
+    "integration",
+    "ivr"
+  ],
+  "selected_section_ids": [
+    6,
+    7,
+    8,
+    10,
+    11,
+    12,
+    17,
+    19,
+    20,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    35
+  ],
+  "eligible_section_ids": [
+    6,
+    7,
+    8,
+    10,
+    11,
+    12,
+    17,
+    19,
+    20,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    35
+  ],
+  "project_scope": "IVR Context Validation",
+  "status": "FAILED",
+  "created_at": "2026-09-21T08:44:42Z",
+  "started_at": "2026-09-21T08:44:42Z",
+  "updated_at": "2026-09-21T08:45:09Z",
+  "progress": {
+    "total_sections": 16,
+    "completed_sections": 1,
+    "completed_section_ids": [
+      6
+    ],
+    "remaining_sections": 15,
+    "current_section_id": 6,
+    "current_section_heading": "1.1 Business Solution Summary",
+    "last_section_status": "COMPLETED",
+    "stage": "FAILED"
+  },
+  "usage": {
+    "model_calls": 1,
+    "input_tokens": 23062,
+    "output_tokens": 1874,
+    "total_tokens": 24936,
+    "reasoning_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 23060,
+    "duration_ms": 17622,
+    "total_nano_aiu": 7639400000,
+    "ai_credits_from_nano_aiu": 7.6394,
+    "premium_request_cost": 1
+  },
+  "review_errors": [],
+  "result": {
+    "success": true,
+    "segmented_blueprint": {
+      "document_metadata": {
+        "title": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention",
+        "segments_found": 0,
+        "review_scopes": [
+          "architecture",
+          "security",
+          "integration",
+          "ivr"
+        ],
+        "sections_reviewed": 16
+      },
+      "review_summary": {
+        "overall_status": "PASS",
+        "finding_count": 0,
+        "pass_count": 0,
+        "manual_review_count": 0,
+        "review_error_count": 0,
+        "visual_sections_reviewed": 0
+      },
+      "findings": [
+        {
+          "finding_id": "F-001",
+          "scope": "integration",
+          "category": "External Dependency",
+          "severity": "Medium",
+          "title": "Integration scope named without interface or data flow detail",
+          "finding": "The summary states integration between AWS QuickSight, Amazon Connect data source, and AWS Cost & Usage Report, but provides no detail on the interface (API, data export, direct connect, S3 export), data flow direction, payload/schema, refresh cadence, or error handling for this integration.",
+          "evidence": {
+            "text": "The primarily focus for this release to integrate AWS Quick Sight BI reporting tool with Amazon Connect data source & AWS Cost & Usage Report.",
+            "visual_observation": ""
+          },
+          "impact": "Without interface and data flow specifics, downstream architecture, security, and integration error-handling review cannot be performed, increasing risk of undetected design gaps.",
+          "recommendation": "Provide a detailed integration design (data source connectors, refresh schedule, IAM roles, error/retry handling) in a subsequent section, and reference it here.",
+          "confidence": 0.7,
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.1 Business Solution Summary",
+          "content_types": [
+            "text"
+          ],
+          "visual_reviewed": false
+        }
+      ],
+      "passed_checks": [],
+      "manual_review": [
+        {
+          "scope": "architecture",
+          "reason": "This is a high-level business summary with no architectural components, boundaries, dependencies, deployment topology, or diagrams provided; no architecture-specific evidence exists to validate or refute.",
+          "required_action": "Review subsequent architecture sections/diagrams (component and deployment views) once available.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.1 Business Solution Summary"
+        },
+        {
+          "scope": "security",
+          "reason": "No security controls (authentication, IAM roles, encryption, network boundaries) are mentioned for the QuickSight/Connect/Cost & Usage Report integration in this summary section.",
+          "required_action": "Validate IAM permissions, encryption in transit/at rest, and access controls for QuickSight's access to Amazon Connect data and Cost & Usage Report in the security design section.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.1 Business Solution Summary"
+        },
+        {
+          "scope": "integration",
+          "reason": "No API/interface contract, payload schema, or error-handling behavior is described for the QuickSight-Connect-Cost & Usage Report integration.",
+          "required_action": "Obtain and review the detailed integration/interface specification section for this data pipeline.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.1 Business Solution Summary"
+        },
+        {
+          "scope": "ivr",
+          "reason": "No contact flow, prompt, queue, Lambda, Lex, transfer, or disconnect behavior is described in this business summary; it only references Amazon Connect as a data source for reporting, not IVR call-flow behavior.",
+          "required_action": "Review dedicated IVR/contact flow design sections for call-flow-specific validation; this section provides no IVR flow evidence.",
+          "section_reference": "https://reqcentral.com/wiki/spaces/FES/pages/1143493583/High+Level+Design+Document+-+Contact+Center+-+BAU+R12.0#HighLevelDesignDocumentContactCenterBAUR12.0-2.6.2DataLifecycleandRetention -> 1.1 Business Solution Summary"
+        }
+      ],
+      "review_errors": [],
+      "review_required_sections": [],
+      "ivr_flow_requirements": [],
+      "ai_consumption": {
+        "attribution_mode": "exact-by-section-shared-across-selected-scopes",
+        "note": "SDK usage is exact for each section/turn. A single combined turn covers all selected scopes, so tokens and credits are not artificially split between scopes.",
+        "by_section": [
+          {
+            "sectionId": 6,
+            "sectionHeading": "1.1 Business Solution Summary",
+            "reviewScopes": [
+              "architecture",
+              "security",
+              "integration",
+              "ivr"
+            ],
+            "attributionMode": "shared-section-call",
+            "visualReviewed": false,
+            "modelCalls": 1,
+            "models": [
+              "claude-sonnet-5"
+            ],
+            "inputTokens": 23062,
+            "outputTokens": 1874,
+            "totalTokens": 24936,
+            "reasoningTokens": 0,
+            "cacheReadTokens": 0,
+            "cacheWriteTokens": 23060,
+            "durationMs": 17622,
+            "totalNanoAiu": 7639400000,
+            "aiCreditsFromNanoAiu": 7.6394,
+            "premiumRequestCost": 1,
+            "usageComplete": true,
+            "turnStatus": "completed",
+            "usageSource": "session.rpc.usage.getMetrics + assistant.usage",
+            "contextInfo": null,
+            "modelBreakdown": {
+              "claude-sonnet-5": {
+                "calls": 1,
+                "inputTokens": 23062,
+                "outputTokens": 1874,
+                "reasoningTokens": 0,
+                "totalNanoAiu": 7639400000,
+                "aiCreditsFromNanoAiu": 7.6394
+              }
+            },
+            "apiCalls": [
+              {
+                "model": "claude-sonnet-5",
+                "inputTokens": 23062,
+                "outputTokens": 1874,
+                "reasoningTokens": 0,
+                "cacheReadTokens": 0,
+                "cacheWriteTokens": 23060,
+                "costMultiplier": 1,
+                "durationMs": 17622,
+                "timeToFirstTokenMs": 3848.1232,
+                "interTokenLatencyMs": 44.57518640776701,
+                "reasoningEffort": null,
+                "initiator": "user",
+                "apiCallId": "msg_011CfGHpm7iTuwHgBbR2iUTu",
+                "serviceRequestId": "1f5a36c1-58fc-4176-833e-66078d70e31f",
+                "apiEndpoint": "/v1/messages",
+                "providerCallId": "AEF8:8288C:DEBA07:FC4482:6AB0EE86",
+                "finishReason": "stop",
+                "contentFilterTriggered": false,
+                "copilotUsage": {
+                  "tokenDetails": [
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 200000000000,
+                      "tokenCount": 2,
+                      "tokenType": "input"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 20000000000,
+                      "tokenCount": 0,
+                      "tokenType": "cache_read"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 250000000000,
+                      "tokenCount": 23060,
+                      "tokenType": "cache_write"
+                    },
+                    {
+                      "batchSize": 1000000,
+                      "costPerBatch": 1000000000000,
+                      "tokenCount": 1874,
+                      "tokenType": "output"
+                    }
+                  ],
+                  "totalNanoAiu": 7639400000
+                }
+              }
+            ],
+            "diagnostics": {
+              "sectionId": 6,
+              "sectionHeading": "1.1 Business Solution Summary",
+              "scopes": [
+                "architecture",
+                "security",
+                "integration",
+                "ivr"
+              ],
+              "contentTypes": [
+                "text"
+              ],
+              "sourceChars": 206,
+              "sourceEstimatedTokens": 52,
+              "promptChars": 6134,
+              "promptEstimatedTokens": 1534,
+              "systemPromptChars": 493,
+              "systemPromptEstimatedTokens": 124,
+              "attachmentCount": 0,
+              "attachments": [],
+              "visualReviewRequested": false,
+              "visualReviewAttached": false,
+              "note": "Estimated token counts are diagnostic approximations only; authoritative usage comes from Copilot SDK telemetry."
+            }
+          }
+        ],
+        "by_scope": {
+          "architecture": {
+            "sections_reviewed": 1,
+            "shared_model_calls": 1,
+            "usage_attribution": "shared-section-call"
+          },
+          "security": {
+            "sections_reviewed": 1,
+            "shared_model_calls": 1,
+            "usage_attribution": "shared-section-call"
+          },
+          "integration": {
+            "sections_reviewed": 1,
+            "shared_model_calls": 1,
+            "usage_attribution": "shared-section-call"
+          },
+          "ivr": {
+            "sections_reviewed": 1,
+            "shared_model_calls": 1,
+            "usage_attribution": "shared-section-call"
+          }
+        },
+        "by_model": {
+          "claude-sonnet-5": {
+            "calls": 1,
+            "input_tokens": 23062,
+            "output_tokens": 1874,
+            "reasoning_tokens": 0,
+            "total_nano_aiu": 7639400000,
+            "ai_credits_from_nano_aiu": 7.6394
+          }
+        },
+        "totals": {
+          "model_calls": 1,
+          "input_tokens": 23062,
+          "output_tokens": 1874,
+          "total_tokens": 24936,
+          "reasoning_tokens": 0,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 23060,
+          "duration_ms": 17622,
+          "total_nano_aiu": 7639400000,
+          "ai_credits_from_nano_aiu": 7.6394,
+          "premium_request_cost": 1
+        }
+      }
+    }
+  },
+  "error": "500: [WinError 5] Access is denied: 'C:\\\\Users\\\\ramasubramanians\\\\OneDrive - HCL TECHNOLOGIES LIMITED\\\\Documents\\\\HS\\\\Training\\\\MyProjects\\\\IVR_SDLC_Analyst_UI\\\\src\\\\backend\\\\review_jobs\\\\89fa06cd4aa49e4386c1ef02.tmp' -> 'C:\\\\Users\\\\ramasubramanians\\\\OneDrive - HCL TECHNOLOGIES LIMITED\\\\Documents\\\\HS\\\\Training\\\\MyProjects\\\\IVR_SDLC_Analyst_UI\\\\src\\\\backend\\\\review_jobs\\\\89fa06cd4aa49e4386c1ef02.json'"
+}

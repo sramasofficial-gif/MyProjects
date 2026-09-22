@@ -12,6 +12,7 @@ import numpy as np
 import traceback
 import asyncio # 🟢 Ensure this is imported at the top of server.py
 import threading  # 🟢 NEW: Import native thread locking module
+import time
 import hashlib
 from pathlib import Path
 from datetime import datetime
@@ -21,6 +22,7 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.responses import FileResponse
+from fastapi import Query
 
 from services.repo_tools import read_file  # Import your existing file reader
 
@@ -80,6 +82,15 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+ACTIVE_REVIEW_STATUSES = {
+    "QUEUED",
+    "RUNNING",
+    "CANCEL_REQUESTED",
+    "RECOVERY_REQUIRED",
+}
+
+DISCOVERABLE_REVIEW_STATUSES = ACTIVE_REVIEW_STATUSES | {"COMPLETED"}
+
 # Cache storage tracking memory arrays
 BACKEND_DIAGRAM_CACHE = {}
 
@@ -90,7 +101,17 @@ LATEST_MATRIX_CACHE_PATH = "prioritized_audit_chunks.json"
 LIVE_CO_PROCESS = None
 
 # Persistent long-running HLD review job manager. Browser refreshes do not affect jobs.
-REVIEW_JOB_DIR = Path(__file__).resolve().parent / "review_jobs"
+# Review job state is intentionally stored outside the source tree.
+# The application is developed under OneDrive, and frequently replacing a
+# JSON file inside a synced directory can produce WinError 5 when OneDrive
+# briefly holds the target file open. Keep this high-frequency state in the
+# local AppData area on Windows (or ~/.local/share on non-Windows platforms).
+if os.name == "nt":
+    _review_state_root = Path(os.environ.get("LOCALAPPDATA", Path.home()))
+    REVIEW_JOB_DIR = _review_state_root / "IVR_SDLC_Analyst_UI" / "review_jobs"
+else:
+    REVIEW_JOB_DIR = Path.home() / ".local" / "share" / "IVR_SDLC_Analyst_UI" / "review_jobs"
+
 REVIEW_JOB_DIR.mkdir(parents=True, exist_ok=True)
 REVIEW_JOB_LOCK = threading.RLock()
 REVIEW_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=1, thread_name_prefix="hld-review")
@@ -1104,6 +1125,212 @@ def get_wiki_cache_path(page_url: str) -> str:
     url_hash = hashlib.sha256(page_url.encode("utf-8")).hexdigest()
     return f"matrix_cache_wiki_v{MATRIX_SCHEMA_VERSION}_{url_hash[:16]}.json"
 
+def _normalise_review_scopes(review_scopes: list[str] | None) -> list[str]:
+    return sorted({
+        str(scope).strip().lower()
+        for scope in (review_scopes or [])
+        if str(scope).strip() in REVIEW_SCOPE_DEFINITIONS
+    })
+
+
+def _normalise_section_ids(section_ids: list[int] | None) -> list[int]:
+    values = []
+    for value in section_ids or []:
+        try:
+            values.append(int(value))
+        except (TypeError, ValueError):
+            continue
+    return sorted(set(values))
+
+
+def _get_eligible_section_ids(
+    document_title: str,
+    review_scopes: list[str] | None,
+    selected_section_ids: list[int] | None,
+) -> list[int]:
+    """Resolve the exact section set used by Review Plan and Review Start.
+
+    This must be the single source of truth for review signatures and active-job
+    discovery so browser recovery cannot accidentally attach to a different
+    section/scope combination.
+    """
+    scopes = _normalise_review_scopes(review_scopes)
+    selected_ids = set(_normalise_section_ids(selected_section_ids))
+    matrix_chunks = _load_cached_hld_matrix(document_title)
+
+    eligible_ids = []
+    for chunk in matrix_chunks:
+        section_id = int(chunk.get("id", 0))
+        status = (chunk.get("metadata") or {}).get("status") or chunk.get("status") or "ok"
+
+        if selected_ids and section_id not in selected_ids:
+            continue
+        if status == "empty":
+            continue
+        if not _section_matches_scopes(chunk, scopes):
+            continue
+
+        eligible_ids.append(section_id)
+
+    return sorted(set(eligible_ids))
+
+
+def _review_signature(
+    document_title: str,
+    review_scopes: list[str] | None,
+    eligible_section_ids: list[int] | None,
+) -> str:
+    """Canonical v2 signature shared by plan, start, resume and discovery."""
+    payload = {
+        "document_title": str(document_title or "").strip(),
+        "matrix_schema_version": MATRIX_SCHEMA_VERSION,
+        "review_scopes": _normalise_review_scopes(review_scopes),
+        "eligible_section_ids": _normalise_section_ids(eligible_section_ids),
+    }
+
+    raw = json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    )
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _legacy_review_signature(
+    document_title: str,
+    review_scopes: list[str] | None,
+    eligible_section_ids: list[int] | None,
+) -> str:
+    """Compatibility signature used by jobs created before active-job discovery was added."""
+    payload = {
+        "document_title": str(document_title or "").strip(),
+        "matrix_schema_version": MATRIX_SCHEMA_VERSION,
+        "review_scopes": sorted(set(review_scopes or [])),
+        "eligible_section_ids": sorted({int(x) for x in (eligible_section_ids or [])}),
+    }
+    raw = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _job_matches_review_request(
+    job: dict,
+    document_title: str,
+    review_scopes: list[str] | None,
+    eligible_section_ids: list[int] | None,
+) -> bool:
+    """Match a persisted job against the same canonical review request."""
+    target_signature = _review_signature(
+        document_title,
+        review_scopes,
+        eligible_section_ids,
+    )
+    legacy_signature = _legacy_review_signature(
+        document_title,
+        review_scopes,
+        eligible_section_ids,
+    )
+
+    stored_signature = str(job.get("review_signature") or "")
+    if stored_signature in {target_signature, legacy_signature}:
+        return True
+
+    # Fallback for very old records that did not persist a signature.
+    job_document = str(
+        job.get("document_title") or job.get("document_url") or ""
+    ).strip()
+    job_scopes = _normalise_review_scopes(job.get("review_scopes") or [])
+    job_eligible = _normalise_section_ids(
+        job.get("eligible_section_ids") or job.get("selected_section_ids") or []
+    )
+    return (
+        job_document == str(document_title or "").strip()
+        and job_scopes == _normalise_review_scopes(review_scopes)
+        and job_eligible == _normalise_section_ids(eligible_section_ids)
+    )
+
+
+def _discover_active_review_job(
+    document_title: str,
+    review_scopes: list[str] | None,
+    selected_section_ids: list[int] | None,
+):
+    """Return the newest discoverable review job matching the exact request."""
+    eligible_ids = _get_eligible_section_ids(
+        document_title,
+        review_scopes,
+        selected_section_ids,
+    )
+
+    candidates = []
+    if not REVIEW_JOB_DIR.exists():
+        return None
+
+    for path in REVIEW_JOB_DIR.glob("*.json"):
+        try:
+            with path.open("r", encoding="utf-8") as handle:
+                job = json.load(handle)
+        except (OSError, ValueError, TypeError):
+            continue
+
+        if job.get("status") not in DISCOVERABLE_REVIEW_STATUSES:
+            continue
+
+        if not _job_matches_review_request(
+            job,
+            document_title,
+            review_scopes,
+            eligible_ids,
+        ):
+            continue
+
+        candidates.append(job)
+
+    if not candidates:
+        return None
+
+    candidates.sort(
+        key=lambda item: str(item.get("updated_at") or item.get("created_at") or ""),
+        reverse=True,
+    )
+    return candidates[0]
+
+
+@app.get("/api/hld/review/active")
+async def discover_active_hld_review(
+    document_url: str = Query(..., description="HLD/Confluence document URL"),
+    review_scopes: Optional[str] = Query(None),
+    selected_section_ids: Optional[str] = Query(None),
+):
+    """Find an active, recoverable, or completed review for the exact request."""
+    scopes = [
+        item.strip().lower()
+        for item in (review_scopes or "").split(",")
+        if item.strip()
+    ]
+
+    section_ids = []
+    for value in (selected_section_ids or "").split(","):
+        value = value.strip()
+        if not value:
+            continue
+        try:
+            section_ids.append(int(value))
+        except ValueError:
+            continue
+
+    job = _discover_active_review_job(
+        document_title=document_url,
+        review_scopes=scopes,
+        selected_section_ids=section_ids,
+    )
+
+    return {
+        "success": True,
+        "found": bool(job),
+        "job": _job_public_view(job),
+    }
+
 
 @app.post("/api/hld/generate-matrix")
 async def generate_verified_matrix(payload: ConfluenceURLRequest):
@@ -1270,27 +1497,25 @@ def get_hld_review_scopes():
 
 @app.post("/api/hld/review-plan")
 def build_hld_review_plan(payload: HLDReviewPlanRequest):
+    scopes = _normalise_review_scopes(payload.review_scopes)
+    if not scopes:
+        raise HTTPException(status_code=400, detail="Select at least one valid HLD review scope.")
+
+    selected_ids = _normalise_section_ids(payload.selected_section_ids)
     matrix_chunks = _load_cached_hld_matrix(payload.document_title)
-    scopes = [s for s in payload.review_scopes if s in REVIEW_SCOPE_DEFINITIONS]
-    selected_ids = {int(x) for x in payload.selected_section_ids}
-
-    eligible = []
-    for chunk in matrix_chunks:
-        section_id = int(chunk.get("id", 0))
-        status = (chunk.get("metadata") or {}).get("status") or chunk.get("status") or "ok"
-
-        if selected_ids and section_id not in selected_ids:
-            continue
-        if status == "empty":
-            continue
-        if not _section_matches_scopes(chunk, scopes):
-            continue
-        eligible.append(chunk)
+    eligible_ids = _get_eligible_section_ids(
+        payload.document_title,
+        scopes,
+        selected_ids,
+    )
+    eligible_set = set(eligible_ids)
+    eligible = [c for c in matrix_chunks if int(c.get("id", 0)) in eligible_set]
 
     total_words = sum(_section_word_count(c) for c in eligible)
     section_count = len(eligible)
     estimated_prompt_tokens = int(round(total_words * 1.35 + section_count * (220 + 35 * len(scopes))))
     estimated_completion_tokens = section_count * max(300, 160 + 70 * max(1, len(scopes)))
+    signature = _review_signature(payload.document_title, scopes, eligible_ids)
 
     return {
         "success": True,
@@ -1299,7 +1524,7 @@ def build_hld_review_plan(payload: HLDReviewPlanRequest):
             {"id": s, "label": REVIEW_SCOPE_DEFINITIONS[s]["label"]}
             for s in scopes
         ],
-        "eligible_section_ids": [int(c.get("id")) for c in eligible],
+        "eligible_section_ids": eligible_ids,
         "eligible_section_count": section_count,
         "skipped_section_count": len(matrix_chunks) - section_count,
         "total_words": total_words,
@@ -1307,24 +1532,68 @@ def build_hld_review_plan(payload: HLDReviewPlanRequest):
         "estimated_completion_tokens": estimated_completion_tokens,
         "estimated_total_tokens": estimated_prompt_tokens + estimated_completion_tokens,
         "estimated_model_calls": section_count,
+        "review_signature": signature,
+        "review_signature_version": 2,
         "estimate_note": "Planning estimate only. Actual model/SDK usage should be captured during execution.",
     }
-
-
 
 
 def _job_file(job_id: str) -> Path:
     return REVIEW_JOB_DIR / f"{job_id}.json"
 
 
-def _atomic_write_job(job: dict) -> None:
+def _atomic_write_job(job: dict) -> bool:
+    """Persist a review job without allowing filesystem sync/locking to kill the AI job.
+
+    Review-job state is high-frequency mutable state, so it is kept outside
+    the OneDrive-backed source tree. A unique temporary file plus short retry
+    handling makes this safe on Windows as well. Persistence failure is logged
+    and treated as non-fatal; the review worker must not fail solely because a
+    progress snapshot could not be written.
+    """
     job["updated_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
     path = _job_file(job["job_id"])
-    temp = path.with_suffix(".tmp")
+
     with REVIEW_JOB_LOCK:
-        with open(temp, "w", encoding="utf-8") as f:
-            json.dump(job, f, ensure_ascii=False, indent=2)
-        temp.replace(path)
+        temp = path.with_name(f"{path.stem}.{os.getpid()}.{threading.get_ident()}.tmp")
+        try:
+            with open(temp, "w", encoding="utf-8") as f:
+                json.dump(job, f, ensure_ascii=False, indent=2)
+                f.flush()
+                try:
+                    os.fsync(f.fileno())
+                except OSError:
+                    pass
+
+            last_error = None
+            for attempt in range(8):
+                try:
+                    os.replace(temp, path)
+                    return True
+                except PermissionError as exc:
+                    last_error = exc
+                    time.sleep(0.15 * (attempt + 1))
+                except OSError as exc:
+                    last_error = exc
+                    time.sleep(0.15 * (attempt + 1))
+
+            print(
+                f"[REVIEW JOB WARNING] Could not persist job {job.get('job_id')} "
+                f"after retries: {last_error}"
+            )
+            return False
+        except Exception as exc:
+            print(
+                f"[REVIEW JOB WARNING] Persistence failed for job "
+                f"{job.get('job_id')}: {exc}"
+            )
+            return False
+        finally:
+            try:
+                if temp.exists():
+                    temp.unlink()
+            except OSError:
+                pass
 
 
 def _load_job(job_id: str) -> dict | None:
@@ -1339,25 +1608,23 @@ def _load_job(job_id: str) -> dict | None:
         return None
 
 
-def _new_review_signature(document_title: str, review_scopes: list[str], eligible_ids: list[int]) -> str:
-    payload = {
-        "document_title": str(document_title or "").strip(),
-        "matrix_schema_version": MATRIX_SCHEMA_VERSION,
-        "review_scopes": sorted(set(review_scopes)),
-        "eligible_section_ids": sorted({int(x) for x in eligible_ids}),
-    }
-    raw = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
-
-
-def _find_latest_job_by_signature(signature: str) -> dict | None:
+def _find_latest_job_by_review_request(
+    document_title: str,
+    review_scopes: list[str] | None,
+    eligible_section_ids: list[int] | None,
+) -> dict | None:
     latest = None
     with REVIEW_JOB_LOCK:
         for path in REVIEW_JOB_DIR.glob("*.json"):
             try:
                 with open(path, "r", encoding="utf-8") as f:
                     job = json.load(f)
-                if job.get("review_signature") != signature:
+                if not _job_matches_review_request(
+                    job,
+                    document_title,
+                    review_scopes,
+                    eligible_section_ids,
+                ):
                     continue
                 if latest is None or str(job.get("updated_at", "")) > str(latest.get("updated_at", "")):
                     latest = job
@@ -1486,51 +1753,74 @@ def _run_review_job_worker(job_id: str) -> None:
 
 
 def _start_or_resume_review_job(request: HLDReviewStartRequest) -> dict:
-    scopes = [s for s in request.review_scopes if s in REVIEW_SCOPE_DEFINITIONS]
+    scopes = _normalise_review_scopes(request.review_scopes)
     if not scopes:
         raise HTTPException(status_code=400, detail="Select at least one valid HLD review scope.")
-    selected_ids = sorted({int(x) for x in request.selected_section_ids})
-    matrix_chunks = _load_cached_hld_matrix(request.document_title)
-    eligible = []
-    for chunk in matrix_chunks:
-        sid = int(chunk.get("id", 0))
-        status = (chunk.get("metadata") or {}).get("status") or chunk.get("status") or "ok"
-        if selected_ids and sid not in selected_ids:
-            continue
-        if status == "empty":
-            continue
-        if not _section_matches_scopes(chunk, scopes):
-            continue
-        eligible.append(chunk)
-    eligible_ids = [int(c.get("id")) for c in eligible]
-    if not eligible_ids:
-        raise HTTPException(status_code=400, detail="The current section selection and review scopes produced no reviewable sections.")
 
-    signature = _new_review_signature(request.document_title, scopes, eligible_ids)
-    existing = _find_latest_job_by_signature(signature)
+    selected_ids = _normalise_section_ids(request.selected_section_ids)
+    eligible_ids = _get_eligible_section_ids(
+        request.document_title,
+        scopes,
+        selected_ids,
+    )
+
+    if not eligible_ids:
+        raise HTTPException(
+            status_code=400,
+            detail="The current section selection and review scopes produced no reviewable sections.",
+        )
+
+    signature = _review_signature(
+        request.document_title,
+        scopes,
+        eligible_ids,
+    )
+
+    existing = _find_latest_job_by_review_request(
+        request.document_title,
+        scopes,
+        eligible_ids,
+    )
+
     if existing and existing.get("status") in {"RUNNING", "QUEUED", "CANCEL_REQUESTED"}:
         return _job_public_view(existing)
+
     if existing and existing.get("status") == "COMPLETED":
         return _job_public_view(existing)
 
-    existing_completed = {int(x) for x in (existing or {}).get("progress", {}).get("completed_section_ids", [])}
-    can_resume_partial = existing and existing.get("status") in {"RECOVERY_REQUIRED", "FAILED", "CANCELLED"} and len(existing_completed) < len(eligible_ids)
+    existing_completed = {
+        int(x)
+        for x in (existing or {}).get("progress", {}).get("completed_section_ids", [])
+    }
+    can_resume_partial = (
+        existing
+        and existing.get("status") in {"RECOVERY_REQUIRED", "FAILED", "CANCELLED"}
+        and len(existing_completed) < len(eligible_ids)
+    )
 
     if can_resume_partial:
         job = existing
         job["status"] = "QUEUED"
         job["error"] = None
         job["recovery_note"] = None
+        job["review_signature"] = signature
+        job["review_signature_version"] = 2
+        job["document_title"] = request.document_title
+        job["document_url"] = request.document_title
         job["review_scopes"] = scopes
         job["selected_section_ids"] = selected_ids
         job["eligible_section_ids"] = eligible_ids
         _atomic_write_job(job)
     else:
-        job_id = hashlib.sha256(f"{signature}:{datetime.utcnow().isoformat()}".encode()).hexdigest()[:24]
+        job_id = hashlib.sha256(
+            f"{signature}:{datetime.utcnow().isoformat()}".encode()
+        ).hexdigest()[:24]
         job = {
             "job_id": job_id,
             "review_signature": signature,
+            "review_signature_version": 2,
             "document_title": request.document_title,
+            "document_url": request.document_title,
             "review_scopes": scopes,
             "selected_section_ids": selected_ids,
             "eligible_section_ids": eligible_ids,
@@ -1562,25 +1852,9 @@ def _start_or_resume_review_job(request: HLDReviewStartRequest) -> dict:
 
 @app.post("/api/hld/review/start")
 def start_hld_review(payload: HLDReviewStartRequest):
-    return {"success": True, "job": _start_or_resume_review_job(payload)}
-
-
-@app.get("/api/hld/review/active")
-def get_active_hld_review(document_title: str):
-    candidates = []
-    with REVIEW_JOB_LOCK:
-        for path in REVIEW_JOB_DIR.glob("*.json"):
-            try:
-                with open(path, "r", encoding="utf-8") as f:
-                    job = json.load(f)
-                if job.get("document_title") != document_title:
-                    continue
-                if job.get("status") in {"QUEUED", "RUNNING", "RECOVERY_REQUIRED", "CANCEL_REQUESTED"}:
-                    candidates.append(job)
-            except Exception:
-                continue
-    job = sorted(candidates, key=lambda j: str(j.get("updated_at", "")), reverse=True)[0] if candidates else None
-    return {"success": True, "job": _job_public_view(job)}
+    """Start a new review or resume/recover an existing matching review job."""
+    job = _start_or_resume_review_job(payload)
+    return {"success": True, "job": job}
 
 
 @app.get("/api/hld/review/{job_id}")
@@ -1668,6 +1942,7 @@ def _run_hld_review_core(
             "by_section": [],
             "by_scope": {},
             "by_model": {},
+            "by_auto_tier": {},
             "totals": {
                 "model_calls": 0,
                 "input_tokens": 0,
@@ -1693,7 +1968,7 @@ def _run_hld_review_core(
     aggregated_blueprint.setdefault("ai_consumption", {
         "attribution_mode": "exact-by-section-shared-across-selected-scopes",
         "note": "SDK usage is exact for each section/turn. A single combined turn covers all selected scopes, so tokens and credits are not artificially split between scopes.",
-        "by_section": [], "by_scope": {}, "by_model": {},
+        "by_section": [], "by_scope": {}, "by_model": {}, "by_auto_tier": {},
         "totals": {"model_calls": 0, "input_tokens": 0, "output_tokens": 0, "total_tokens": 0, "reasoning_tokens": 0, "cache_read_tokens": 0, "cache_write_tokens": 0, "duration_ms": 0, "total_nano_aiu": 0, "ai_credits_from_nano_aiu": 0.0, "premium_request_cost": 0}
     })
     resume_completed_ids = set(resume_completed_ids or set())
@@ -1708,6 +1983,21 @@ def _run_hld_review_core(
         usage_item["reviewScopes"] = list(scopes)
         usage_item["attributionMode"] = "shared-section-call"
         aggregated_blueprint["ai_consumption"]["by_section"].append(usage_item)
+
+        routing = usage_item.get("routing") or {}
+        requested_tier = routing.get("requestedAutoTier") or "default"
+        actual_model = routing.get("actualModel") or ((usage_item.get("models") or [None])[0])
+        usage_item["routing"] = {
+            "requestedModelMode": routing.get("requestedModelMode") or "auto",
+            "requestedAutoTier": requested_tier if requested_tier != "default" else None,
+            "selectionReason": routing.get("selectionReason"),
+            "actualModel": actual_model,
+            "actualAutoTier": routing.get("actualAutoTier"),
+            "pendingAutoTier": routing.get("pendingAutoTier"),
+            "activatingAutoTier": routing.get("activatingAutoTier"),
+            "visualRequired": bool(routing.get("visualRequired")),
+            "modelChangeEvents": routing.get("modelChangeEvents") or [],
+        }
 
         totals = aggregated_blueprint["ai_consumption"]["totals"]
         mapping = (
@@ -1748,6 +2038,20 @@ def _run_hld_review_core(
             bucket["reasoning_tokens"] += int(model_data.get("reasoningTokens") or 0)
             bucket["total_nano_aiu"] += int(model_data.get("totalNanoAiu") or 0)
             bucket["ai_credits_from_nano_aiu"] += float(model_data.get("aiCreditsFromNanoAiu") or 0)
+
+        tier_key = requested_tier
+        tier_bucket = aggregated_blueprint["ai_consumption"]["by_auto_tier"].setdefault(
+            tier_key,
+            {"sections_reviewed": 0, "model_calls": 0, "input_tokens": 0, "output_tokens": 0, "reasoning_tokens": 0, "ai_credits": 0.0, "actual_models": []}
+        )
+        tier_bucket["sections_reviewed"] += 1
+        tier_bucket["model_calls"] += int(usage_item.get("modelCalls") or 0)
+        tier_bucket["input_tokens"] += int(usage_item.get("inputTokens") or 0)
+        tier_bucket["output_tokens"] += int(usage_item.get("outputTokens") or 0)
+        tier_bucket["reasoning_tokens"] += int(usage_item.get("reasoningTokens") or 0)
+        tier_bucket["ai_credits"] += float(usage_item.get("aiCreditsFromNanoAiu") or 0)
+        if actual_model and actual_model not in tier_bucket["actual_models"]:
+            tier_bucket["actual_models"].append(actual_model)
 
         for scope in scopes:
             bucket = aggregated_blueprint["ai_consumption"]["by_scope"].setdefault(
@@ -1894,7 +2198,8 @@ def _run_hld_review_core(
             "[HLD REVIEW FINAL] "
             f"findings={finding_count}, passed={pass_count}, manual={manual_count}, "
             f"status={overall_status}, model_calls={aggregated_blueprint['ai_consumption']['totals']['model_calls']}, "
-            f"review_errors={review_error_count}"
+            f"review_errors={review_error_count}, "
+            f"auto_tiers={list(aggregated_blueprint['ai_consumption']['by_auto_tier'].keys())}"
         )
 
         return aggregated_blueprint
@@ -2043,16 +2348,24 @@ def export_hld_review_excel(payload: HLDExcelExportRequest):
         for u in by_section:
             d=u.get("diagnostics") or {}
             ci=u.get("contextInfo") or {}
+            routing = u.get("routing") or {}
             trows.append([
-                u.get("sectionId"),u.get("sectionHeading"),", ".join(u.get("reviewScopes") or []),", ".join(u.get("models") or []),
+                u.get("sectionId"),u.get("sectionHeading"),", ".join(u.get("reviewScopes") or []),
+                routing.get("requestedModelMode") or "auto", routing.get("requestedAutoTier") or "default",
+                routing.get("selectionReason") or "", routing.get("actualModel") or (", ".join(u.get("models") or [])),
+                routing.get("actualAutoTier") or "",
                 u.get("modelCalls",0),u.get("inputTokens",0),u.get("outputTokens",0),u.get("reasoningTokens",0),u.get("totalTokens",0),
                 u.get("aiCreditsFromNanoAiu",0),u.get("premiumRequestCost",0),"Yes" if u.get("visualReviewed") else "No",u.get("turnStatus"),
                 d.get("sourceChars",0),d.get("sourceEstimatedTokens",0),d.get("promptChars",0),d.get("promptEstimatedTokens",0),
                 d.get("systemPromptChars",0),d.get("attachmentCount",0),ci.get("totalTokens",0),ci.get("promptTokenLimit",0),
                 ci.get("systemTokens",0),ci.get("conversationTokens",0),ci.get("toolDefinitionsTokens",0)
             ])
-        _write_sheet(tws,["Section ID","Section","Scopes","Models","Calls","Input Tokens","Output Tokens","Reasoning Tokens","Total Tokens","AI Credits","Premium Request Cost","Visual Reviewed","Turn Status","Source Chars","Source Est. Tokens","Prompt Chars","Prompt Est. Tokens","System Chars","Attachments","Context Tokens","Context Limit","Context System","Context Conversation","Context Tools"],trows)
-        _format_excel_sheet(tws,{1:12,2:42,3:34,4:28,5:10,6:14,7:15,8:17,9:14,10:14,11:20,12:16,13:14,14:14,15:16,16:14,17:16,18:14,19:12,20:14,21:15,22:14,23:20,24:16})
+        _write_sheet(tws,["Section ID","Section","Scopes","Requested Mode","Requested Auto Tier","Selection Reason","Actual Model","Actual Auto Tier","Calls","Input Tokens","Output Tokens","Reasoning Tokens","Total Tokens","AI Credits","Premium Request Cost","Visual Reviewed","Turn Status","Source Chars","Source Est. Tokens","Prompt Chars","Prompt Est. Tokens","System Chars","Attachments","Context Tokens","Context Limit","Context System","Context Conversation","Context Tools"],trows)
+        _format_excel_sheet(tws,{1:12,2:42,3:34,4:16,5:18,6:55,7:26,8:18,9:10,10:14,11:15,12:17,13:14,14:14,15:20,16:16,17:14,18:14,19:16,20:14,21:16,22:14,23:12,24:14,25:15,26:14,27:20,28:16})
+
+        ars=wb.create_sheet("Auto Routing")
+        _write_sheet(ars,["Requested Auto Tier","Sections","Model Calls","Input Tokens","Output Tokens","Reasoning Tokens","AI Credits","Actual Models"],[[tier,v.get("sections_reviewed",0),v.get("model_calls",0),v.get("input_tokens",0),v.get("output_tokens",0),v.get("reasoning_tokens",0),v.get("ai_credits",0),", ".join(v.get("actual_models",[]))] for tier,v in (consumption.get("by_auto_tier") or {}).items()])
+        _format_excel_sheet(ars,{1:22,2:12,3:14,4:16,5:16,6:18,7:14,8:35})
 
         sws=wb.create_sheet("Scope Coverage")
         _write_sheet(sws,["Scope","Sections Reviewed","Shared Model Calls","Attribution"],[[scope,item.get("sections_reviewed",0),item.get("shared_model_calls",0),item.get("usage_attribution","")] for scope,item in by_scope.items()])
@@ -2073,6 +2386,8 @@ def export_hld_review_excel(payload: HLDExcelExportRequest):
         notes.append(["Actual model/token usage is sourced from Copilot SDK telemetry when available."])
         notes.append(["Source/prompt token values marked as estimated are diagnostics only, not billing values."])
         notes.append(["When multiple review scopes share one section-level Copilot turn, usage is reported at the section/call level and is not artificially divided across scopes."])
+        notes.append(["The application selects an Auto routing tier (efficiency, balance, or intelligence) based on content type, visual evidence, and selected review scopes; GitHub Copilot Auto selects the actual model."])
+        notes.append(["Actual model and effective Auto tier are captured from Copilot SDK session telemetry where available. Requested tier is an application routing preference, not an assertion of the model selected."])
         notes.append(["SDK AI credits are shown as a convenience conversion from totalNanoAiu; validate current GitHub billing semantics before using for accounting."])
         notes.append(["Review failures are separated from findings and do not imply PASS."])
         notes.column_dimensions["A"].width=120

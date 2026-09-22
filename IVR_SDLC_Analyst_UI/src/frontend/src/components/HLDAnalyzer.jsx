@@ -27,6 +27,7 @@ const REPORT = {
     issueBg: "#fbead9",
     empty: "#8a94a0",
     emptyBg: "#eef0f2",
+    muted: "#f1f3f5",
     purpleBg: "#efe6f7",
     purple: "#6b3fa0",
     greenBg: "#e7f4ee",
@@ -123,35 +124,113 @@ export default function HLDAnalyzer() {
     const [exportingExcel, setExportingExcel] = useState(false);
     const [excelExportError, setExcelExportError] = useState("");
     const [reviewJob, setReviewJob] = useState(null);
-    const [reviewJobId, setReviewJobId] = useState(() => localStorage.getItem("hld.activeReviewJobId"));
+    const [reviewJobId, setReviewJobId] = useState(null);
     const reviewPollRef = useRef(null);
-    const reviewPollInFlightRef = useRef(false);
     const restoringStateRef = useRef(true);
 
     useEffect(() => {
-        const savedUrl = localStorage.getItem("hld.lastDocumentUrl");
-        const savedScopes = localStorage.getItem("hld.selectedScopes");
-        const savedIds = localStorage.getItem("hld.selectedSectionIds");
-        if (savedUrl) {
-            setWikiURL(savedUrl);
-            generateHLDMatrix(savedUrl).then((data) => {
-                setVerificationMatrix(Array.isArray(data.matrix) ? data.matrix : []);
-                setIsLoadedFromCache(Boolean(data.loaded_from_cache));
-            }).catch(() => {});
+        let cancelled = false;
+
+        async function restorePageState() {
+            const savedUrl = localStorage.getItem("hld.lastDocumentUrl") || "";
+            const savedScopes = localStorage.getItem("hld.selectedScopes");
+            const savedIds = localStorage.getItem("hld.selectedSectionIds");
+
+            let restoredScopes = DEFAULT_REVIEW_SCOPES;
+            let restoredIds = [];
+
+            if (savedScopes) {
+                try {
+                    const parsed = JSON.parse(savedScopes);
+                    if (Array.isArray(parsed) && parsed.length) {
+                        restoredScopes = parsed;
+                        if (!cancelled) setSelectedReviewScopes(parsed);
+                    }
+                } catch {}
+            }
+
+            if (savedIds) {
+                try {
+                    const parsed = JSON.parse(savedIds);
+                    if (Array.isArray(parsed)) {
+                        restoredIds = parsed.map(Number).filter(Number.isFinite);
+                        if (!cancelled) setSelectedIds(new Set(restoredIds));
+                    }
+                } catch {}
+            }
+
+            if (savedUrl) {
+                if (!cancelled) setWikiURL(savedUrl);
+
+                try {
+                    const matrixData = await generateHLDMatrix(savedUrl);
+
+                    if (cancelled) return;
+
+                    setVerificationMatrix(
+                        Array.isArray(matrixData.matrix)
+                            ? matrixData.matrix
+                            : []
+                    );
+                    setIsLoadedFromCache(
+                        Boolean(matrixData.loaded_from_cache)
+                    );
+
+                    // Recover a backend-owned review independently of the old
+                    // localStorage job ID. This is the key refresh-recovery path.
+                    const activeJob = await discoverActiveReviewJob(
+                        savedUrl,
+                        restoredScopes,
+                        restoredIds,
+                    );
+
+                    if (cancelled) return;
+
+                    if (activeJob?.job_id) {
+                        console.info(
+                            "[HLD REVIEW] Backend review job restored:",
+                            activeJob.job_id,
+                            activeJob.status
+                        );
+                        setReviewJob(activeJob);
+                        persistJobId(activeJob.job_id);
+
+                        if (
+                            activeJob.status === "COMPLETED" &&
+                            activeJob.result?.segmented_blueprint
+                        ) {
+                            setAnalysisResult(activeJob.result.segmented_blueprint);
+                            setActiveTab("findings");
+                        } else {
+                            setActiveTab("review");
+                        }
+                    } else {
+                        // Do not keep a stale localStorage ID alive when the
+                        // backend confirms that no matching job exists.
+                        clearStoredReviewJob();
+                        setReviewJobId(null);
+                        setReviewJob(null);
+                        setAnalysisResult(null);
+                    }
+                } catch (err) {
+                    if (cancelled) return;
+                    console.warn(
+                        "[HLD REVIEW] Initial page-state recovery failed:",
+                        err
+                    );
+                }
+            }
+
+            if (!cancelled) {
+                restoringStateRef.current = false;
+            }
         }
-        if (savedScopes) {
-            try {
-                const parsed = JSON.parse(savedScopes);
-                if (Array.isArray(parsed) && parsed.length) setSelectedReviewScopes(parsed);
-            } catch {}
-        }
-        if (savedIds) {
-            try {
-                const parsed = JSON.parse(savedIds);
-                if (Array.isArray(parsed)) setSelectedIds(new Set(parsed.map(Number)));
-            } catch {}
-        }
-        restoringStateRef.current = false;
+
+        restorePageState();
+
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     useEffect(() => {
@@ -169,55 +248,105 @@ export default function HLDAnalyzer() {
     }
 
     async function getHLDJson(path) {
-        const url = path.startsWith("http") ? path : `${BACKEND_API_BASE}${path}`;
+        const url = path.startsWith("http")
+            ? path
+            : `${BACKEND_API_BASE}${path}`;
+
         const response = await fetch(url);
         const data = await response.json().catch(() => ({}));
-        if (!response.ok) throw new Error(data.detail || `Request failed (${response.status}) for ${url}`);
+
+        if (!response.ok) {
+            const err = new Error(
+                data.detail ||
+                data.message ||
+                `Request failed (${response.status}) for ${url}`
+            );
+            err.status = response.status;
+            err.code = data.code || null;
+            throw err;
+        }
+
         return data;
+    }
+
+    async function discoverActiveReviewJob(documentUrl, scopes, sectionIds) {
+        if (!documentUrl?.trim()) return null;
+
+        const params = new URLSearchParams();
+        params.set("document_url", documentUrl.trim());
+
+        if (Array.isArray(scopes) && scopes.length) {
+            params.set("review_scopes", scopes.join(","));
+        }
+
+        if (Array.isArray(sectionIds) && sectionIds.length) {
+            params.set(
+                "selected_section_ids",
+                sectionIds.map(Number).filter(Number.isFinite).join(",")
+            );
+        }
+
+        const data = await getHLDJson(
+            `/api/hld/review/active?${params.toString()}`
+        );
+
+        return data.found ? data.job : null;
+    }
+
+    function clearStoredReviewJob(jobId = null) {
+        const storedJobId = localStorage.getItem(
+            "hld.activeReviewJobId"
+        );
+
+        if (!jobId || storedJobId === jobId) {
+            localStorage.removeItem(
+                "hld.activeReviewJobId"
+            );
+        }
     }
 
     async function refreshReviewJob(jobId) {
         if (!jobId) return null;
 
-        const data = await getHLDJson(
-            `/api/hld/review/${encodeURIComponent(jobId)}`
-        );
-
-        const job = data.job;
-
-        if (!job) {
-            throw new Error("Review job was not returned by the backend.");
-        }
-
-        setReviewJob(job);
-
-        if (job.status === "COMPLETED") {
-            if (job.result?.segmented_blueprint) {
-                setAnalysisResult(job.result.segmented_blueprint);
-            }
-            setActiveTab("findings");
-        } else if (job.status === "FAILED") {
-            setError(
-                job.error ||
-                "The HLD review job failed."
+        try {
+            const data = await getHLDJson(
+                `/api/hld/review/${encodeURIComponent(jobId)}`
             );
-            setActiveTab("review");
-        } else if (
-            job.status === "RUNNING" ||
-            job.status === "QUEUED" ||
-            job.status === "CANCEL_REQUESTED" ||
-            job.status === "RECOVERY_REQUIRED"
-        ) {
-            setActiveTab("review");
-        }
 
-        return job;
+            const job = data.job;
+
+            if (!job) {
+                throw new Error("Review job was not returned by the backend.");
+            }
+
+            setReviewJob(job);
+
+            return job;
+
+        } catch (err) {
+            // A missing job is a stale browser reference, not a transient error.
+            if (err?.status === 404 || /404|not found/i.test(err?.message || "")) {
+                console.warn(
+                    `[HLD REVIEW] Stale job ID removed: ${jobId}`
+                );
+
+                clearStoredReviewJob(jobId);
+
+                setReviewJob(null);
+                setReviewJobId(null);
+                setActiveTab("inventory");
+
+                return null;
+            }
+
+            throw err;
+        }
     }
 
     useEffect(() => {
-        const jobId = reviewJobId;
-
-        if (!jobId) return undefined;
+        if (!reviewJobId) {
+            return undefined;
+        }
 
         let cancelled = false;
 
@@ -225,30 +354,35 @@ export default function HLDAnalyzer() {
             if (cancelled) return;
 
             try {
-                const job = await refreshReviewJob(jobId);
+                const job = await refreshReviewJob(reviewJobId);
 
                 if (cancelled) return;
 
+                if (!job) {
+                    // Stale/missing job. refreshReviewJob() already cleaned it.
+                    return;
+                }
+
                 if (
-                    job &&
-                    ["QUEUED", "RUNNING", "CANCEL_REQUESTED"].includes(job.status)
+                    ["QUEUED", "RUNNING", "CANCEL_REQUESTED"]
+                        .includes(job.status)
                 ) {
                     reviewPollRef.current = window.setTimeout(
                         poll,
                         1500
                     );
                 }
+
             } catch (err) {
                 if (cancelled) return;
 
-                setError(
-                    err.message ||
-                    "Unable to update the HLD review job."
+                console.error(
+                    "[HLD REVIEW] Poll failed:",
+                    err
                 );
 
-                // IMPORTANT:
-                // Do not permanently stop polling because of one
-                // temporary network/request failure.
+                // Transient network/server problem:
+                // keep polling.
                 reviewPollRef.current = window.setTimeout(
                     poll,
                     3000
@@ -262,7 +396,10 @@ export default function HLDAnalyzer() {
             cancelled = true;
 
             if (reviewPollRef.current) {
-                window.clearTimeout(reviewPollRef.current);
+                window.clearTimeout(
+                    reviewPollRef.current
+                );
+
                 reviewPollRef.current = null;
             }
         };
@@ -314,23 +451,104 @@ export default function HLDAnalyzer() {
         }
     }
 
-    async function handleForcedCacheClear() {
-        if (!wikiURL.trim()) return;
-        setLoading(true);
-        setError("");
+    async function invalidateCurrentReviewJob() {
+        const jobId = reviewJobId;
+        const activeStatuses = ["QUEUED", "RUNNING", "CANCEL_REQUESTED"];
+
+        if (reviewPollRef.current) {
+            window.clearTimeout(reviewPollRef.current);
+            reviewPollRef.current = null;
+        }
 
         try {
-            await clearHLDMatrixCache(wikiURL.trim());
-            setVerificationMatrix(null);
-            setAnalysisResult(null);
-            setIsLoadedFromCache(false);
-            setSelectedIds(new Set());
-            setExpandedId(null);
-            setReviewPlan(null);
-            setActiveTab("inventory");
-            await triggerPhase1MatrixIngestion();
+            if (jobId) {
+                const activeJob = reviewJob;
+
+                if (activeJob && activeStatuses.includes(activeJob.status)) {
+                    await postHLDJson(
+                        `/api/hld/review/${encodeURIComponent(jobId)}/cancel`,
+                        {}
+                    );
+                }
+            }
         } catch (err) {
-            setError(err.message || "Failed to reset backend cache matrix correctly.");
+            console.warn(
+                "[HLD REVIEW] Unable to cancel previous review before re-scrape:",
+                err
+            );
+        } finally {
+            clearStoredReviewJob(jobId);
+            setReviewJobId(null);
+            setReviewJob(null);
+            setAnalysisResult(null);
+        }
+    }
+
+    /*
+    async function handleForcedCacheClear() {
+        const targetUrl = wikiURL.trim();
+        if (!targetUrl) return;
+
+        // Preserve the URL as the source-of-truth for the entire refresh operation.
+        // Do not depend on React state updates while clearing/rebuilding the matrix.
+        setLoading(true);
+        setError("");
+        setWikiURL(targetUrl);
+        setVerificationMatrix(null);
+        setAnalysisResult(null);
+        setIsLoadedFromCache(false);
+        setSelectedIds(new Set());
+        setExpandedId(null);
+        setReviewPlan(null);
+        setActiveTab("inventory");
+
+        try {
+            await clearHLDMatrixCache(targetUrl);
+
+            // Re-ingest directly with the preserved URL rather than calling
+            // triggerPhase1MatrixIngestion(), which reads the asynchronously
+            // updated wikiURL React state.
+            const data = await generateHLDMatrix(targetUrl);
+            setWikiURL(targetUrl);
+            setVerificationMatrix(Array.isArray(data.matrix) ? data.matrix : []);
+            setIsLoadedFromCache(Boolean(data.loaded_from_cache));
+        } catch (err) {
+            // Keep the URL visible even when the re-scrape fails so the user
+            // knows exactly which document was being refreshed.
+            setWikiURL(targetUrl);
+            setError(err.message || "Failed to refresh the Confluence HLD matrix.");
+        } finally {
+            setLoading(false);
+        }
+    }
+    */
+
+    async function handleForcedCacheClear() {
+        const targetUrl = wikiURL.trim();
+        if (!targetUrl) return;
+
+        await invalidateCurrentReviewJob();
+
+        setLoading(true);
+        setError("");
+        setVerificationMatrix(null);
+
+        try {
+            await clearHLDMatrixCache(targetUrl);
+            const data = await generateHLDMatrix(targetUrl);
+
+            setWikiURL(targetUrl);
+            setVerificationMatrix(
+                Array.isArray(data.matrix) ? data.matrix : []
+            );
+            setIsLoadedFromCache(Boolean(data.loaded_from_cache));
+            setActiveTab("inventory");
+        } catch (err) {
+            setWikiURL(targetUrl);
+            setError(
+                err.message || "Failed to refresh the HLD matrix."
+            );
+        } finally {
             setLoading(false);
         }
     }
@@ -356,7 +574,14 @@ export default function HLDAnalyzer() {
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) {
-            throw new Error(data.detail || `Request failed (${response.status}) for ${url}`);
+            const err = new Error(
+                data.detail ||
+                data.message ||
+                `Request failed (${response.status}) for ${url}`
+            );
+            err.status = response.status;
+            err.code = data.code || null;
+            throw err;
         }
         return data;
     }
@@ -676,6 +901,14 @@ export default function HLDAnalyzer() {
                         placeholder="https://reqcentral.com/wiki/spaces/..."
                         value={wikiURL}
                         onChange={handleURLChange}
+                        disabled={
+                            loading ||
+                            Boolean(
+                                reviewJob &&
+                                ["QUEUED", "RUNNING", "CANCEL_REQUESTED"].includes(reviewJob.status)
+                            )
+                        }
+                        aria-label="Atlassian Wiki Page URL"
                         style={{
                             width: "100%",
                             padding: "8px 9px",
@@ -684,7 +917,9 @@ export default function HLDAnalyzer() {
                             fontSize: 12,
                             fontFamily: REPORT.mono,
                             outline: "none",
-                            background: REPORT.panel,
+                            background: loading ? REPORT.muted : REPORT.panel,
+                            color: REPORT.ink,
+                            opacity: 1,
                         }}
                     />
                 </div>
@@ -910,13 +1145,41 @@ export default function HLDAnalyzer() {
                             background: REPORT.panel,
                             border: `1px solid ${REPORT.line}`,
                             borderRadius: 8,
-                            padding: "44px 24px",
+                            padding: "32px 24px",
                             textAlign: "center",
                             color: REPORT.inkSoft,
-                            fontSize: 13,
                         }}
                     >
-                        Connecting to Atlassian Wiki Secure Node via Playwright execution layers...
+                        <div
+                            style={{
+                                fontSize: 15,
+                                fontWeight: 700,
+                                color: REPORT.accent,
+                                marginBottom: 8,
+                            }}
+                        >
+                            Refreshing Confluence HLD
+                        </div>
+
+                        <div
+                            style={{
+                                fontSize: 12,
+                                marginBottom: 8,
+                            }}
+                        >
+                            Connecting to Atlassian Wiki Secure Node via Playwright execution layers...
+                        </div>
+
+                        <div
+                            style={{
+                                fontFamily: REPORT.mono,
+                                fontSize: 11,
+                                color: REPORT.inkSoft,
+                                wordBreak: "break-all",
+                            }}
+                        >
+                            {wikiURL}
+                        </div>
                     </div>
                 )}
 
@@ -1662,7 +1925,9 @@ export default function HLDAnalyzer() {
                                     ? { background: "#fff7ed", color: "#c2410c" }
                                     : status === "MANUAL_REVIEW"
                                         ? { background: "#fef3c7", color: "#a16207" }
-                                        : { background: REPORT.okBg, color: REPORT.ok };
+                                        : status === "REVIEW_INCOMPLETE"
+                                            ? { background: REPORT.issueBg, color: REPORT.issue }
+                                            : { background: REPORT.okBg, color: REPORT.ok };
 
                                 return (
                                     <>
@@ -2026,21 +2291,48 @@ export default function HLDAnalyzer() {
                                 const secs = c.by_section || [];
                                 const scopes = Object.entries(c.by_scope || {});
                                 const models = Object.entries(c.by_model || {});
+                                const tiers = Object.entries(c.by_auto_tier || {});
                                 const fmt = v => Number(v || 0).toLocaleString();
                                 const credits = v => Number(v || 0).toFixed(6);
                                 return <>
                                     <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0,1fr))", gap: 10, marginBottom: 18 }}>
                                         {[["Model calls",t.model_calls],["Input tokens",t.input_tokens],["Output tokens",t.output_tokens],["Reasoning tokens",t.reasoning_tokens],["SDK AI credits",credits(t.ai_credits_from_nano_aiu)]].map(([label,value]) => <div key={label} style={{ background: REPORT.emptyBg, border: `1px solid ${REPORT.line}`, borderRadius: 7, padding: 12 }}><div style={{ fontSize: 20, fontWeight: 750 }}>{typeof value === "string" ? value : fmt(value)}</div><div style={{ marginTop: 3, fontSize: 10.5, color: REPORT.inkSoft }}>{label}</div></div>)}
                                     </div>
+                                    <div style={{
+                                        display: "grid",
+                                        gridTemplateColumns: "1fr 1fr 1fr",
+                                        gap: 12,
+                                        marginBottom: 18,
+                                    }}>
+                                        <div style={{ background: REPORT.accentSoft, border: `1px solid ${REPORT.line}`, borderRadius: 7, padding: 12 }}>
+                                            <div style={{ fontSize: 12, fontWeight: 750, color: REPORT.accent, marginBottom: 5 }}>Application routing</div>
+                                            <div style={{ fontSize: 11.5, color: REPORT.inkSoft, lineHeight: 1.45 }}>
+                                                The platform selects an <b>Auto tier</b> from evidence complexity. GitHub Copilot Auto selects the concrete model.
+                                            </div>
+                                        </div>
+                                        <div style={{ background: REPORT.emptyBg, border: `1px solid ${REPORT.line}`, borderRadius: 7, padding: 12 }}>
+                                            <div style={{ fontSize: 12, fontWeight: 750, marginBottom: 5 }}>Auto tiers used</div>
+                                            <div style={{ fontSize: 11.5, color: REPORT.inkSoft }}>
+                                                {tiers.length ? tiers.map(([tier, item]) => `${tier}: ${fmt(item.sections_reviewed)}`).join("  ·  ") : "No completed routing records"}
+                                            </div>
+                                        </div>
+                                        <div style={{ background: REPORT.emptyBg, border: `1px solid ${REPORT.line}`, borderRadius: 7, padding: 12 }}>
+                                            <div style={{ fontSize: 12, fontWeight: 750, marginBottom: 5 }}>Actual models</div>
+                                            <div style={{ fontSize: 11.5, color: REPORT.inkSoft }}>
+                                                {models.length ? models.map(([model, item]) => `${model}: ${fmt(item.calls)}`).join("  ·  ") : "No completed model calls"}
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div style={{ overflowX: "auto", marginBottom: 18 }}>
                                         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
-                                            <thead><tr style={{ background: REPORT.emptyBg }}>{["Section","Scopes","Model","Input","Output","Reasoning","AI credits","Src est.","Prompt est.","Attachments","Context","Status"].map(h=><th key={h} style={{ padding: "7px 8px", textAlign: ["Input","Output","Reasoning","AI credits","Src est.","Prompt est.","Attachments","Context"].includes(h)?"right":"left", borderBottom:`1px solid ${REPORT.line}`, color:REPORT.inkSoft }}>{h}</th>)}</tr></thead>
-                                            <tbody>{secs.map((item,idx)=>{const d=item.diagnostics||{}; const ci=item.contextInfo||{}; return <tr key={`${item.sectionId}-${idx}`}><td style={{padding:"7px 8px",borderBottom:`1px solid ${REPORT.line}`}}>{item.sectionHeading||`Section ${item.sectionId}`}</td><td style={{padding:"7px 8px",borderBottom:`1px solid ${REPORT.line}`}}>{(item.reviewScopes||[]).join(", ")}</td><td style={{padding:"7px 8px",borderBottom:`1px solid ${REPORT.line}`}}>{(item.models||[]).join(", ")||"-"}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.inputTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.outputTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.reasoningTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{credits(item.aiCreditsFromNanoAiu)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(d.sourceEstimatedTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(d.promptEstimatedTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(d.attachmentCount)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(ci.totalTokens)}</td><td style={{padding:"7px 8px",borderBottom:`1px solid ${REPORT.line}`}}>{item.turnStatus||"-"}</td></tr>})}</tbody>
+                                            <thead><tr style={{ background: REPORT.emptyBg }}>{["Section","Scopes","Mode","Auto tier","Actual model","Input","Output","Reasoning","AI credits","Src est.","Prompt est.","Attachments","Context","Status"].map(h=><th key={h} style={{ padding: "7px 8px", textAlign: ["Input","Output","Reasoning","AI credits","Src est.","Prompt est.","Attachments","Context"].includes(h)?"right":"left", borderBottom:`1px solid ${REPORT.line}`, color:REPORT.inkSoft }}>{h}</th>)}</tr></thead>
+                                            <tbody>{secs.map((item,idx)=>{const d=item.diagnostics||{}; const ci=item.contextInfo||{}; return <tr key={`${item.sectionId}-${idx}`}><td style={{padding:"7px 8px",borderBottom:`1px solid ${REPORT.line}`}}>{item.sectionHeading||`Section ${item.sectionId}`}</td><td style={{padding:"7px 8px",borderBottom:`1px solid ${REPORT.line}`}}>{(item.reviewScopes||[]).join(", ")}</td><td style={{padding:"7px 8px",borderBottom:`1px solid ${REPORT.line}`}}>{item.routing?.requestedModelMode||"auto"}</td><td style={{padding:"7px 8px",borderBottom:`1px solid ${REPORT.line}`}}>{item.routing?.requestedAutoTier||"default"}</td><td style={{padding:"7px 8px",borderBottom:`1px solid ${REPORT.line}`}}>{item.routing?.actualModel||(item.models||[]).join(", ")||"-"}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.inputTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.outputTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.reasoningTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{credits(item.aiCreditsFromNanoAiu)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(d.sourceEstimatedTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(d.promptEstimatedTokens)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(d.attachmentCount)}</td><td style={{padding:"7px 8px",textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(ci.totalTokens)}</td><td style={{padding:"7px 8px",borderBottom:`1px solid ${REPORT.line}`}}>{item.turnStatus||"-"}</td></tr>})}</tbody>
                                         </table>
                                     </div>
-                                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:18 }}>
+                                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:18 }}>
                                         <div><h3 style={{margin:"0 0 8px",fontSize:15}}>Scope coverage</h3><table style={{width:"100%",borderCollapse:"collapse",fontSize:11.5}}><thead><tr style={{background:REPORT.emptyBg}}><th style={{padding:7,textAlign:"left"}}>Scope</th><th style={{padding:7,textAlign:"right"}}>Sections</th><th style={{padding:7,textAlign:"right"}}>Shared calls</th></tr></thead><tbody>{scopes.map(([scope,item])=><tr key={scope}><td style={{padding:7,borderBottom:`1px solid ${REPORT.line}`}}>{scope}</td><td style={{padding:7,textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.sections_reviewed)}</td><td style={{padding:7,textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.shared_model_calls)}</td></tr>)}</tbody></table></div>
                                         <div><h3 style={{margin:"0 0 8px",fontSize:15}}>Model usage</h3><table style={{width:"100%",borderCollapse:"collapse",fontSize:11.5}}><thead><tr style={{background:REPORT.emptyBg}}><th style={{padding:7,textAlign:"left"}}>Model</th><th style={{padding:7,textAlign:"right"}}>Calls</th><th style={{padding:7,textAlign:"right"}}>Input</th><th style={{padding:7,textAlign:"right"}}>AI credits</th></tr></thead><tbody>{models.map(([model,item])=><tr key={model}><td style={{padding:7,borderBottom:`1px solid ${REPORT.line}`}}>{model}</td><td style={{padding:7,textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.calls)}</td><td style={{padding:7,textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.input_tokens)}</td><td style={{padding:7,textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{credits(item.ai_credits_from_nano_aiu)}</td></tr>)}</tbody></table></div>
+                                        <div><h3 style={{margin:"0 0 8px",fontSize:15}}>Auto routing</h3><table style={{width:"100%",borderCollapse:"collapse",fontSize:11.5}}><thead><tr style={{background:REPORT.emptyBg}}><th style={{padding:7,textAlign:"left"}}>Tier</th><th style={{padding:7,textAlign:"right"}}>Sections</th><th style={{padding:7,textAlign:"right"}}>Calls</th></tr></thead><tbody>{tiers.map(([tier,item])=><tr key={tier}><td style={{padding:7,borderBottom:`1px solid ${REPORT.line}`}}>{tier}</td><td style={{padding:7,textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.sections_reviewed)}</td><td style={{padding:7,textAlign:"right",borderBottom:`1px solid ${REPORT.line}`}}>{fmt(item.model_calls)}</td></tr>)}</tbody></table></div>
                                     </div>
                                     <div style={{marginTop:16,padding:10,background:REPORT.accentSoft,border:`1px solid ${REPORT.line}`,borderRadius:6,color:REPORT.inkSoft,fontSize:11.5,lineHeight:1.45}}>Actual model usage comes from Copilot SDK telemetry. Source/prompt estimates are diagnostics only. A shared section-level call is not artificially split across review scopes.</div>
                                 </>;
