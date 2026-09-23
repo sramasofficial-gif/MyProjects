@@ -103,13 +103,199 @@ function normalizeScopes(scopes) {
     return [...new Set(normalized)];
 }
 
+const AUTO_TIERS = new Set(["efficiency", "balance", "intelligence"]);
+const HIGH_RISK_SCOPES = new Set(["security", "vulnerability", "compliance"]);
+const ARCHITECTURAL_SCOPES = new Set(["architecture", "integration", "ivr", "reliability", "performance"]);
+const TEXT_ONLY_TYPES = new Set(["text", "table"]);
+const VISUAL_TYPES = new Set(["image", "diagram", "diagram-iframe"]);
+
+function clampNumber(value, min, max, fallback = min) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return fallback;
+    return Math.max(min, Math.min(max, n));
+}
+
+function estimatePromptTokensFromChars(value) {
+    return Math.ceil(String(value || "").length / 4);
+}
+
+/**
+ * Application-level routing policy.
+ * This selects an Auto routing preference only. GitHub Copilot still chooses
+ * the concrete model when model="auto" is used.
+ */
+function determineAutoTier(
+    request,
+    scopes,
+    attachments,
+    promptEstimatedTokens,
+    contextInfo = null
+) {
+    const types = new Set(
+        (Array.isArray(request.contentTypes) ? request.contentTypes : [])
+            .map((v) => String(v || "").trim().toLowerCase())
+            .filter(Boolean)
+    );
+
+    const normalizedScopes = new Set(scopes);
+    const hasVisualAttachment = attachments.length > 0;
+    const visualContentPresent = [...types].some((t) => VISUAL_TYPES.has(t));
+    const visualUnavailable = visualContentPresent && !hasVisualAttachment;
+    const highRisk = [...normalizedScopes].some((s) => HIGH_RISK_SCOPES.has(s));
+    const architectural = [...normalizedScopes].some((s) => ARCHITECTURAL_SCOPES.has(s));
+    const textOnly = types.size === 0 || [...types].every((t) => TEXT_ONLY_TYPES.has(t));
+
+    const sourceChars = String(request.source || "").length;
+    const sourceTokens = estimatePromptTokensFromChars(request.source || "");
+    const scopeCount = scopes.length;
+
+    const complexitySignals = {
+        hasVisualAttachment,
+        visualContentPresent,
+        visualUnavailable,
+        highRisk,
+        architectural,
+        textOnly,
+        sourceChars,
+        sourceEstimatedTokens: sourceTokens,
+        promptEstimatedTokens,
+        scopeCount,
+    };
+
+    let tier;
+    let reason;
+
+    if (hasVisualAttachment && highRisk) {
+        tier = "intelligence";
+        reason =
+            "attached visual evidence combined with high-risk security/vulnerability/compliance review";
+    } else if (hasVisualAttachment && architectural) {
+        tier = "intelligence";
+        reason =
+            "attached visual evidence combined with architecture/integration/IVR/reliability/performance review";
+    } else if (visualUnavailable && highRisk) {
+        tier =
+            sourceChars > 16000 || scopeCount >= 3
+                ? "intelligence"
+                : "balance";
+
+        reason =
+            "high-risk review with visual content detected but no attachment was available; route from textual evidence";
+    } else if (visualUnavailable) {
+        tier = "balance";
+        reason =
+            "visual content is declared but no usable visual attachment was available";
+    } else if (highRisk) {
+        tier =
+            sourceChars > 16000 || scopeCount >= 3
+                ? "intelligence"
+                : "balance";
+
+        reason =
+            sourceChars > 16000 || scopeCount >= 3
+                ? "high-risk review with elevated textual complexity"
+                : "high-risk textual review";
+    } else if (architectural) {
+        tier = sourceChars > 18000 || scopeCount >= 3 ? "balance" : "balance";
+
+        reason =
+            sourceChars > 18000 || scopeCount >= 3
+                ? "architectural review with moderate/high textual complexity"
+                : "standard architectural/integration review";
+    } else if (textOnly && sourceChars <= 10000 && scopeCount <= 2) {
+        tier = "efficiency";
+        reason =
+            "compact text/table-only review without visual evidence";
+    } else {
+        tier = "balance";
+        reason = "mixed-content review with moderate complexity";
+    }
+
+    // Context-aware adjustment. Context does not change billing directly; it is
+    // used here as a guardrail against sending low-complexity work through the
+    // highest Auto tier when the prompt is already close to the model context limit.
+    let contextDecision = null;
+
+    if (contextInfo) {
+        const currentTokens = Number(contextInfo.totalTokens || 0);
+        const promptLimit = Number(contextInfo.promptTokenLimit || 0);
+        const projectedTokens =
+            currentTokens + Number(promptEstimatedTokens || 0);
+
+        const utilization =
+            promptLimit > 0
+                ? projectedTokens / promptLimit
+                : 0;
+
+        contextDecision = {
+            currentTokens,
+            promptLimit,
+            projectedTokens,
+            utilization,
+        };
+
+        if (promptLimit > 0 && utilization >= 0.90) {
+            if (
+                !hasVisualAttachment &&
+                !highRisk &&
+                tier === "intelligence"
+            ) {
+                tier = "balance";
+                reason =
+                    `${reason}; downgraded because projected context utilization is ` +
+                    `${Math.round(utilization * 100)}%`;
+            } else if (
+                textOnly &&
+                tier === "balance"
+            ) {
+                tier = "efficiency";
+                reason =
+                    `${reason}; reduced to efficiency because projected context utilization is ` +
+                    `${Math.round(utilization * 100)}%`;
+            } else {
+                reason =
+                    `${reason}; context utilization is ` +
+                    `${Math.round(utilization * 100)}% so the high-risk/visual tier is retained`;
+            }
+        } else if (
+            promptLimit > 0 &&
+            utilization >= 0.75 &&
+            tier === "intelligence" &&
+            !hasVisualAttachment &&
+            !highRisk
+        ) {
+            tier = "balance";
+            reason =
+                `${reason}; balanced due to ` +
+                `${Math.round(utilization * 100)}% projected context utilization`;
+        }
+    }
+
+    if (!AUTO_TIERS.has(tier)) {
+        tier = "balance";
+    }
+
+    return {
+        requestedModelMode: "auto",
+        requestedAutoTier: tier,
+        selectionReason: reason,
+        contextDecision,
+        complexitySignals,
+    };
+}
+
 function normalizeResponseText(response) {
     let rawText = "";
 
-    if (typeof response === "string") rawText = response;
-    else if (response?.data?.content) rawText = response.data.content;
-    else if (response?.content) rawText = response.content;
-    else if (response?.message?.content) rawText = response.message.content;
+    if (typeof response === "string") {
+        rawText = response;
+    } else if (response?.data?.content) {
+        rawText = response.data.content;
+    } else if (response?.content) {
+        rawText = response.content;
+    } else if (response?.message?.content) {
+        rawText = response.message.content;
+    }
 
     return (rawText || "")
         .trim()
@@ -125,15 +311,20 @@ Review the HLD section from a general enterprise architecture perspective. Ident
 `.trim();
     }
 
-    return scopes.map((scope) => {
-        const rule = REVIEW_SCOPE_RULES[scope];
-        return `- ${rule.label}: ${rule.objective} Relevant finding categories include: ${rule.categories.join(", ")}.`;
-    }).join("\n");
+    return scopes
+        .map((scope) => {
+            const rule = REVIEW_SCOPE_RULES[scope];
+
+            return `- ${rule.label}: ${rule.objective} Relevant finding categories include: ${rule.categories.join(", ")}.`;
+        })
+        .join("\n");
 }
 
 function buildStructuredReviewPrompt(request, scopes, attachments) {
     const scopeLabels = scopes.length
-        ? scopes.map((scope) => REVIEW_SCOPE_RULES[scope]?.label || scope).join(", ")
+        ? scopes
+            .map((scope) => REVIEW_SCOPE_RULES[scope]?.label || scope)
+            .join(", ")
         : "General HLD Review";
 
     const visualInstruction = attachments.length > 0
@@ -167,6 +358,7 @@ ${JSON.stringify(request.contentTypes || [])}
 
 RAW HLD SECTION CONTENT:
 ${request.source || "(no text content supplied)"}
+
 ${visualInstruction}
 
 IMPORTANT REVIEW PRINCIPLES:
@@ -248,14 +440,19 @@ STRICT OUTPUT RULES:
 
 function collectAttachments(request) {
     const attachments = [];
-    if (!request.visualReviewRequired || !Array.isArray(request.visualEvidence)) {
+
+    if (
+        !request.visualReviewRequired ||
+        !Array.isArray(request.visualEvidence)
+    ) {
         return attachments;
     }
 
     for (const evidence of request.visualEvidence) {
-        const evidencePath = typeof evidence === "string"
-            ? evidence
-            : evidence?.path;
+        const evidencePath =
+            typeof evidence === "string"
+                ? evidence
+                : evidence?.path;
 
         if (!evidencePath || !path.isAbsolute(evidencePath)) {
             process.stderr.write(
@@ -274,53 +471,113 @@ function collectAttachments(request) {
         attachments.push({
             type: "file",
             path: evidencePath,
-            displayName: evidence?.displayName || path.basename(evidencePath)
+            displayName:
+                evidence?.displayName ||
+                path.basename(evidencePath),
         });
     }
 
     return attachments;
 }
 
-function ensureStructuredReview(parsed, request, scopes, visualReviewed) {
-    const result = parsed && typeof parsed === "object" ? parsed : {};
+function ensureStructuredReview(
+    parsed,
+    request,
+    scopes,
+    visualReviewed
+) {
+    const result =
+        parsed && typeof parsed === "object"
+            ? parsed
+            : {};
 
-    result.document_metadata = result.document_metadata || {};
-    result.document_metadata.title = result.document_metadata.title || request.relativePath;
+    result.document_metadata =
+        result.document_metadata || {};
+
+    result.document_metadata.title =
+        result.document_metadata.title ||
+        request.relativePath;
+
     result.document_metadata.review_scopes = scopes;
-    result.document_metadata.content_types = request.contentTypes || [];
-    result.document_metadata.visual_reviewed = Boolean(visualReviewed);
 
-    result.review_summary = result.review_summary || {};
-    result.findings = Array.isArray(result.findings) ? result.findings : [];
-    result.passed_checks = Array.isArray(result.passed_checks) ? result.passed_checks : [];
-    result.manual_review = Array.isArray(result.manual_review) ? result.manual_review : [];
-    result.ivr_flow_requirements = Array.isArray(result.ivr_flow_requirements)
-        ? result.ivr_flow_requirements
+    result.document_metadata.content_types =
+        request.contentTypes || [];
+
+    result.document_metadata.visual_reviewed =
+        Boolean(visualReviewed);
+
+    result.review_summary =
+        result.review_summary || {};
+
+    result.findings = Array.isArray(result.findings)
+        ? result.findings
         : [];
 
-    // Defensive normalization: never allow a model to claim visual review when
+    result.passed_checks =
+        Array.isArray(result.passed_checks)
+            ? result.passed_checks
+            : [];
+
+    result.manual_review =
+        Array.isArray(result.manual_review)
+            ? result.manual_review
+            : [];
+
+    result.ivr_flow_requirements =
+        Array.isArray(result.ivr_flow_requirements)
+            ? result.ivr_flow_requirements
+            : [];
+
+    // Defensive normalization:
+    // never allow a model to claim visual review when
     // the SDK request had no actual visual attachment.
     for (const finding of result.findings) {
-        finding.visual_reviewed = Boolean(visualReviewed && finding.visual_reviewed);
-        finding.section_reference = finding.section_reference || request.relativePath;
-        finding.content_types = finding.content_types || request.contentTypes || [];
+        finding.visual_reviewed =
+            Boolean(
+                visualReviewed &&
+                finding.visual_reviewed
+            );
+
+        finding.section_reference =
+            finding.section_reference ||
+            request.relativePath;
+
+        finding.content_types =
+            finding.content_types ||
+            request.contentTypes ||
+            [];
     }
 
     for (const check of result.passed_checks) {
-        check.visual_reviewed = Boolean(visualReviewed && check.visual_reviewed);
-        check.section_reference = check.section_reference || request.relativePath;
+        check.visual_reviewed =
+            Boolean(
+                visualReviewed &&
+                check.visual_reviewed
+            );
+
+        check.section_reference =
+            check.section_reference ||
+            request.relativePath;
     }
 
-    result.review_summary.finding_count = result.findings.length;
-    result.review_summary.pass_count = result.passed_checks.length;
-    result.review_summary.manual_review_count = result.manual_review.length;
+    result.review_summary.finding_count =
+        result.findings.length;
+
+    result.review_summary.pass_count =
+        result.passed_checks.length;
+
+    result.review_summary.manual_review_count =
+        result.manual_review.length;
 
     if (result.findings.length > 0) {
-        result.review_summary.overall_status = "FINDINGS";
+        result.review_summary.overall_status =
+            "FINDINGS";
     } else if (result.manual_review.length > 0) {
-        result.review_summary.overall_status = "MANUAL_REVIEW";
+        result.review_summary.overall_status =
+            "MANUAL_REVIEW";
     } else {
-        result.review_summary.overall_status = "PASS";
+        result.review_summary.overall_status =
+            "PASS";
     }
 
     return result;
@@ -331,12 +588,16 @@ async function safeGetSessionMetrics(session) {
         if (!session?.rpc?.usage?.getMetrics) {
             return null;
         }
-        const metrics = await session.rpc.usage.getMetrics();
+
+        const metrics =
+            await session.rpc.usage.getMetrics();
+
         return metrics || null;
     } catch (error) {
         process.stderr.write(
             `[COPILOT USAGE] session.rpc.usage.getMetrics unavailable: ${String(error)}\n`
         );
+
         return null;
     }
 }
@@ -346,15 +607,35 @@ async function safeGetContextInfo(session) {
         if (!session?.rpc?.metadata?.contextInfo) {
             return null;
         }
-        const result = await session.rpc.metadata.contextInfo({
-            promptTokenLimit: 0,
-            outputTokenLimit: 0,
-        });
+
+        const result =
+            await session.rpc.metadata.contextInfo({
+                promptTokenLimit: 0,
+                outputTokenLimit: 0,
+            });
+
         return result?.contextInfo || null;
     } catch (error) {
         process.stderr.write(
             `[COPILOT CONTEXT] session.rpc.metadata.contextInfo unavailable: ${String(error)}\n`
         );
+
+        return null;
+    }
+}
+
+async function safeGetCurrentModelState(session) {
+    try {
+        if (!session?.rpc?.model?.getCurrent) {
+            return null;
+        }
+
+        return await session.rpc.model.getCurrent();
+    } catch (error) {
+        process.stderr.write(
+            `[COPILOT ROUTING] session.rpc.model.getCurrent unavailable: ${String(error)}\n`
+        );
+
         return null;
     }
 }
@@ -362,199 +643,575 @@ async function safeGetContextInfo(session) {
 function waitForSessionIdle(session, timeoutMs) {
     return new Promise((resolve, reject) => {
         let settled = false;
+
         const timer = setTimeout(() => {
             if (settled) return;
+
             settled = true;
-            try { session.off?.("session.idle", done); } catch (_) {}
-            reject(new Error(`Timeout after ${timeoutMs}ms waiting for session.idle`));
+
+            try {
+                session.off?.(
+                    "session.idle",
+                    done
+                );
+            } catch (_) {}
+
+            reject(
+                new Error(
+                    `Timeout after ${timeoutMs}ms waiting for session.idle`
+                )
+            );
         }, timeoutMs);
 
         const done = () => {
             if (settled) return;
+
             settled = true;
+
             clearTimeout(timer);
-            try { session.off?.("session.idle", done); } catch (_) {}
+
+            try {
+                session.off?.(
+                    "session.idle",
+                    done
+                );
+            } catch (_) {}
+
             resolve();
         };
 
-        session.on("session.idle", done);
+        session.on(
+            "session.idle",
+            done
+        );
     });
 }
 
 function normalizeUsageRecord(data) {
     return {
         model: data?.model || null,
-        inputTokens: Number(data?.inputTokens || 0),
-        outputTokens: Number(data?.outputTokens || 0),
-        reasoningTokens: Number(data?.reasoningTokens || 0),
-        cacheReadTokens: Number(data?.cacheReadTokens || 0),
-        cacheWriteTokens: Number(data?.cacheWriteTokens || 0),
-        costMultiplier: Number(data?.cost || 0),
-        durationMs: Number(data?.duration || 0),
-        timeToFirstTokenMs: Number(data?.timeToFirstTokenMs || 0),
-        interTokenLatencyMs: Number(data?.interTokenLatencyMs || 0),
-        reasoningEffort: data?.reasoningEffort || null,
-        initiator: data?.initiator || null,
-        apiCallId: data?.apiCallId || null,
-        serviceRequestId: data?.serviceRequestId || null,
-        apiEndpoint: data?.apiEndpoint || null,
-        providerCallId: data?.providerCallId || null,
-        finishReason: data?.finishReason || null,
-        contentFilterTriggered: Boolean(data?.contentFilterTriggered),
-        copilotUsage: data?.copilotUsage || null,
+
+        inputTokens:
+            Number(data?.inputTokens || 0),
+
+        outputTokens:
+            Number(data?.outputTokens || 0),
+
+        reasoningTokens:
+            Number(data?.reasoningTokens || 0),
+
+        cacheReadTokens:
+            Number(data?.cacheReadTokens || 0),
+
+        cacheWriteTokens:
+            Number(data?.cacheWriteTokens || 0),
+
+        costMultiplier:
+            Number(data?.cost || 0),
+
+        durationMs:
+            Number(data?.duration || 0),
+
+        timeToFirstTokenMs:
+            Number(data?.timeToFirstTokenMs || 0),
+
+        interTokenLatencyMs:
+            Number(data?.interTokenLatencyMs || 0),
+
+        reasoningEffort:
+            data?.reasoningEffort || null,
+
+        initiator:
+            data?.initiator || null,
+
+        apiCallId:
+            data?.apiCallId || null,
+
+        serviceRequestId:
+            data?.serviceRequestId || null,
+
+        apiEndpoint:
+            data?.apiEndpoint || null,
+
+        providerCallId:
+            data?.providerCallId || null,
+
+        finishReason:
+            data?.finishReason || null,
+
+        contentFilterTriggered:
+            Boolean(data?.contentFilterTriggered),
+
+        copilotUsage:
+            data?.copilotUsage || null,
     };
 }
 
 function normalizeSessionMetrics(metrics) {
-    if (!metrics || typeof metrics !== 'object') return null;
+    if (
+        !metrics ||
+        typeof metrics !== "object"
+    ) {
+        return null;
+    }
 
     const modelMetrics = {};
-    for (const [model, metric] of Object.entries(metrics.modelMetrics || {})) {
+
+    for (
+        const [model, metric]
+        of Object.entries(
+            metrics.modelMetrics || {}
+        )
+    ) {
         if (!metric) continue;
+
         modelMetrics[model] = {
-            inputTokens: Number(metric?.usage?.inputTokens || 0),
-            outputTokens: Number(metric?.usage?.outputTokens || 0),
-            reasoningTokens: Number(metric?.usage?.reasoningTokens || 0),
-            totalNanoAiu: Number(metric?.totalNanoAiu || 0),
+            inputTokens:
+                Number(
+                    metric?.usage?.inputTokens || 0
+                ),
+
+            outputTokens:
+                Number(
+                    metric?.usage?.outputTokens || 0
+                ),
+
+            reasoningTokens:
+                Number(
+                    metric?.usage?.reasoningTokens || 0
+                ),
+
+            totalNanoAiu:
+                Number(
+                    metric?.totalNanoAiu || 0
+                ),
         };
     }
 
-    const totalNanoAiu = Number(metrics.totalNanoAiu || 0);
+    const totalNanoAiu =
+        Number(metrics.totalNanoAiu || 0);
 
     return {
         totalNanoAiu,
-        aiCreditsFromNanoAiu: totalNanoAiu / 1e9,
-        totalPremiumRequestCost: Number(metrics.totalPremiumRequestCost || 0),
+
+        aiCreditsFromNanoAiu:
+            totalNanoAiu / 1e9,
+
+        totalPremiumRequestCost:
+            Number(
+                metrics.totalPremiumRequestCost || 0
+            ),
+
         modelMetrics,
-        tokenDetails: metrics.tokenDetails || {},
+
+        tokenDetails:
+            metrics.tokenDetails || {},
     };
 }
 
 function estimateTokensFromChars(value) {
-    // Diagnostic approximation only. Actual usage comes from Copilot SDK telemetry.
-    return Math.ceil(String(value || "").length / 4);
+    // Diagnostic approximation only.
+    // Actual usage comes from Copilot SDK telemetry.
+    return Math.ceil(
+        String(value || "").length / 4
+    );
 }
 
-function getVisualAttachmentDiagnostics(attachments) {
-    return (attachments || []).map((attachment) => {
-        let bytes = 0;
-        try { bytes = fs.statSync(attachment.path).size; } catch (_) {}
-        return {
-            displayName: attachment.displayName || path.basename(attachment.path),
-            path: attachment.path,
-            bytes,
-            kilobytes: Math.round(bytes / 1024),
-        };
-    });
+function getVisualAttachmentDiagnostics(
+    attachments
+) {
+    return (attachments || []).map(
+        (attachment) => {
+            let bytes = 0;
+
+            try {
+                bytes = fs.statSync(
+                    attachment.path
+                ).size;
+            } catch (_) {}
+
+            return {
+                displayName:
+                    attachment.displayName ||
+                    path.basename(
+                        attachment.path
+                    ),
+
+                path: attachment.path,
+
+                bytes,
+
+                kilobytes:
+                    Math.round(bytes / 1024),
+            };
+        }
+    );
 }
 
-function buildRequestDiagnostics(request, prompt, attachments, systemPrompt) {
-    const sourceText = String(request.source || "");
-    const promptText = String(prompt || "");
-    const systemText = String(systemPrompt || "");
-    const attachmentInfo = getVisualAttachmentDiagnostics(attachments);
+function buildRequestDiagnostics(
+    request,
+    prompt,
+    attachments,
+    systemPrompt
+) {
+    const sourceText =
+        String(request.source || "");
+
+    const promptText =
+        String(prompt || "");
+
+    const systemText =
+        String(systemPrompt || "");
+
+    const attachmentInfo =
+        getVisualAttachmentDiagnostics(
+            attachments
+        );
 
     return {
-        sectionId: Number(request.sectionId || 0),
-        sectionHeading: request.sectionHeading || request.relativePath || "",
-        scopes: Array.isArray(request.reviewScopes) ? request.reviewScopes : [],
-        contentTypes: Array.isArray(request.contentTypes) ? request.contentTypes : [],
-        sourceChars: sourceText.length,
-        sourceEstimatedTokens: estimateTokensFromChars(sourceText),
-        promptChars: promptText.length,
-        promptEstimatedTokens: estimateTokensFromChars(promptText),
-        systemPromptChars: systemText.length,
-        systemPromptEstimatedTokens: estimateTokensFromChars(systemText),
-        attachmentCount: attachmentInfo.length,
-        attachments: attachmentInfo,
-        visualReviewRequested: Boolean(request.visualReviewRequired),
-        visualReviewAttached: attachmentInfo.length > 0,
-        note: "Estimated token counts are diagnostic approximations only; authoritative usage comes from Copilot SDK telemetry.",
+        sectionId:
+            Number(request.sectionId || 0),
+
+        sectionHeading:
+            request.sectionHeading ||
+            request.relativePath ||
+            "",
+
+        scopes:
+            Array.isArray(request.reviewScopes)
+                ? request.reviewScopes
+                : [],
+
+        contentTypes:
+            Array.isArray(request.contentTypes)
+                ? request.contentTypes
+                : [],
+
+        sourceChars:
+            sourceText.length,
+
+        sourceEstimatedTokens:
+            estimateTokensFromChars(
+                sourceText
+            ),
+
+        promptChars:
+            promptText.length,
+
+        promptEstimatedTokens:
+            estimateTokensFromChars(
+                promptText
+            ),
+
+        systemPromptChars:
+            systemText.length,
+
+        systemPromptEstimatedTokens:
+            estimateTokensFromChars(
+                systemText
+            ),
+
+        attachmentCount:
+            attachmentInfo.length,
+
+        attachments:
+            attachmentInfo,
+
+        visualReviewRequested:
+            Boolean(
+                request.visualReviewRequired
+            ),
+
+        visualReviewAttached:
+            attachmentInfo.length > 0,
+
+        note:
+            "Estimated token counts are diagnostic approximations only; authoritative usage comes from Copilot SDK telemetry.",
     };
 }
 
-function buildUsageSummary({ request, scopes, usageEvents, sessionMetrics, contextInfo, visualReviewed, turnStatus, requestDiagnostics }) {
-    const eventInput = usageEvents.reduce((sum, item) => sum + item.inputTokens, 0);
-    const eventOutput = usageEvents.reduce((sum, item) => sum + item.outputTokens, 0);
-    const eventReasoning = usageEvents.reduce((sum, item) => sum + item.reasoningTokens, 0);
-    const eventCacheRead = usageEvents.reduce((sum, item) => sum + item.cacheReadTokens, 0);
-    const eventCacheWrite = usageEvents.reduce((sum, item) => sum + item.cacheWriteTokens, 0);
-    const eventDuration = usageEvents.reduce((sum, item) => sum + item.durationMs, 0);
+function buildUsageSummary({
+    request,
+    scopes,
+    usageEvents,
+    sessionMetrics,
+    contextInfo,
+    visualReviewed,
+    turnStatus,
+    requestDiagnostics,
+    routing,
+}) {
+    const eventInput =
+        usageEvents.reduce(
+            (sum, item) =>
+                sum + item.inputTokens,
+            0
+        );
 
-    const modelMetrics = sessionMetrics?.modelMetrics || {};
-    const sessionInput = Object.values(modelMetrics).reduce((sum, item) => sum + item.inputTokens, 0);
-    const sessionOutput = Object.values(modelMetrics).reduce((sum, item) => sum + item.outputTokens, 0);
+    const eventOutput =
+        usageEvents.reduce(
+            (sum, item) =>
+                sum + item.outputTokens,
+            0
+        );
+
+    const eventReasoning =
+        usageEvents.reduce(
+            (sum, item) =>
+                sum + item.reasoningTokens,
+            0
+        );
+
+    const eventCacheRead =
+        usageEvents.reduce(
+            (sum, item) =>
+                sum + item.cacheReadTokens,
+            0
+        );
+
+    const eventCacheWrite =
+        usageEvents.reduce(
+            (sum, item) =>
+                sum + item.cacheWriteTokens,
+            0
+        );
+
+    const eventDuration =
+        usageEvents.reduce(
+            (sum, item) =>
+                sum + item.durationMs,
+            0
+        );
+
+    const modelMetrics =
+        sessionMetrics?.modelMetrics || {};
+
+    const sessionInput =
+        Object.values(modelMetrics).reduce(
+            (sum, item) =>
+                sum + item.inputTokens,
+            0
+        );
+
+    const sessionOutput =
+        Object.values(modelMetrics).reduce(
+            (sum, item) =>
+                sum + item.outputTokens,
+            0
+        );
 
     // Reasoning-token counts are taken from assistant.usage events because the
     // session modelMetrics schema currently documents input/output and AIU cost,
     // while assistant.usage explicitly exposes reasoningTokens.
     const models = sessionMetrics
         ? Object.keys(modelMetrics)
-        : [...new Set(usageEvents.map((item) => item.model).filter(Boolean))];
+        : [
+            ...new Set(
+                usageEvents
+                    .map((item) => item.model)
+                    .filter(Boolean)
+            )
+        ];
 
     const modelBreakdown = {};
+
     for (const model of models) {
-        const metric = modelMetrics[model];
-        const eventRows = usageEvents.filter((item) => item.model === model);
+        const metric =
+            modelMetrics[model];
+
+        const eventRows =
+            usageEvents.filter(
+                (item) =>
+                    item.model === model
+            );
+
         modelBreakdown[model] = {
             calls: eventRows.length,
-            inputTokens: metric ? metric.inputTokens : eventRows.reduce((sum, item) => sum + item.inputTokens, 0),
-            outputTokens: metric ? metric.outputTokens : eventRows.reduce((sum, item) => sum + item.outputTokens, 0),
-            reasoningTokens: eventRows.reduce((sum, item) => sum + item.reasoningTokens, 0),
-            totalNanoAiu: metric ? metric.totalNanoAiu : 0,
-            aiCreditsFromNanoAiu: metric ? metric.totalNanoAiu / 1e9 : 0,
+
+            inputTokens: metric
+                ? metric.inputTokens
+                : eventRows.reduce(
+                    (sum, item) =>
+                        sum +
+                        item.inputTokens,
+                    0
+                ),
+
+            outputTokens: metric
+                ? metric.outputTokens
+                : eventRows.reduce(
+                    (sum, item) =>
+                        sum +
+                        item.outputTokens,
+                    0
+                ),
+
+            reasoningTokens:
+                eventRows.reduce(
+                    (sum, item) =>
+                        sum +
+                        item.reasoningTokens,
+                    0
+                ),
+
+            totalNanoAiu:
+                metric
+                    ? metric.totalNanoAiu
+                    : 0,
+
+            aiCreditsFromNanoAiu:
+                metric
+                    ? metric.totalNanoAiu / 1e9
+                    : 0,
         };
     }
 
-    const inputTokens = sessionMetrics ? sessionInput : eventInput;
-    const outputTokens = sessionMetrics ? sessionOutput : eventOutput;
-    const reasoningTokens = eventReasoning;
-    const totalNanoAiu = sessionMetrics?.totalNanoAiu || 0;
-    const premiumRequestCost = sessionMetrics?.totalPremiumRequestCost || 0;
+    const inputTokens = sessionMetrics
+        ? sessionInput
+        : eventInput;
 
-    const normalizedContextInfo = contextInfo ? {
-        totalTokens: Number(contextInfo.totalTokens || 0),
-        promptTokenLimit: Number(contextInfo.promptTokenLimit || 0),
-        systemTokens: Number(contextInfo.systemTokens || 0),
-        conversationTokens: Number(contextInfo.conversationTokens || 0),
-        toolDefinitionsTokens: Number(contextInfo.toolDefinitionsTokens || 0),
-    } : null;
+    const outputTokens = sessionMetrics
+        ? sessionOutput
+        : eventOutput;
+
+    const reasoningTokens =
+        eventReasoning;
+
+    const totalNanoAiu =
+        sessionMetrics?.totalNanoAiu || 0;
+
+    const premiumRequestCost =
+        sessionMetrics?.totalPremiumRequestCost ||
+        0;
+
+    const normalizedContextInfo =
+        contextInfo
+            ? {
+                totalTokens:
+                    Number(
+                        contextInfo.totalTokens ||
+                        0
+                    ),
+
+                promptTokenLimit:
+                    Number(
+                        contextInfo.promptTokenLimit ||
+                        0
+                    ),
+
+                systemTokens:
+                    Number(
+                        contextInfo.systemTokens ||
+                        0
+                    ),
+
+                conversationTokens:
+                    Number(
+                        contextInfo.conversationTokens ||
+                        0
+                    ),
+
+                toolDefinitionsTokens:
+                    Number(
+                        contextInfo.toolDefinitionsTokens ||
+                        0
+                    ),
+            }
+            : null;
 
     return {
-        sectionId: Number(request.sectionId || 0),
-        sectionHeading: request.sectionHeading || request.relativePath || "",
-        reviewScopes: scopes,
-        attributionMode: "shared-section-call",
-        visualReviewed: Boolean(visualReviewed),
-        modelCalls: usageEvents.length,
+        sectionId:
+            Number(request.sectionId || 0),
+
+        sectionHeading:
+            request.sectionHeading ||
+            request.relativePath ||
+            "",
+
+        reviewScopes:
+            scopes,
+
+        attributionMode:
+            "shared-section-call",
+
+        visualReviewed:
+            Boolean(visualReviewed),
+
+        modelCalls:
+            usageEvents.length,
+
         models,
+
         inputTokens,
+
         outputTokens,
-        totalTokens: inputTokens + outputTokens,
+
+        totalTokens:
+            inputTokens + outputTokens,
+
         reasoningTokens,
-        cacheReadTokens: eventCacheRead,
-        cacheWriteTokens: eventCacheWrite,
-        durationMs: eventDuration,
+
+        cacheReadTokens:
+            eventCacheRead,
+
+        cacheWriteTokens:
+            eventCacheWrite,
+
+        durationMs:
+            eventDuration,
+
         totalNanoAiu,
-        aiCreditsFromNanoAiu: totalNanoAiu / 1e9,
+
+        aiCreditsFromNanoAiu:
+            totalNanoAiu / 1e9,
+
         premiumRequestCost,
-        usageComplete: usageEvents.length > 0,
-        turnStatus: turnStatus || "completed",
-        usageSource: sessionMetrics ? "session.rpc.usage.getMetrics + assistant.usage" : "assistant.usage events",
-        contextInfo: normalizedContextInfo,
+
+        usageComplete:
+            usageEvents.length > 0,
+
+        turnStatus:
+            turnStatus || "completed",
+
+        usageSource:
+            sessionMetrics
+                ? "session.rpc.usage.getMetrics + assistant.usage"
+                : "assistant.usage events",
+
+        contextInfo:
+            normalizedContextInfo,
+
         modelBreakdown,
-        apiCalls: usageEvents,
-        diagnostics: requestDiagnostics || null,
+
+        apiCalls:
+            usageEvents,
+
+        diagnostics:
+            requestDiagnostics || null,
+
+        routing:
+            routing || null,
     };
 }
 
-async function runOneReviewRequest(client, request, scopes, attachments) {
+
+async function runOneReviewRequest(
+    client,
+    request,
+    scopes,
+    attachments
+) {
     let session = null;
+
     const usageEvents = [];
+    const routingEvents = [];
     let assistantMessages = [];
     let contextInfo = null;
     let turnStatus = "started";
     let requestDiagnostics = null;
+    let routingDecision = null;
+    let effectiveModelState = null;
+
     const WAIT_TIMEOUT_MS = 180000;
 
     try {
@@ -566,57 +1223,366 @@ Never invent requirements or claim to have inspected a visual artifact unless an
 Return machine-readable JSON when the caller requests JSON.
 `.trim();
 
-        session = await client.createSession({
-            streaming: true,
-            systemMessage: { content: systemPrompt }
-        });
-
-        session.on("assistant.message", (event) => {
-            const content = event?.data?.content;
-            if (typeof content === "string" && content.trim()) {
-                assistantMessages.push(content.trim());
-            }
-        });
-
-        session.on("session.usage_info", (event) => {
-            const data = event?.data || {};
-            process.stderr.write(
-                `[COPILOT CONTEXT] section=${request.sectionId || "?"} ` +
-                `current=${Number(data.currentTokens || 0)} limit=${Number(data.tokenLimit || 0)}\n`
-            );
-        });
-
-        session.on("assistant.usage", (event) => {
-            const record = normalizeUsageRecord(event?.data || {});
-            usageEvents.push(record);
-            process.stderr.write(
-                `[COPILOT USAGE] section=${request.sectionId || "?"} scopes=${scopes.join(",")} ` +
-                `model=${record.model || "unknown"} input=${record.inputTokens} ` +
-                `output=${record.outputTokens} reasoning=${record.reasoningTokens} ` +
-                `costMultiplier=${record.costMultiplier}\n`
-            );
-        });
-
-        const specificPrompt = request.diagramType === "HLD_SEGMENTATION_MODE"
-            ? buildStructuredReviewPrompt(
-                {
-                    ...request,
-                    contentTypes: Array.isArray(request.contentTypes) ? request.contentTypes : []
-                },
-                scopes,
-                attachments
-            )
-            : `
+        const specificPrompt =
+            request.diagramType === "HLD_SEGMENTATION_MODE"
+                ? buildStructuredReviewPrompt(
+                    {
+                        ...request,
+                        contentTypes: Array.isArray(
+                            request.contentTypes
+                        )
+                            ? request.contentTypes
+                            : [],
+                    },
+                    scopes,
+                    attachments
+                )
+                : `
 Analyze ${request.relativePath} and produce a professional Mermaid diagram from the source code.
 Output raw Mermaid syntax only.
 `.trim();
 
-        requestDiagnostics = buildRequestDiagnostics(
-            { ...request, reviewScopes: scopes },
-            specificPrompt,
+        const promptEstimatedTokens =
+            estimatePromptTokensFromChars(
+                specificPrompt
+            );
+
+        // ------------------------------------------------------------
+        // FIRST ROUTING PASS
+        // ------------------------------------------------------------
+        //
+        // This is performed before the Copilot session exists.
+        // It uses section content, review scopes, visual attachments,
+        // and prompt size to select an application-level Auto tier.
+        //
+        // The selected tier is a routing preference only.
+        // The concrete model is still selected by GitHub Copilot Auto.
+        //
+        routingDecision = determineAutoTier(
+            request,
+            scopes,
             attachments,
-            systemPrompt
+            promptEstimatedTokens,
+            null
         );
+
+        process.stderr.write(
+            `[MODEL ROUTER] section=${request.sectionId || "?"} ` +
+            `tier=${routingDecision.requestedAutoTier} ` +
+            `reason=${routingDecision.selectionReason}\n`
+        );
+
+        // ------------------------------------------------------------
+        // COPILOT SESSION CREATION
+        // ------------------------------------------------------------
+        //
+        // Ask Copilot to use Auto model selection.
+        //
+        // When supported, explicitly provide the application's
+        // requested Auto tier.
+        //
+        try {
+            session = await client.createSession({
+                model: "auto",
+
+                capi: {
+                    autoTier:
+                        routingDecision.requestedAutoTier,
+                },
+
+                streaming: true,
+
+                systemMessage: {
+                    content: systemPrompt,
+                },
+            });
+        } catch (createError) {
+            // --------------------------------------------------------
+            // COMPATIBILITY FALLBACK
+            // --------------------------------------------------------
+            //
+            // Some Copilot SDK/runtime versions may not accept the
+            // explicit Auto-tier property. In that case we preserve
+            // model="auto" and allow provider-default Auto routing.
+            //
+            process.stderr.write(
+                `[MODEL ROUTER] Auto tier createSession option was rejected; ` +
+                `retrying with provider-default Auto: ${String(createError)}\n`
+            );
+
+            routingDecision = {
+                ...routingDecision,
+
+                requestedAutoTier: null,
+
+                selectionReason:
+                    `${routingDecision.selectionReason}; ` +
+                    `runtime did not accept explicit Auto tier, so provider-default Auto was used`,
+
+                autoTierControlSupported: false,
+            };
+
+            session = await client.createSession({
+                model: "auto",
+
+                streaming: true,
+
+                systemMessage: {
+                    content: systemPrompt,
+                },
+            });
+        }
+
+        routingDecision.autoTierControlSupported =
+            routingDecision.autoTierControlSupported !== false;
+
+        // ------------------------------------------------------------
+        // SESSION / ROUTING EVENTS
+        // ------------------------------------------------------------
+
+        session.on(
+            "session.start",
+            (event) => {
+                const autoTier =
+                    event?.data?.autoTier;
+
+                if (autoTier) {
+                    routingEvents.push({
+                        type: "session.start",
+                        autoTier,
+                    });
+                }
+            }
+        );
+
+        session.on(
+            "session.resume",
+            (event) => {
+                const autoTier =
+                    event?.data?.autoTier;
+
+                if (autoTier) {
+                    routingEvents.push({
+                        type: "session.resume",
+                        autoTier,
+                    });
+                }
+            }
+        );
+
+        session.on(
+            "session.model_change",
+            (event) => {
+                const data =
+                    event?.data || {};
+
+                routingEvents.push({
+                    type: "session.model_change",
+
+                    modelId:
+                        data.modelId ||
+                        data.model ||
+                        null,
+
+                    autoTier:
+                        data.autoTier ||
+                        data.auto_tier ||
+                        null,
+                });
+            }
+        );
+
+        session.on(
+            "session.auto_tier_switch_failed",
+            (event) => {
+                const data =
+                    event?.data || {};
+
+                routingEvents.push({
+                    type:
+                        "session.auto_tier_switch_failed",
+
+                    reason:
+                        data.reason ||
+                        null,
+                });
+            }
+        );
+
+        // ------------------------------------------------------------
+        // ASSISTANT MESSAGE EVENTS
+        // ------------------------------------------------------------
+
+        session.on(
+            "assistant.message",
+            (event) => {
+                const content =
+                    event?.data?.content;
+
+                if (
+                    typeof content === "string" &&
+                    content.trim()
+                ) {
+                    assistantMessages.push(
+                        content.trim()
+                    );
+                }
+            }
+        );
+
+        // ------------------------------------------------------------
+        // CONTEXT / USAGE EVENTS
+        // ------------------------------------------------------------
+
+        session.on(
+            "session.usage_info",
+            (event) => {
+                const data =
+                    event?.data || {};
+
+                process.stderr.write(
+                    `[COPILOT CONTEXT] section=${request.sectionId || "?"} ` +
+                    `current=${Number(data.currentTokens || 0)} ` +
+                    `limit=${Number(data.tokenLimit || 0)}\n`
+                );
+            }
+        );
+
+        session.on(
+            "assistant.usage",
+            (event) => {
+                const record =
+                    normalizeUsageRecord(
+                        event?.data || {}
+                    );
+
+                usageEvents.push(record);
+
+                process.stderr.write(
+                    `[COPILOT USAGE] section=${request.sectionId || "?"} ` +
+                    `scopes=${scopes.join(",")} ` +
+                    `model=${record.model || "unknown"} ` +
+                    `input=${record.inputTokens} ` +
+                    `output=${record.outputTokens} ` +
+                    `reasoning=${record.reasoningTokens} ` +
+                    `costMultiplier=${record.costMultiplier}\n`
+                );
+            }
+        );
+
+        // ------------------------------------------------------------
+        // REQUEST DIAGNOSTICS
+        // ------------------------------------------------------------
+
+        // Build diagnostics before the turn so the application router
+        // has an explicit record of:
+        //   - source size
+        //   - prompt size
+        //   - system prompt size
+        //   - attachment count
+        //   - visual review request
+        //
+        requestDiagnostics =
+            buildRequestDiagnostics(
+                {
+                    ...request,
+                    reviewScopes: scopes,
+                },
+
+                specificPrompt,
+
+                attachments,
+
+                systemPrompt
+            );
+
+        // ------------------------------------------------------------
+        // SECOND ROUTING PASS: CONTEXT-AWARE
+        // ------------------------------------------------------------
+        //
+        // The session now exists, so query its current context
+        // composition.
+        //
+        // The routing policy can refine the requested Auto tier using:
+        //   - current context tokens
+        //   - prompt limit
+        //   - projected utilization
+        //   - visual evidence
+        //   - high-risk scope
+        //   - content complexity
+        //
+        contextInfo =
+            await safeGetContextInfo(
+                session
+            );
+
+        const contextAdjustedRouting =
+            determineAutoTier(
+                request,
+                scopes,
+                attachments,
+                requestDiagnostics.promptEstimatedTokens,
+                contextInfo
+            );
+
+        const baseTier =
+            routingDecision.requestedAutoTier;
+
+        routingDecision =
+            contextAdjustedRouting;
+
+        routingDecision.initialAutoTier =
+            baseTier;
+
+        // ------------------------------------------------------------
+        // APPLY CONTEXT-ADJUSTED TIER
+        // ------------------------------------------------------------
+
+        if (
+            baseTier !==
+                routingDecision.requestedAutoTier &&
+            session.setAutoTier &&
+            routingDecision.requestedAutoTier
+        ) {
+            try {
+                const switchResult =
+                    await session.setAutoTier(
+                        routingDecision.requestedAutoTier
+                    );
+
+                routingDecision.autoTierSwitchStatus =
+                    switchResult?.status ||
+                    null;
+
+                process.stderr.write(
+                    `[MODEL ROUTER] section=${request.sectionId || "?"} ` +
+                    `context-adjusted tier=${routingDecision.requestedAutoTier} ` +
+                    `switchStatus=${switchResult?.status || "unknown"}\n`
+                );
+            } catch (switchError) {
+                routingDecision.autoTierSwitchStatus =
+                    "failed";
+
+                routingEvents.push({
+                    type:
+                        "router.setAutoTier_error",
+
+                    requestedAutoTier:
+                        routingDecision.requestedAutoTier,
+
+                    error:
+                        String(switchError),
+                });
+
+                process.stderr.write(
+                    `[MODEL ROUTER] section=${request.sectionId || "?"} ` +
+                    `setAutoTier failed: ${String(switchError)}\n`
+                );
+            }
+        }
+
+        requestDiagnostics.routing =
+            routingDecision;
 
         process.stderr.write(
             `[COPILOT REQUEST] section=${request.sectionId || "?"} ` +
@@ -625,48 +1591,170 @@ Output raw Mermaid syntax only.
             `promptChars=${requestDiagnostics.promptChars} ` +
             `promptEstTokens=${requestDiagnostics.promptEstimatedTokens} ` +
             `systemChars=${requestDiagnostics.systemPromptChars} ` +
-            `attachments=${requestDiagnostics.attachmentCount}\n`
+            `attachments=${requestDiagnostics.attachmentCount} ` +
+            `autoTier=${routingDecision.requestedAutoTier || "default"}\n`
         );
+
+        // ------------------------------------------------------------
+        // VISUAL EVIDENCE
+        // ------------------------------------------------------------
 
         if (attachments.length > 0) {
             process.stderr.write(
-                `[VISUAL REVIEW] Attaching ${attachments.length} image(s) for ${request.relativePath} scopes=${scopes.join(",")}\n`
+                `[VISUAL REVIEW] Attaching ${attachments.length} image(s) ` +
+                `for ${request.relativePath} ` +
+                `scopes=${scopes.join(",")}\n`
             );
+
             for (const attachment of attachments) {
                 process.stderr.write(
-                    `[VISUAL REVIEW]   -> ${attachment.displayName}: ${attachment.path}\n`
+                    `[VISUAL REVIEW]   -> ${attachment.displayName}: ` +
+                    `${attachment.path}\n`
                 );
             }
         }
 
-        // Use send() + an explicit session.idle wait rather than sendAndWait().
-        // GitHub documents a 60s default for sendAndWait; HLD visual review can
-        // legitimately exceed that. The explicit wait below gives us 3 minutes
-        // while still using the session's true idle event as the completion signal.
-        const messageId = await session.send({
-            prompt: specificPrompt,
-            ...(attachments.length > 0 ? { attachments } : {})
-        });
+        // ------------------------------------------------------------
+        // SEND COPILOT REQUEST
+        // ------------------------------------------------------------
+
+        const messageId =
+            await session.send({
+                prompt: specificPrompt,
+
+                ...(attachments.length > 0
+                    ? { attachments }
+                    : {}),
+            });
 
         process.stderr.write(
-            `[COPILOT TURN] section=${request.sectionId || "?"} message=${messageId} ` +
+            `[COPILOT TURN] section=${request.sectionId || "?"} ` +
+            `message=${messageId} ` +
             `waiting_for_idle=${WAIT_TIMEOUT_MS}ms\n`
         );
 
+        // ------------------------------------------------------------
+        // WAIT FOR TURN COMPLETION
+        // ------------------------------------------------------------
+
         try {
-            await waitForSessionIdle(session, WAIT_TIMEOUT_MS);
+            await waitForSessionIdle(
+                session,
+                WAIT_TIMEOUT_MS
+            );
+
             turnStatus = "completed";
         } catch (waitError) {
             turnStatus = "timeout";
+
             process.stderr.write(
-                `[COPILOT TURN] section=${request.sectionId || "?"} wait timeout: ${String(waitError)}\n`
+                `[COPILOT TURN] section=${request.sectionId || "?"} ` +
+                `wait timeout: ${String(waitError)}\n`
             );
+
             throw waitError;
         }
 
-        contextInfo = await safeGetContextInfo(session);
-        const sessionMetricsRaw = await safeGetSessionMetrics(session);
-        const sessionMetrics = normalizeSessionMetrics(sessionMetricsRaw);
+        // ------------------------------------------------------------
+        // FINAL EFFECTIVE MODEL / ROUTING STATE
+        // ------------------------------------------------------------
+        //
+        // After the turn, query the SDK for:
+        //   - actual/effective model
+        //   - committed Auto tier
+        //   - pending Auto tier
+        //   - activating Auto tier
+        //
+        effectiveModelState =
+            await safeGetCurrentModelState(
+                session
+            );
+
+        const finalContextInfo =
+            await safeGetContextInfo(
+                session
+            );
+
+        if (finalContextInfo) {
+            contextInfo =
+                finalContextInfo;
+        }
+
+        const actualModelFromUsage =
+            usageEvents.findLast?.(
+                (item) => item.model
+            )?.model
+            ||
+            usageEvents[
+                usageEvents.length - 1
+            ]?.model
+            ||
+            null;
+
+        const effectiveRouting = {
+            requestedModelMode:
+                "auto",
+
+            requestedAutoTier:
+                routingDecision.requestedAutoTier ||
+                null,
+
+            selectionReason:
+                routingDecision.selectionReason ||
+                null,
+
+            initialAutoTier:
+                routingDecision.initialAutoTier ||
+                null,
+
+            actualModel:
+                actualModelFromUsage ||
+                effectiveModelState?.modelId ||
+                effectiveModelState?.model ||
+                null,
+
+            actualAutoTier:
+                effectiveModelState?.autoTier ||
+                null,
+
+            pendingAutoTier:
+                effectiveModelState?.pendingAutoTier ||
+                null,
+
+            activatingAutoTier:
+                effectiveModelState?.activatingAutoTier ||
+                null,
+
+            autoTierControlSupported:
+                routingDecision.autoTierControlSupported !== false,
+
+            autoTierSwitchStatus:
+                routingDecision.autoTierSwitchStatus ||
+                null,
+
+            visualRequired:
+                Boolean(
+                    request.visualReviewRequired
+                ),
+
+            contextDecision:
+                routingDecision.contextDecision ||
+                null,
+
+            complexitySignals:
+                routingDecision.complexitySignals ||
+                null,
+
+            modelChangeEvents:
+                routingEvents,
+        };
+
+        requestDiagnostics.routing =
+            effectiveRouting;
+
+        // ------------------------------------------------------------
+        // FINAL CONTEXT DIAGNOSTICS
+        // ------------------------------------------------------------
 
         if (contextInfo) {
             process.stderr.write(
@@ -679,76 +1767,147 @@ Output raw Mermaid syntax only.
             );
         }
 
-        const response = assistantMessages.length > 0
-            ? { data: { content: assistantMessages[assistantMessages.length - 1] } }
-            : undefined;
-        const rawText = normalizeResponseText(response);
+        // ------------------------------------------------------------
+        // BUILD PER-SECTION USAGE SUMMARY
+        // ------------------------------------------------------------
 
-        if (request.diagramType !== "HLD_SEGMENTATION_MODE") {
+        const usage =
+            buildUsageSummary({
+                request,
+
+                scopes,
+
+                usageEvents,
+
+                sessionMetrics:
+                    normalizeSessionMetrics(
+                        await safeGetSessionMetrics(
+                            session
+                        )
+                    ),
+
+                contextInfo,
+
+                visualReviewed:
+                    attachments.length > 0,
+
+                turnStatus,
+
+                requestDiagnostics,
+
+                routing:
+                    effectiveRouting,
+            });
+
+        // ------------------------------------------------------------
+        // FINAL ASSISTANT RESPONSE
+        // ------------------------------------------------------------
+
+        const response =
+            assistantMessages.length > 0
+                ? {
+                    data: {
+                        content:
+                            assistantMessages[
+                                assistantMessages.length - 1
+                            ],
+                    },
+                }
+                : undefined;
+
+        const rawText =
+            normalizeResponseText(
+                response
+            );
+
+        // ------------------------------------------------------------
+        // NON-HLD MODE
+        // ------------------------------------------------------------
+
+        if (
+            request.diagramType !==
+            "HLD_SEGMENTATION_MODE"
+        ) {
             return {
                 success: true,
                 mermaid_string: rawText,
-                usage: buildUsageSummary({
-                    request,
-                    scopes,
-                    usageEvents,
-                    sessionMetrics,
-                    contextInfo,
-                    turnStatus,
-                    visualReviewed: attachments.length > 0
-                })
+                usage,
             };
         }
+
+        // ------------------------------------------------------------
+        // STRUCTURED HLD REVIEW MODE
+        // ------------------------------------------------------------
 
         let parsed;
+
         try {
-            parsed = JSON.parse(rawText);
+            parsed =
+                JSON.parse(rawText);
         } catch (parseError) {
             process.stderr.write(
-                `[HLD REVIEW] Invalid JSON returned for ${request.relativePath} scopes=${scopes.join(",")}: ${String(parseError)}\n`
+                `[HLD REVIEW] Invalid JSON returned for ` +
+                `${request.relativePath} ` +
+                `scopes=${scopes.join(",")}: ` +
+                `${String(parseError)}\n`
             );
+
             return {
                 success: false,
-                error: "Copilot returned invalid JSON for the structured HLD review.",
-                raw_response: rawText.slice(0, 2000),
-                usage: buildUsageSummary({
-                    request,
-                    scopes,
-                    usageEvents,
-                    sessionMetrics,
-                    contextInfo,
-                    turnStatus,
-                    visualReviewed: attachments.length > 0,
-                    requestDiagnostics
-                })
+
+                error:
+                    "Copilot returned invalid JSON for the structured HLD review.",
+
+                raw_response:
+                    rawText.slice(0, 2000),
+
+                usage,
             };
         }
 
-        const structuredReview = ensureStructuredReview(
-            parsed,
-            {
-                ...request,
-                contentTypes: Array.isArray(request.contentTypes) ? request.contentTypes : []
-            },
-            scopes,
-            attachments.length > 0
-        );
+        const structuredReview =
+            ensureStructuredReview(
+                parsed,
+
+                {
+                    ...request,
+
+                    contentTypes:
+                        Array.isArray(
+                            request.contentTypes
+                        )
+                            ? request.contentTypes
+                            : [],
+                },
+
+                scopes,
+
+                attachments.length > 0
+            );
 
         return {
             success: true,
-            mermaid_string: JSON.stringify(structuredReview),
-            usage: buildUsageSummary({
-                request,
-                scopes,
-                usageEvents,
-                sessionMetrics,
-                visualReviewed: attachments.length > 0,
-                    requestDiagnostics
-            })
+
+            mermaid_string:
+                JSON.stringify(
+                    structuredReview
+                ),
+
+            usage,
         };
     } finally {
-        if (session?.destroy) {
-            await session.destroy().catch(() => {});
+        // ------------------------------------------------------------
+        // SESSION CLEANUP
+        // ------------------------------------------------------------
+
+        if (session?.disconnect) {
+            await session
+                .disconnect()
+                .catch(() => {});
+        } else if (session?.destroy) {
+            await session
+                .destroy()
+                .catch(() => {});
         }
     }
 }
@@ -757,31 +1916,88 @@ async function main() {
     let client = null;
 
     try {
+        // ------------------------------------------------------------
+        // COPILOT CLIENT INITIALIZATION
+        // ------------------------------------------------------------
+
         client = new CopilotClient({
             connection: RuntimeConnection.forStdio(),
-            useLoggedInUser: true
+            useLoggedInUser: true,
         });
+
         await client.start();
 
+        // ------------------------------------------------------------
+        // STDIN / STDOUT DAEMON
+        // ------------------------------------------------------------
+        //
+        // The Python backend sends one JSON request per stdin line.
+        // The daemon writes one JSON response per stdout line.
+        //
         const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
-            terminal: false
+            terminal: false,
         });
 
         for await (const line of rl) {
-            if (!line.trim()) continue;
+            if (!line.trim()) {
+                continue;
+            }
 
             try {
+                // ----------------------------------------------------
+                // REQUEST PARSING
+                // ----------------------------------------------------
+
                 const request = JSON.parse(line);
-                const scopes = normalizeScopes(request.reviewScopes);
-                const requestContentTypes = Array.isArray(request.contentTypes)
-                    ? request.contentTypes
-                    : [];
-                const attachments = collectAttachments(request);
-                const selectedScopes = scopes.length ? scopes : ["architecture"];
-                const visualAllowed = selectedScopes.some((scope) => VISUAL_SCOPES.has(scope));
-                const scopeAttachments = visualAllowed ? attachments : [];
+
+                const scopes =
+                    normalizeScopes(
+                        request.reviewScopes
+                    );
+
+                const requestContentTypes =
+                    Array.isArray(
+                        request.contentTypes
+                    )
+                        ? request.contentTypes
+                        : [];
+
+                // ----------------------------------------------------
+                // VISUAL EVIDENCE
+                // ----------------------------------------------------
+                //
+                // collectAttachments() validates that supplied paths
+                // are absolute and that the files actually exist.
+                //
+                const attachments =
+                    collectAttachments(
+                        request
+                    );
+
+                const selectedScopes =
+                    scopes.length
+                        ? scopes
+                        : ["architecture"];
+
+                // ----------------------------------------------------
+                // VISUAL REVIEW POLICY
+                // ----------------------------------------------------
+                //
+                // Visual inspection is only enabled for review scopes
+                // that support visual evidence.
+                //
+                const visualAllowed =
+                    selectedScopes.some(
+                        (scope) =>
+                            VISUAL_SCOPES.has(scope)
+                    );
+
+                const scopeAttachments =
+                    visualAllowed
+                        ? attachments
+                        : [];
 
                 process.stderr.write(
                     `[HLD REVIEW] section=${request.sectionId || "?"} ` +
@@ -789,48 +2005,131 @@ async function main() {
                     `visual=${scopeAttachments.length > 0}\n`
                 );
 
-                const result = await runOneReviewRequest(
-                    client,
-                    {
-                        ...request,
-                        contentTypes: requestContentTypes
-                    },
-                    selectedScopes,
-                    scopeAttachments
-                );
+                // ----------------------------------------------------
+                // RUN ONE SECTION REVIEW
+                // ----------------------------------------------------
 
-                if (request.diagramType !== "HLD_SEGMENTATION_MODE") {
-                    process.stdout.write(JSON.stringify(result) + "\n");
+                const result =
+                    await runOneReviewRequest(
+                        client,
+
+                        {
+                            ...request,
+
+                            contentTypes:
+                                requestContentTypes,
+                        },
+
+                        selectedScopes,
+
+                        scopeAttachments
+                    );
+
+                // ----------------------------------------------------
+                // NON-HLD MODE
+                // ----------------------------------------------------
+                //
+                // For non-HLD requests the result can be returned
+                // directly.
+                //
+                if (
+                    request.diagramType !==
+                    "HLD_SEGMENTATION_MODE"
+                ) {
+                    process.stdout.write(
+                        JSON.stringify(result) +
+                        "\n"
+                    );
+
                     continue;
                 }
+
+                // ----------------------------------------------------
+                // FAILED STRUCTURED REVIEW
+                // ----------------------------------------------------
 
                 if (!result.success) {
-                    process.stdout.write(JSON.stringify(result) + "\n");
+                    process.stdout.write(
+                        JSON.stringify(result) +
+                        "\n"
+                    );
+
                     continue;
                 }
 
-                const chunkBlueprint = JSON.parse(result.mermaid_string);
-                process.stdout.write(JSON.stringify({
-                    success: true,
-                    mermaid_string: JSON.stringify(chunkBlueprint),
-                    usage: result.usage || null
-                }) + "\n");
+                // ----------------------------------------------------
+                // STRUCTURED HLD RESPONSE
+                // ----------------------------------------------------
+                //
+                // The structured review payload is serialized through
+                // mermaid_string for compatibility with the existing
+                // Python bridge.
+                //
+                const chunkBlueprint =
+                    JSON.parse(
+                        result.mermaid_string
+                    );
+
+                process.stdout.write(
+                    JSON.stringify({
+                        success: true,
+
+                        mermaid_string:
+                            JSON.stringify(
+                                chunkBlueprint
+                            ),
+
+                        usage:
+                            result.usage ||
+                            null,
+                    }) +
+                    "\n"
+                );
             } catch (innerError) {
-                process.stdout.write(JSON.stringify({
-                    success: false,
-                    error: String(innerError)
-                }) + "\n");
+                // ----------------------------------------------------
+                // PER-REQUEST ERROR
+                // ----------------------------------------------------
+                //
+                // Never crash the daemon because one request failed.
+                // Return the error as JSON so the Python server can
+                // mark that section as a review error.
+                //
+                process.stdout.write(
+                    JSON.stringify({
+                        success: false,
+
+                        error:
+                            String(innerError),
+                    }) +
+                    "\n"
+                );
             }
         }
     } catch (globalError) {
-        process.stderr.write(`Daemon Crash Exception: ${String(globalError)}\n`);
+        // ------------------------------------------------------------
+        // DAEMON-LEVEL FAILURE
+        // ------------------------------------------------------------
+
+        process.stderr.write(
+            `Daemon Crash Exception: ${String(globalError)}\n`
+        );
+
         process.exit(1);
     } finally {
+        // ------------------------------------------------------------
+        // COPILOT CLIENT SHUTDOWN
+        // ------------------------------------------------------------
+
         if (client?.stop) {
-            await client.stop().catch(() => {});
+            await client
+                .stop()
+                .catch(() => {});
         }
     }
 }
 
-await main();
+// ------------------------------------------------------------
+// DAEMON ENTRY POINT
+// ------------------------------------------------------------
 
+await main();

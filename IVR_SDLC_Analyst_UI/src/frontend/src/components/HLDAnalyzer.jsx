@@ -125,6 +125,7 @@ export default function HLDAnalyzer() {
     const [excelExportError, setExcelExportError] = useState("");
     const [reviewJob, setReviewJob] = useState(null);
     const [reviewJobId, setReviewJobId] = useState(null);
+    const [refreshingUrl, setRefreshingUrl] = useState("");
     const reviewPollRef = useRef(null);
     const restoringStateRef = useRef(true);
 
@@ -134,10 +135,11 @@ export default function HLDAnalyzer() {
         async function restorePageState() {
             const savedUrl = localStorage.getItem("hld.lastDocumentUrl") || "";
             const savedScopes = localStorage.getItem("hld.selectedScopes");
-            const savedIds = localStorage.getItem("hld.selectedSectionIds");
+
+            localStorage.removeItem("hld.selectedSectionIds");
 
             let restoredScopes = DEFAULT_REVIEW_SCOPES;
-            let restoredIds = [];
+            const restoredIds = [];
 
             if (savedScopes) {
                 try {
@@ -145,16 +147,6 @@ export default function HLDAnalyzer() {
                     if (Array.isArray(parsed) && parsed.length) {
                         restoredScopes = parsed;
                         if (!cancelled) setSelectedReviewScopes(parsed);
-                    }
-                } catch {}
-            }
-
-            if (savedIds) {
-                try {
-                    const parsed = JSON.parse(savedIds);
-                    if (Array.isArray(parsed)) {
-                        restoredIds = parsed.map(Number).filter(Number.isFinite);
-                        if (!cancelled) setSelectedIds(new Set(restoredIds));
                     }
                 } catch {}
             }
@@ -238,7 +230,6 @@ export default function HLDAnalyzer() {
         if (!wikiURL.trim()) return;
         localStorage.setItem("hld.lastDocumentUrl", wikiURL.trim());
         localStorage.setItem("hld.selectedScopes", JSON.stringify(selectedReviewScopes));
-        localStorage.setItem("hld.selectedSectionIds", JSON.stringify(Array.from(selectedIds)));
     }, [wikiURL, selectedReviewScopes, selectedIds]);
 
     function persistJobId(jobId) {
@@ -444,6 +435,8 @@ export default function HLDAnalyzer() {
             const data = await generateHLDMatrix(wikiURL.trim());
             setVerificationMatrix(Array.isArray(data.matrix) ? data.matrix : []);
             setIsLoadedFromCache(Boolean(data.loaded_from_cache));
+            setSelectedIds(new Set());
+            localStorage.removeItem("hld.selectedSectionIds");
         } catch (err) {
             setError(err.message || "Failed to process wiki document matrix.");
         } finally {
@@ -527,11 +520,13 @@ export default function HLDAnalyzer() {
         const targetUrl = wikiURL.trim();
         if (!targetUrl) return;
 
-        await invalidateCurrentReviewJob();
-
+        setRefreshingUrl(targetUrl);
+        setWikiURL(targetUrl);
         setLoading(true);
         setError("");
         setVerificationMatrix(null);
+
+        await invalidateCurrentReviewJob();
 
         try {
             await clearHLDMatrixCache(targetUrl);
@@ -542,6 +537,8 @@ export default function HLDAnalyzer() {
                 Array.isArray(data.matrix) ? data.matrix : []
             );
             setIsLoadedFromCache(Boolean(data.loaded_from_cache));
+            setSelectedIds(new Set());
+            localStorage.removeItem("hld.selectedSectionIds");
             setActiveTab("inventory");
         } catch (err) {
             setWikiURL(targetUrl);
@@ -550,6 +547,7 @@ export default function HLDAnalyzer() {
             );
         } finally {
             setLoading(false);
+            setRefreshingUrl("");
         }
     }
 
@@ -1178,7 +1176,7 @@ export default function HLDAnalyzer() {
                                 wordBreak: "break-all",
                             }}
                         >
-                            {wikiURL}
+                            {refreshingUrl || wikiURL}
                         </div>
                     </div>
                 )}
@@ -1244,8 +1242,9 @@ export default function HLDAnalyzer() {
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
             {[
-                ["Sections", reviewPlan.eligible_section_count],
-                ["Skipped", reviewPlan.skipped_section_count],
+                ["Selected", reviewPlan.selected_section_count ?? selectedIds.size],
+                ["Eligible", reviewPlan.eligible_section_count],
+                ["Excluded", reviewPlan.excluded_section_count ?? reviewPlan.skipped_section_count],
                 ["Words", reviewPlan.total_words],
                 ["Est. prompt tokens", reviewPlan.estimated_prompt_tokens],
                 ["Est. completion tokens", reviewPlan.estimated_completion_tokens],
@@ -1814,7 +1813,8 @@ export default function HLDAnalyzer() {
                                     <div style={{ marginTop: 18, height: 12, background: REPORT.emptyBg, borderRadius: 100, overflow: "hidden", border: `1px solid ${REPORT.line}` }}>
                                         <div style={{ height: "100%", width: `${percent}%`, background: REPORT.accent, transition: "width 300ms ease" }} />
                                     </div>
-                                    <div style={{ marginTop: 7, fontSize: 11.5, color: REPORT.inkSoft }}>{percent}% complete · remaining {Math.max(0, total - completed)} section(s)</div>
+                                    <div style={{ marginTop: 7, fontSize: 11.5, color: REPORT.inkSoft }}>{percent}% complete · remaining {Math.max(0, total - completed)} eligible section(s)</div>
+                                    <div style={{ marginTop: 4, fontSize: 10.5, color: REPORT.empty }}>Selected: {reviewJob.selected_section_count ?? reviewJob.selected_section_ids?.length ?? 0} · Eligible: {reviewJob.eligible_section_count ?? total} · Excluded: {reviewJob.excluded_section_count ?? 0}</div>
                                     {p.current_section_heading && <div style={{ marginTop: 14, padding: 11, background: REPORT.accentSoft, borderRadius: 6, fontSize: 12.5, color: REPORT.ink }}><strong>Current section:</strong> {p.current_section_heading}</div>}
                                     {reviewJob.status === "RECOVERY_REQUIRED" && (
                                         <div style={{ marginTop: 14, padding: 11, background: REPORT.yellowBg, color: REPORT.yellow, borderRadius: 6, fontSize: 12.5 }}>
