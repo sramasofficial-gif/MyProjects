@@ -3,13 +3,10 @@ import React, { useState } from 'react';
 import MainLayout from './layout/MainLayout';
 import HLDAnalyzer from './components/HLDAnalyzer';
 import { SystemSettingsPage } from './components/SystemSettingsPage';
-import ReviewJobs from './components/ReviewJobs';
 
 export default function App() {
     const [activeSection, setActiveSection] = useState('repository');
     const [selectedFile, setSelectedFile] = useState(null);
-    const [reviewJobsOpenJobId, setReviewJobsOpenJobId] = useState(null);
-    const [reviewJobsOpenTab, setReviewJobsOpenTab] = useState("findings");
 
     // 🟢 SAFE DESKTOP ROUTER: Moves logic outside of JSX return block to prevent page blanking
     const renderActiveSection = () => {
@@ -23,23 +20,8 @@ export default function App() {
                         />
                     );
                 case 'hld-analyzer':
-                    return (
-                        <HLDAnalyzer
-                            openJobId={reviewJobsOpenJobId}
-                            openJobTab={reviewJobsOpenTab}
-                            onOpenJobHandled={() => setReviewJobsOpenJobId(null)}
-                        />
-                    );
-                case 'review-jobs':
-                    return (
-                        <ReviewJobs
-                            onOpenJob={(jobId, tab) => {
-                                setReviewJobsOpenJobId(jobId);
-                                setReviewJobsOpenTab(tab || 'findings');
-                                setActiveSection('hld-analyzer');
-                            }}
-                        />
-                    );
+                    // Make sure HLDAnalyzer handles internal states gracefully
+                    return <HLDAnalyzer /> || <div style={{ padding: '20px' }}>HLD Analyzer View offline.</div>;
                 case 'settings':
                     return <SystemSettingsPage />;
                 default:
@@ -124,21 +106,6 @@ export default function App() {
                             onClick={() => setActiveSection('hld-analyzer')}
                         >
                             📋 HLD Analyzer
-                        </button>
-                        <button
-                            className="diagram-tab"
-                            style={{
-                                background: activeSection === 'review-jobs' ? '#0f6cbd' : 'rgba(255,255,255,0.1)',
-                                color: '#ffffff',
-                                border: 'none',
-                                padding: '8px 16px',
-                                borderRadius: '6px',
-                                fontWeight: '600',
-                                cursor: 'pointer'
-                            }}
-                            onClick={() => setActiveSection('review-jobs')}
-                        >
-                            Jobs
                         </button>
                     </nav>
                 </div>

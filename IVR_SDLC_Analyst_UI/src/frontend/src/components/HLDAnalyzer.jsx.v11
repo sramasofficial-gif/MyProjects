@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
     generateHLDMatrix,
     clearHLDMatrixCache,
-    getReviewJob,
 } from "../services/api";
 
 const TYPE_LABELS = {
@@ -107,7 +106,7 @@ function extractNumbering(title = "") {
     return match ? match[1] : "—";
 }
 
-export default function HLDAnalyzer({ openJobId = null, openJobTab = "findings", onOpenJobHandled }) {
+export default function HLDAnalyzer() {
     const [wikiURL, setWikiURL] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -127,7 +126,6 @@ export default function HLDAnalyzer({ openJobId = null, openJobTab = "findings",
     const [reviewJob, setReviewJob] = useState(null);
     const [reviewJobId, setReviewJobId] = useState(null);
     const [refreshingUrl, setRefreshingUrl] = useState("");
-    const [sourceMetadata, setSourceMetadata] = useState(null);
     const reviewPollRef = useRef(null);
     const restoringStateRef = useRef(true);
 
@@ -169,7 +167,6 @@ export default function HLDAnalyzer({ openJobId = null, openJobTab = "findings",
                     setIsLoadedFromCache(
                         Boolean(matrixData.loaded_from_cache)
                     );
-                    setSourceMetadata(matrixData.source_metadata || null);
 
                     // Recover a backend-owned review independently of the old
                     // localStorage job ID. This is the key refresh-recovery path.
@@ -338,68 +335,6 @@ export default function HLDAnalyzer({ openJobId = null, openJobTab = "findings",
     }
 
     useEffect(() => {
-        if (!openJobId) return undefined;
-
-        let cancelled = false;
-
-        async function loadHistoricalJob() {
-            try {
-                const data = await getReviewJob(openJobId);
-                const job = data.job;
-                if (cancelled || !job) return;
-
-                setReviewJob(job);
-                setReviewJobId(job.job_id);
-                persistJobId(job.job_id);
-
-                if (job.document_url || job.document_title) {
-                    setWikiURL(job.document_url || job.document_title);
-                }
-
-                if (Array.isArray(job.review_scopes) && job.review_scopes.length) {
-                    setSelectedReviewScopes(job.review_scopes);
-                }
-
-                if (job.source_version || job.source_version_timestamp) {
-                    setSourceMetadata({
-                        document_url: job.document_url || job.document_title || "",
-                        document_title: job.document_title || "",
-                        document_version: job.source_version || null,
-                        document_version_timestamp: job.source_version_timestamp || null,
-                        document_version_source: job.source_version_source || null,
-                        source_content_hash: job.source_content_hash || null,
-                    });
-                }
-
-                setReviewPlan(job.review_plan || null);
-                const result = job.result?.segmented_blueprint;
-                if (result) {
-                    setAnalysisResult(result);
-                }
-
-                setActiveTab(
-                    openJobTab === "telemetry" && result
-                        ? "telemetry"
-                        : result
-                            ? "findings"
-                            : "review"
-                );
-                onOpenJobHandled?.();
-            } catch (err) {
-                if (!cancelled) {
-                    setError(err.message || "Failed to open the selected review job.");
-                }
-            }
-        }
-
-        loadHistoricalJob();
-
-        return () => {
-            cancelled = true;
-        };
-    }, [openJobId, openJobTab]);
-
-    useEffect(() => {
         if (!reviewJobId) {
             return undefined;
         }
@@ -500,7 +435,6 @@ export default function HLDAnalyzer({ openJobId = null, openJobTab = "findings",
             const data = await generateHLDMatrix(wikiURL.trim());
             setVerificationMatrix(Array.isArray(data.matrix) ? data.matrix : []);
             setIsLoadedFromCache(Boolean(data.loaded_from_cache));
-            setSourceMetadata(data.source_metadata || null);
             setSelectedIds(new Set());
             localStorage.removeItem("hld.selectedSectionIds");
         } catch (err) {
@@ -603,7 +537,6 @@ export default function HLDAnalyzer({ openJobId = null, openJobTab = "findings",
                 Array.isArray(data.matrix) ? data.matrix : []
             );
             setIsLoadedFromCache(Boolean(data.loaded_from_cache));
-            setSourceMetadata(data.source_metadata || null);
             setSelectedIds(new Set());
             localStorage.removeItem("hld.selectedSectionIds");
             setActiveTab("inventory");
@@ -708,16 +641,7 @@ export default function HLDAnalyzer({ openJobId = null, openJobTab = "findings",
                 document_title: wikiURL.trim(),
                 project_scope: "IVR Context Validation",
                 review_scopes: selectedReviewScopes,
-                // Preserve the user's original selection. The backend will
-                // recompute the eligible review set from this selection and
-                // the selected review scopes.
-                selected_section_ids: Array.from(selectedIds),
-                source_version: sourceMetadata?.document_version || null,
-                source_version_timestamp: sourceMetadata?.document_version_timestamp || sourceMetadata?.observed_at || null,
-                source_version_source: sourceMetadata?.document_version_source || null,
-                source_content_hash: sourceMetadata?.source_content_hash || null,
-                review_type: "Technical Document Review",
-                review_plan: plan,
+                selected_section_ids: plan.eligible_section_ids,
             });
 
             const job = response.job;

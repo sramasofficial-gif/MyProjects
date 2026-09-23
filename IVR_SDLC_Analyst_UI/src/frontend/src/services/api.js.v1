@@ -156,36 +156,3 @@ export async function runCopilotHLDAudit(filename) {
 
     return parseResponse(response);
 }
-
-export async function listReviewJobs({ status = "", search = "", documentUrl = "", limit = 100, offset = 0 } = {}) {
-    const params = new URLSearchParams();
-    if (status) params.set("status", status);
-    if (search) params.set("search", search);
-    if (documentUrl) params.set("document_url", documentUrl);
-    params.set("limit", String(limit));
-    params.set("offset", String(offset));
-
-    const response = await fetch(`${API_URL}/hld/jobs?${params.toString()}`);
-    return parseResponse(response);
-}
-
-export async function getReviewJob(jobId) {
-    const response = await fetch(`${API_URL}/hld/jobs/${encodeURIComponent(jobId)}`);
-    return parseResponse(response);
-}
-
-export async function deleteReviewJob(jobId) {
-    const response = await fetch(`${API_URL}/hld/jobs/${encodeURIComponent(jobId)}`, {
-        method: "DELETE",
-    });
-    return parseResponse(response);
-}
-
-export async function clearCompletedReviewJobs(jobIds = null) {
-    const response = await fetch(`${API_URL}/hld/jobs/completed`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(jobIds ? { job_ids: jobIds } : {}),
-    });
-    return parseResponse(response);
-}

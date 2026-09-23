@@ -33,7 +33,6 @@ from contextlib import asynccontextmanager
 
 import concurrent.futures
 from functools import partial
-from review_job_store import ReviewJobStore
 
 from services.repo_tools import (
     find_files,
@@ -109,17 +108,11 @@ LIVE_CO_PROCESS = None
 # local AppData area on Windows (or ~/.local/share on non-Windows platforms).
 if os.name == "nt":
     _review_state_root = Path(os.environ.get("LOCALAPPDATA", Path.home()))
+    REVIEW_JOB_DIR = _review_state_root / "IVR_SDLC_Analyst_UI" / "review_jobs"
 else:
-    _review_state_root = Path.home() / ".local" / "share"
+    REVIEW_JOB_DIR = Path.home() / ".local" / "share" / "IVR_SDLC_Analyst_UI" / "review_jobs"
 
-REVIEW_DATA_DIR = _review_state_root / "IVR_SDLC_Analyst_UI"
-REVIEW_DATA_DIR.mkdir(parents=True, exist_ok=True)
-# Legacy JSON directory is retained only for one-time migration.
-REVIEW_JOB_DIR = REVIEW_DATA_DIR / "review_jobs"
 REVIEW_JOB_DIR.mkdir(parents=True, exist_ok=True)
-REVIEW_DB_PATH = REVIEW_DATA_DIR / "review_jobs.sqlite3"
-REVIEW_JOB_STORE = ReviewJobStore(REVIEW_DB_PATH)
-REVIEW_JOB_STORE.migrate_json_directory(REVIEW_JOB_DIR)
 REVIEW_JOB_LOCK = threading.RLock()
 REVIEW_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=1, thread_name_prefix="hld-review")
 REVIEW_CANCEL_EVENTS: dict[str, threading.Event] = {}
@@ -160,12 +153,6 @@ class HLDReviewStartRequest(BaseModel):
     review_scopes: list[str] = []
     selected_section_ids: list[int] = []
     project_scope: Optional[str] = "IVR Context Validation"
-    source_version: Optional[str] = None
-    source_version_timestamp: Optional[str] = None
-    source_version_source: Optional[str] = None
-    source_content_hash: Optional[str] = None
-    review_type: Optional[str] = "Technical Document Review"
-    review_plan: dict = {}
 
 
 class DiagramGenerationRequest(BaseModel):
@@ -716,77 +703,6 @@ class HLDReviewPlanRequest(BaseModel):
     document_title: str
     review_scopes: list[str] = []
     selected_section_ids: list[int] = []
-
-
-async def extract_confluence_source_metadata_async(page, page_url: str) -> dict:
-    """Best-effort extraction of Confluence page version/modified metadata.
-
-    Confluence deployments differ in their DOM. We prefer explicit version/modified
-    metadata and otherwise fall back to the current scrape timestamp.
-    """
-    observed_at = datetime.utcnow().isoformat(timespec="seconds") + "Z"
-    try:
-        data = await page.evaluate("""() => {
-            const pick = (selectors) => {
-                for (const selector of selectors) {
-                    const el = document.querySelector(selector);
-                    if (!el) continue;
-                    const value = el.getAttribute('content') || el.getAttribute('datetime') || el.textContent;
-                    if (value && value.trim()) return value.trim();
-                }
-                return null;
-            };
-            const version = pick([
-                '[data-version-number]',
-                '[data-page-version]',
-                '[data-version]',
-                'meta[name="ajs-page-version"]',
-                'meta[name="page-version"]',
-                'meta[property="page:version"]'
-            ]);
-            const modified = pick([
-                'meta[property="article:modified_time"]',
-                'meta[name="last-modified"]',
-                'meta[name="ajs-content-last-updated"]',
-                'time[datetime]'
-            ]);
-            const title = pick([
-                'meta[property="og:title"]',
-                'meta[name="ajs-content-title"]',
-                'title'
-            ]);
-            let bodyVersion = null;
-            if (!version) {
-                const text = document.body?.innerText || '';
-                const match = text.match(/\\bVersion\\s+(\\d+)\\b/i);
-                if (match) bodyVersion = match[1];
-            }
-            return { version: version || bodyVersion, modified, title };
-        }""")
-    except Exception:
-        data = {}
-
-    version = str(data.get("version") or "").strip() or None
-    modified = str(data.get("modified") or "").strip() or None
-    title = str(data.get("title") or "").strip() or None
-
-    if version:
-        version_source = "confluence_page_version"
-    elif modified:
-        version = None
-        version_source = "confluence_modified_timestamp"
-    else:
-        version_source = "scrape_timestamp"
-        modified = observed_at
-
-    return {
-        "document_url": page_url,
-        "document_title": title or page_url,
-        "document_version": version,
-        "document_version_timestamp": modified,
-        "document_version_source": version_source,
-        "observed_at": observed_at,
-    }
 
 
 async def extract_confluence_section_inventory_async(page, selector):
@@ -1369,33 +1285,39 @@ def _discover_active_review_job(
         review_scopes,
         selected_section_ids,
     )
-    signature = _review_signature(
-        document_title,
-        _normalise_review_scopes(review_scopes),
-        _normalise_section_ids(eligible_ids),
-    )
-    try:
-        jobs, _ = REVIEW_JOB_STORE.list_jobs(limit=500, offset=0)
-        candidates = [
-            job for job in jobs
-            if job.get("status") in DISCOVERABLE_REVIEW_STATUSES
-            and job.get("review_signature") == signature
-            and _job_matches_review_request(
-                job, document_title, review_scopes, eligible_ids
-            )
-        ]
-        if not candidates:
-            return None
-        candidates.sort(
-            key=lambda item: str(
-                item.get("updated_at") or item.get("created_at") or ""
-            ),
-            reverse=True,
-        )
-        return candidates[0]
-    except Exception as exc:
-        print(f"[REVIEW JOB] Active discovery failed: {exc}")
+
+    candidates = []
+    if not REVIEW_JOB_DIR.exists():
         return None
+
+    for path in REVIEW_JOB_DIR.glob("*.json"):
+        try:
+            with path.open("r", encoding="utf-8") as handle:
+                job = json.load(handle)
+        except (OSError, ValueError, TypeError):
+            continue
+
+        if job.get("status") not in DISCOVERABLE_REVIEW_STATUSES:
+            continue
+
+        if not _job_matches_review_request(
+            job,
+            document_title,
+            review_scopes,
+            eligible_ids,
+        ):
+            continue
+
+        candidates.append(job)
+
+    if not candidates:
+        return None
+
+    candidates.sort(
+        key=lambda item: str(item.get("updated_at") or item.get("created_at") or ""),
+        reverse=True,
+    )
+    return candidates[0]
 
 
 @app.get("/api/hld/review/active")
@@ -1448,31 +1370,11 @@ async def generate_verified_matrix(payload: ConfluenceURLRequest):
         print(f"[CACHE HIT] Serving pre-existing matrix for wiki URL hash: {url_hash[:16]}")
         with open(target_cache_path, "r", encoding="utf-8") as f:
             matrix_chunks = json.load(f)
-        metadata_path = Path(str(target_cache_path) + ".meta.json")
-        if metadata_path.exists():
-            try:
-                with metadata_path.open("r", encoding="utf-8") as f:
-                    source_metadata = json.load(f)
-            except Exception:
-                source_metadata = {}
-        else:
-            source_metadata = {
-                "document_url": payload.page_url,
-                "document_title": payload.page_url,
-                "document_version": None,
-                "document_version_timestamp": datetime.fromtimestamp(os.path.getmtime(target_cache_path)).isoformat(timespec="seconds"),
-                "document_version_source": "cache_file_timestamp",
-                "observed_at": datetime.fromtimestamp(os.path.getmtime(target_cache_path)).isoformat(timespec="seconds"),
-                "source_content_hash": hashlib.sha256(
-                    json.dumps(matrix_chunks, sort_keys=True, ensure_ascii=False).encode("utf-8")
-                ).hexdigest(),
-            }
         return {
             "success": True,
             "filename": payload.page_url,
             "matrix": matrix_chunks,
-            "loaded_from_cache": True,
-            "source_metadata": source_metadata,
+            "loaded_from_cache": True
         }
 
     if not os.path.exists(AUTH_STATE_FILE):
@@ -1506,11 +1408,6 @@ async def generate_verified_matrix(payload: ConfluenceURLRequest):
             # Capture the actual rendered pixels for image/diagram sections. These files
             # become optional visual evidence for the later Copilot vision review.
             await capture_section_visuals_async(page, context, url_hash[:16], matrix_rows)
-            source_metadata = await extract_confluence_source_metadata_async(page, payload.page_url)
-
-            source_metadata["source_content_hash"] = hashlib.sha256(
-                json.dumps(matrix_rows, sort_keys=True, ensure_ascii=False).encode("utf-8")
-            ).hexdigest()
 
             if not matrix_rows:
                 raise HTTPException(status_code=422, detail="No HLD sections were detected in the rendered wiki content.")
@@ -1543,17 +1440,13 @@ async def generate_verified_matrix(payload: ConfluenceURLRequest):
         if SERVER_CONFIG.enable_persistence:
             with open(target_cache_path, "w", encoding="utf-8") as f:
                 json.dump(matrix_chunks, f, indent=2)
-            metadata_path = Path(str(target_cache_path) + ".meta.json")
-            with metadata_path.open("w", encoding="utf-8") as f:
-                json.dump(source_metadata, f, indent=2)
             print(f"[PERSISTENCE] Wiki matrix successfully serialized to disk.")
 
         return {
             "success": True,
             "filename": payload.page_url,
             "matrix": matrix_chunks,
-            "loaded_from_cache": False,
-            "source_metadata": source_metadata,
+            "loaded_from_cache": False
         }
 
     except Exception as e:
@@ -1572,12 +1465,6 @@ def clear_matrix_cache(payload: dict):
     target_cache_path = get_wiki_cache_path(filename)
     if os.path.exists(target_cache_path):
         os.remove(target_cache_path)
-        metadata_path = Path(str(target_cache_path) + ".meta.json")
-        try:
-            if metadata_path.exists():
-                metadata_path.unlink()
-        except OSError:
-            pass
         print(f"[CACHE RESET] Cleared wiki matrix cache: {target_cache_path}")
         return {"success": True, "message": "Wiki cache successfully cleared."}
     return {"success": True, "message": "No wiki cache found for this URL."}
@@ -1711,27 +1598,72 @@ def build_hld_review_plan(payload: HLDReviewPlanRequest):
 
 
 def _job_file(job_id: str) -> Path:
-    """Legacy compatibility helper; SQLite is now authoritative."""
     return REVIEW_JOB_DIR / f"{job_id}.json"
 
 
 def _atomic_write_job(job: dict) -> bool:
-    try:
-        REVIEW_JOB_STORE.upsert_job(job)
-        return True
-    except Exception as exc:
-        print(
-            f"[REVIEW JOB WARNING] SQLite persistence failed for job "
-            f"{job.get('job_id')}: {exc}"
-        )
-        return False
+    """Persist a review job without allowing filesystem sync/locking to kill the AI job.
+
+    Review-job state is high-frequency mutable state, so it is kept outside
+    the OneDrive-backed source tree. A unique temporary file plus short retry
+    handling makes this safe on Windows as well. Persistence failure is logged
+    and treated as non-fatal; the review worker must not fail solely because a
+    progress snapshot could not be written.
+    """
+    job["updated_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+    path = _job_file(job["job_id"])
+
+    with REVIEW_JOB_LOCK:
+        temp = path.with_name(f"{path.stem}.{os.getpid()}.{threading.get_ident()}.tmp")
+        try:
+            with open(temp, "w", encoding="utf-8") as f:
+                json.dump(job, f, ensure_ascii=False, indent=2)
+                f.flush()
+                try:
+                    os.fsync(f.fileno())
+                except OSError:
+                    pass
+
+            last_error = None
+            for attempt in range(8):
+                try:
+                    os.replace(temp, path)
+                    return True
+                except PermissionError as exc:
+                    last_error = exc
+                    time.sleep(0.15 * (attempt + 1))
+                except OSError as exc:
+                    last_error = exc
+                    time.sleep(0.15 * (attempt + 1))
+
+            print(
+                f"[REVIEW JOB WARNING] Could not persist job {job.get('job_id')} "
+                f"after retries: {last_error}"
+            )
+            return False
+        except Exception as exc:
+            print(
+                f"[REVIEW JOB WARNING] Persistence failed for job "
+                f"{job.get('job_id')}: {exc}"
+            )
+            return False
+        finally:
+            try:
+                if temp.exists():
+                    temp.unlink()
+            except OSError:
+                pass
 
 
 def _load_job(job_id: str) -> dict | None:
+    path = _job_file(job_id)
+    if not path.exists():
+        return None
     try:
-        return REVIEW_JOB_STORE.get_job(job_id)
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
     except Exception as exc:
-        print(f"[REVIEW JOB] Failed to load {job_id} from SQLite: {exc}")
+        print(f"[REVIEW JOB] Failed to load {job_id}: {exc}")
         return None
 
 
@@ -1740,19 +1672,24 @@ def _find_latest_job_by_review_request(
     review_scopes: list[str] | None,
     eligible_section_ids: list[int] | None,
 ) -> dict | None:
-    try:
-        signature = _review_signature(
-            document_title,
-            _normalise_review_scopes(review_scopes),
-            _normalise_section_ids(eligible_section_ids),
-        )
-        return REVIEW_JOB_STORE.find_latest(
-            document_url=document_title,
-            review_signature=signature,
-        )
-    except Exception as exc:
-        print(f"[REVIEW JOB] SQLite lookup failed: {exc}")
-        return None
+    latest = None
+    with REVIEW_JOB_LOCK:
+        for path in REVIEW_JOB_DIR.glob("*.json"):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    job = json.load(f)
+                if not _job_matches_review_request(
+                    job,
+                    document_title,
+                    review_scopes,
+                    eligible_section_ids,
+                ):
+                    continue
+                if latest is None or str(job.get("updated_at", "")) > str(latest.get("updated_at", "")):
+                    latest = job
+            except Exception:
+                continue
+    return latest
 
 
 def _job_public_view(job: dict | None) -> dict | None:
@@ -1761,12 +1698,6 @@ def _job_public_view(job: dict | None) -> dict | None:
     return {
         "job_id": job.get("job_id"),
         "document_title": job.get("document_title"),
-        "document_url": job.get("document_url") or job.get("document_title"),
-        "source_version": job.get("source_version"),
-        "source_version_timestamp": job.get("source_version_timestamp"),
-        "source_version_source": job.get("source_version_source"),
-        "source_content_hash": job.get("source_content_hash"),
-        "review_type": job.get("review_type") or "Technical Document Review",
         "review_scopes": job.get("review_scopes", []),
         "selected_section_ids": job.get("selected_section_ids", []),
         "eligible_section_ids": job.get("eligible_section_ids", []),
@@ -1776,23 +1707,9 @@ def _job_public_view(job: dict | None) -> dict | None:
         "status": job.get("status", "UNKNOWN"),
         "created_at": job.get("created_at"),
         "started_at": job.get("started_at"),
-        "completed_at": job.get("completed_at"),
         "updated_at": job.get("updated_at"),
-        "duration_ms": job.get("duration_ms", 0),
-        "duration_seconds": round(float(job.get("duration_ms", 0) or 0) / 1000.0, 3),
-        "finding_count": int(job.get("finding_count", 0) or 0),
-        "pass_count": int(job.get("pass_count", 0) or 0),
-        "manual_review_count": int(job.get("manual_review_count", 0) or 0),
-        "input_tokens": int(job.get("input_tokens", 0) or 0),
-        "output_tokens": int(job.get("output_tokens", 0) or 0),
-        "reasoning_tokens": int(job.get("reasoning_tokens", 0) or 0),
-        "ai_credits": float(job.get("ai_credits", 0) or 0),
-        "model_calls": int(job.get("model_calls", 0) or 0),
-        "actual_models": job.get("actual_models", []),
-        "auto_tiers": job.get("auto_tiers", []),
         "progress": job.get("progress", {}),
         "usage": job.get("usage", {}),
-        "review_plan": job.get("review_plan", {}),
         "review_errors": job.get("review_errors", []),
         "error": job.get("error"),
         "recovery_note": job.get("recovery_note"),
@@ -1803,18 +1720,17 @@ def _job_public_view(job: dict | None) -> dict | None:
 def _mark_recoverable_jobs_on_startup() -> None:
     # A process restart cannot safely continue an in-flight Copilot session.
     # Completed section results are preserved so a later start can resume only what remains.
-    try:
-        jobs, _ = REVIEW_JOB_STORE.list_jobs(limit=500, offset=0)
-        for job in jobs:
+    for path in REVIEW_JOB_DIR.glob("*.json"):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                job = json.load(f)
             if job.get("status") in {"QUEUED", "RUNNING", "CANCEL_REQUESTED"}:
                 job["status"] = "RECOVERY_REQUIRED"
-                job["recovery_note"] = (
-                    "Server restarted while review was active. Completed sections are preserved; "
-                    "restarting the same review resumes only remaining sections."
-                )
+                job["recovery_note"] = "Server restarted while review was active. Completed sections are preserved; restarting the same review resumes only remaining sections."
                 _atomic_write_job(job)
-    except Exception as exc:
-        print(f"[REVIEW JOB] Startup recovery scan failed: {exc}")
+        except Exception:
+            continue
+
 
 _mark_recoverable_jobs_on_startup()
 
@@ -1878,42 +1794,6 @@ def _run_review_job_worker(job_id: str) -> None:
         final_job["result"] = {"success": True, "segmented_blueprint": result}
         final_job["usage"] = (result.get("ai_consumption") or {}).get("totals") or {}
         final_job["review_errors"] = result.get("review_errors", [])
-        usage_totals = result.get("ai_consumption", {}).get("totals") or {}
-        final_job["input_tokens"] = int(usage_totals.get("input_tokens", 0) or 0)
-        final_job["output_tokens"] = int(usage_totals.get("output_tokens", 0) or 0)
-        final_job["reasoning_tokens"] = int(usage_totals.get("reasoning_tokens", 0) or 0)
-        final_job["ai_credits"] = float(usage_totals.get("ai_credits_from_nano_aiu", usage_totals.get("ai_credits", 0)) or 0)
-        final_job["model_calls"] = int(usage_totals.get("model_calls", 0) or 0)
-        final_job["finding_count"] = len(result.get("findings", []) or [])
-        final_job["pass_count"] = len(result.get("passed_checks", []) or [])
-        final_job["manual_review_count"] = len(result.get("manual_review", []) or [])
-        final_job["actual_models"] = sorted({
-            str(item.get("model")).strip()
-            for item in (result.get("ai_consumption", {}).get("by_section") or [])
-            for _ in [0]
-            if item.get("model")
-        } | {
-            str(model).strip()
-            for item in (result.get("ai_consumption", {}).get("by_section") or [])
-            for model in (item.get("models") or [])
-            if str(model).strip()
-        })
-        final_job["auto_tiers"] = sorted({
-            str(item.get("routing", {}).get("requestedAutoTier")).strip()
-            for item in (result.get("ai_consumption", {}).get("by_section") or [])
-            if item.get("routing", {}).get("requestedAutoTier")
-        })
-        started = final_job.get("started_at")
-        completed_at = datetime.utcnow().isoformat(timespec="seconds") + "Z"
-        final_job["completed_at"] = completed_at
-        if started:
-            try:
-                start_dt = datetime.fromisoformat(str(started).replace("Z", "+00:00"))
-                end_dt = datetime.fromisoformat(completed_at.replace("Z", "+00:00"))
-                final_job["duration_ms"] = max(0, int((end_dt - start_dt).total_seconds() * 1000))
-            except Exception:
-                pass
-
         if cancel_event.is_set():
             final_job["status"] = "CANCELLED"
             final_job["recovery_note"] = "Review stopped by user. Completed sections are preserved and can be resumed by starting the same review again."
@@ -1992,7 +1872,6 @@ def _start_or_resume_review_job(request: HLDReviewStartRequest) -> dict:
         job["review_scopes"] = scopes
         job["selected_section_ids"] = selected_ids
         job["eligible_section_ids"] = eligible_ids
-        job["review_plan"] = request.review_plan or job.get("review_plan") or {}
         _atomic_write_job(job)
     else:
         job_id = hashlib.sha256(
@@ -2004,11 +1883,6 @@ def _start_or_resume_review_job(request: HLDReviewStartRequest) -> dict:
             "review_signature_version": 2,
             "document_title": request.document_title,
             "document_url": request.document_title,
-            "source_version": request.source_version,
-            "source_version_timestamp": request.source_version_timestamp,
-            "source_version_source": request.source_version_source,
-            "source_content_hash": request.source_content_hash,
-            "review_type": request.review_type or "Technical Document Review",
             "review_scopes": scopes,
             "selected_section_ids": selected_ids,
             "eligible_section_ids": eligible_ids,
@@ -2030,7 +1904,6 @@ def _start_or_resume_review_job(request: HLDReviewStartRequest) -> dict:
             "usage": {},
             "review_errors": [],
             "result": None,
-            "review_plan": request.review_plan or {},
         }
         _atomic_write_job(job)
 
@@ -2044,61 +1917,6 @@ def start_hld_review(payload: HLDReviewStartRequest):
     """Start a new review or resume/recover an existing matching review job."""
     job = _start_or_resume_review_job(payload)
     return {"success": True, "job": job}
-
-
-@app.get("/api/hld/jobs")
-def list_review_jobs(
-    status: Optional[str] = Query(None),
-    search: Optional[str] = Query(None),
-    document_url: Optional[str] = Query(None),
-    limit: int = Query(100, ge=1, le=500),
-    offset: int = Query(0, ge=0),
-):
-    jobs, total = REVIEW_JOB_STORE.list_jobs(
-        status=status,
-        search=search,
-        document_url=document_url,
-        limit=limit,
-        offset=offset,
-    )
-    return {
-        "success": True,
-        "jobs": [_job_public_view(job) for job in jobs],
-        "total": total,
-        "limit": limit,
-        "offset": offset,
-    }
-
-
-@app.get("/api/hld/jobs/{job_id}")
-def get_review_job_detail(job_id: str):
-    job = _load_job(job_id)
-    if not job:
-        raise HTTPException(status_code=404, detail="Review job not found.")
-    return {"success": True, "job": _job_public_view(job)}
-
-
-@app.delete("/api/hld/jobs/completed")
-def clear_completed_review_jobs(payload: dict | None = None):
-    payload = payload or {}
-    job_ids = payload.get("job_ids")
-    if job_ids is not None and not isinstance(job_ids, list):
-        raise HTTPException(status_code=400, detail="job_ids must be an array when provided.")
-    deleted = REVIEW_JOB_STORE.delete_completed(job_ids)
-    return {"success": True, "deleted_count": deleted}
-
-
-@app.delete("/api/hld/jobs/{job_id}")
-def delete_review_job(job_id: str):
-    job = _load_job(job_id)
-    if not job:
-        raise HTTPException(status_code=404, detail="Review job not found.")
-    if job.get("status") in ACTIVE_REVIEW_STATUSES:
-        raise HTTPException(status_code=409, detail="Active review jobs must be cancelled before deletion.")
-    deleted = REVIEW_JOB_STORE.delete_job(job_id)
-    if not deleted:
-        raise HTTPException(status_code=409, detail="Only Completed, Failed, or Cancelled jobs can be deleted.")
-    return {"success": True, "job_id": job_id}
 
 
 @app.get("/api/hld/review/{job_id}")
