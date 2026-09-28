@@ -128,6 +128,9 @@ export default function HLDAnalyzer({ openJobId = null, openJobTab = "findings",
     const [reviewJobId, setReviewJobId] = useState(null);
     const [refreshingUrl, setRefreshingUrl] = useState("");
     const [sourceMetadata, setSourceMetadata] = useState(null);
+    const [documentCheck, setDocumentCheck] = useState(null);
+    const [documentCheckBusy, setDocumentCheckBusy] = useState(false);
+    const [documentCheckDecision, setDocumentCheckDecision] = useState(null);
     const reviewPollRef = useRef(null);
     const restoringStateRef = useRef(true);
 
@@ -360,13 +363,17 @@ export default function HLDAnalyzer({ openJobId = null, openJobTab = "findings",
                     setSelectedReviewScopes(job.review_scopes);
                 }
 
-                if (job.source_version || job.source_version_timestamp) {
+                if (job.source_version || job.source_version_timestamp || job.document_last_updated) {
                     setSourceMetadata({
                         document_url: job.document_url || job.document_title || "",
                         document_title: job.document_title || "",
                         document_version: job.source_version || null,
                         document_version_timestamp: job.source_version_timestamp || null,
                         document_version_source: job.source_version_source || null,
+                        document_last_updated: job.document_last_updated || null,
+                        document_last_updated_by: job.document_last_updated_by || null,
+                        document_created_by: job.document_created_by || null,
+                        document_last_updated_source: job.document_last_updated_source || null,
                         source_content_hash: job.source_content_hash || null,
                     });
                 }
@@ -481,33 +488,111 @@ export default function HLDAnalyzer({ openJobId = null, openJobTab = "findings",
         setReviewPlan(null);
         setActiveTab("inventory");
         setReviewJob(null);
+        setDocumentCheck(null);
+        setDocumentCheckDecision(null);
         persistJobId(null);
     }
 
-    async function triggerPhase1MatrixIngestion() {
-        if (!wikiURL.trim()) return;
-
+    async function executeFullDocumentExtraction(targetUrl, { forceRefresh = false } = {}) {
         setLoading(true);
+        setError("");
+        setVerificationMatrix(null);
+        setAnalysisResult(null);
+        setExpandedId(null);
+        setReviewPlan(null);
+        setActiveTab("inventory");
+        setSelectedIds(new Set());
+
+        try {
+            const data = await generateHLDMatrix(targetUrl, { forceRefresh });
+            setVerificationMatrix(Array.isArray(data.matrix) ? data.matrix : []);
+            setIsLoadedFromCache(Boolean(data.loaded_from_cache));
+            setSourceMetadata(data.source_metadata || null);
+            setSelectedIds(new Set());
+            localStorage.removeItem("hld.selectedSectionIds");
+            setDocumentCheck(null);
+            setDocumentCheckDecision(null);
+            return data;
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function triggerPhase1MatrixIngestion() {
+        const targetUrl = wikiURL.trim();
+        if (!targetUrl) return;
+
+        setDocumentCheckBusy(true);
         setError("");
         setVerificationMatrix(null);
         setAnalysisResult(null);
         setSelectedIds(new Set());
         setExpandedId(null);
         setReviewPlan(null);
-        setActiveTab("inventory");
+        setDocumentCheckDecision(null);
 
         try {
-            const data = await generateHLDMatrix(wikiURL.trim());
+            // Metadata-first gate. The backend deliberately does NOT perform
+            // section extraction when an unchanged, already-reviewed revision
+            // is detected.
+            const data = await generateHLDMatrix(targetUrl, { forceRefresh: false });
+            setSourceMetadata(data.source_metadata || null);
+
+            if (data.requires_confirmation && data.existing_review) {
+                setDocumentCheck(data);
+                setActiveTab("inventory");
+                return;
+            }
+
+            setDocumentCheck(null);
+            setVerificationMatrix(Array.isArray(data.matrix) ? data.matrix : []);
+            setIsLoadedFromCache(Boolean(data.loaded_from_cache));
+            setSelectedIds(new Set());
+            localStorage.removeItem("hld.selectedSectionIds");
+        } catch (err) {
+            setError(err.message || "Failed to check and process the Confluence document.");
+        } finally {
+            setDocumentCheckBusy(false);
+        }
+    }
+
+    async function continueAfterExistingReview() {
+        const targetUrl = wikiURL.trim();
+        if (!targetUrl) return;
+
+        setDocumentCheckDecision("review_again");
+        setDocumentCheckBusy(true);
+        setError("");
+        setDocumentCheck(null);
+
+        try {
+            // The user's explicit decision permits a fresh section extraction
+            // for the unchanged revision. The existing completed job remains
+            // preserved in SQLite; a new review job is created later by the
+            // review-start endpoint with force_new_review=true.
+            await clearHLDMatrixCache(targetUrl).catch(() => {});
+            const data = await generateHLDMatrix(targetUrl, { forceRefresh: true });
             setVerificationMatrix(Array.isArray(data.matrix) ? data.matrix : []);
             setIsLoadedFromCache(Boolean(data.loaded_from_cache));
             setSourceMetadata(data.source_metadata || null);
             setSelectedIds(new Set());
             localStorage.removeItem("hld.selectedSectionIds");
+            setReviewPlan(null);
+            setActiveTab("inventory");
         } catch (err) {
-            setError(err.message || "Failed to process wiki document matrix.");
+            setError(err.message || "Failed to extract the selected document revision.");
         } finally {
-            setLoading(false);
+            setDocumentCheckBusy(false);
         }
+    }
+
+    function stopAfterExistingReview() {
+        setDocumentCheckDecision("stop");
+        setError("");
+        setVerificationMatrix(null);
+        setReviewPlan(null);
+        setAnalysisResult(null);
+        setSelectedIds(new Set());
     }
 
     async function invalidateCurrentReviewJob() {
@@ -596,7 +681,7 @@ export default function HLDAnalyzer({ openJobId = null, openJobTab = "findings",
 
         try {
             await clearHLDMatrixCache(targetUrl);
-            const data = await generateHLDMatrix(targetUrl);
+            const data = await generateHLDMatrix(targetUrl, { forceRefresh: true });
 
             setWikiURL(targetUrl);
             setVerificationMatrix(
@@ -713,10 +798,15 @@ export default function HLDAnalyzer({ openJobId = null, openJobTab = "findings",
                 // the selected review scopes.
                 selected_section_ids: Array.from(selectedIds),
                 source_version: sourceMetadata?.document_version || null,
-                source_version_timestamp: sourceMetadata?.document_version_timestamp || sourceMetadata?.observed_at || null,
+                source_version_timestamp: sourceMetadata?.document_version_timestamp || null,
                 source_version_source: sourceMetadata?.document_version_source || null,
+                document_last_updated: sourceMetadata?.document_last_updated || null,
+                document_last_updated_by: sourceMetadata?.document_last_updated_by || null,
+                document_created_by: sourceMetadata?.document_created_by || null,
+                document_last_updated_source: sourceMetadata?.document_last_updated_source || null,
                 source_content_hash: sourceMetadata?.source_content_hash || null,
                 review_type: "Technical Document Review",
+                force_new_review: documentCheckDecision === "review_again",
                 review_plan: plan,
             });
 
@@ -724,6 +814,7 @@ export default function HLDAnalyzer({ openJobId = null, openJobTab = "findings",
             if (!job?.job_id) throw new Error("The backend did not return a review job ID.");
             setReviewJob(job);
             persistJobId(job.job_id);
+            setDocumentCheckDecision(null);
             setActiveTab("review");
         } catch (err) {
             setError(err.message || "Failed to start the scoped architectural audit.");
@@ -1213,6 +1304,126 @@ export default function HLDAnalyzer({ openJobId = null, openJobTab = "findings",
                         ))}
                     </div>
                 )}
+                {documentCheck?.requires_confirmation && documentCheck?.existing_review && !loading && (
+                    <div
+                        style={{
+                            background: REPORT.panel,
+                            border: `1px solid ${REPORT.line}`,
+                            borderRadius: 8,
+                            padding: 24,
+                            marginBottom: 12,
+                            boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                        }}
+                    >
+                        <div
+                            style={{
+                                fontSize: 17,
+                                fontWeight: 700,
+                                color: REPORT.accent,
+                                marginBottom: 6,
+                            }}
+                        >
+                            Existing Review Found
+                        </div>
+                        <div style={{ fontSize: 12.5, color: REPORT.inkSoft, marginBottom: 14 }}>
+                            A completed review already exists for the current document revision. No section matrix extraction has been performed yet.
+                        </div>
+
+                        <div
+                            style={{
+                                background: REPORT.muted,
+                                border: `1px solid ${REPORT.line}`,
+                                borderRadius: 7,
+                                padding: 14,
+                                marginBottom: 14,
+                                fontSize: 12,
+                            }}
+                        >
+                            <div style={{ fontWeight: 700, color: REPORT.ink, marginBottom: 5 }}>
+                                {documentCheck.source_metadata?.document_title || wikiURL}
+                            </div>
+                            <div style={{ color: REPORT.inkSoft, marginBottom: 3 }}>
+                                Document last updated: <strong style={{ color: REPORT.ink }}>
+                                    {documentCheck.source_metadata?.document_last_updated || "Unavailable"}
+                                </strong>
+                            </div>
+                            {documentCheck.source_metadata?.document_last_updated_by && (
+                                <div style={{ color: REPORT.inkSoft, marginBottom: 3 }}>
+                                    Last updated by: <strong style={{ color: REPORT.ink }}>
+                                        {documentCheck.source_metadata.document_last_updated_by}
+                                    </strong>
+                                </div>
+                            )}
+                            <div style={{ color: REPORT.inkSoft }}>
+                                Previous review: <strong style={{ color: REPORT.ink }}>
+                                    {documentCheck.existing_review.job_id}
+                                </strong>
+                                {documentCheck.existing_review.completed_at
+                                    ? ` on ${new Date(documentCheck.existing_review.completed_at).toLocaleString()}`
+                                    : ""}
+                            </div>
+                            <div style={{ color: REPORT.inkSoft, marginTop: 3 }}>
+                                AI credits consumed: <strong style={{ color: REPORT.ink }}>
+                                    {Number(documentCheck.existing_review.ai_credits || 0).toFixed(4)}
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div style={{ fontSize: 12.5, fontWeight: 650, color: REPORT.ink, marginBottom: 10 }}>
+                            Do you want to review this unchanged document revision again?
+                        </div>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                            <button
+                                onClick={continueAfterExistingReview}
+                                disabled={documentCheckBusy}
+                                style={{
+                                    background: REPORT.accent,
+                                    color: "#fff",
+                                    border: "none",
+                                    borderRadius: 6,
+                                    padding: "9px 14px",
+                                    fontWeight: 700,
+                                    cursor: documentCheckBusy ? "not-allowed" : "pointer",
+                                    opacity: documentCheckBusy ? 0.6 : 1,
+                                }}
+                            >
+                                Review This Version Again
+                            </button>
+                            <button
+                                onClick={stopAfterExistingReview}
+                                disabled={documentCheckBusy}
+                                style={{
+                                    background: REPORT.panel,
+                                    color: REPORT.issue,
+                                    border: `1px solid ${REPORT.issue}`,
+                                    borderRadius: 6,
+                                    padding: "9px 14px",
+                                    fontWeight: 700,
+                                    cursor: documentCheckBusy ? "not-allowed" : "pointer",
+                                }}
+                            >
+                                Stop Review
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {documentCheckDecision === "stop" && !verificationMatrix && !loading && (
+                    <div
+                        style={{
+                            background: REPORT.okBg,
+                            border: `1px solid ${REPORT.line}`,
+                            color: REPORT.ok,
+                            borderRadius: 8,
+                            padding: 18,
+                            marginBottom: 12,
+                            fontSize: 12.5,
+                        }}
+                    >
+                        Review stopped. The completed historical review remains available in the Review Jobs workspace.
+                    </div>
+                )}
+
                 {loading && (
                     <div
                         style={{

@@ -110,16 +110,28 @@ export async function requestDiagramGeneration(path, content, diagramType) {
  * Phase 1 Updated: Ingests a Confluence Wiki URL string parameters object 
  * to generate or load the verification matrix chunk array.
  */
-export async function generateHLDMatrix(pageUrl) {
+export async function generateHLDMatrix(pageUrl, { forceRefresh = false } = {}) {
     const response = await fetch(`${API_URL}/hld/generate-matrix`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ page_url: pageUrl })
+        body: JSON.stringify({
+            page_url: pageUrl,
+            force_refresh: Boolean(forceRefresh),
+        })
     });
 
     return parseResponse(response);
+}
+
+/**
+ * Metadata-first document revision check is implemented by the
+ * /hld/generate-matrix endpoint. With forceRefresh=false the backend may
+ * return a confirmation gate instead of extracting the complete matrix.
+ */
+export async function checkHLDDocument(pageUrl) {
+    return generateHLDMatrix(pageUrl, { forceRefresh: false });
 }
 
 

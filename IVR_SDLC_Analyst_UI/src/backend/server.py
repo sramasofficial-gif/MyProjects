@@ -145,6 +145,11 @@ CONTENT_SELECTORS = [
 
 class ConfluenceURLRequest(BaseModel):
     page_url: str
+    # Phase-1 revision gate controls. The default path always checks the
+    # current Confluence document metadata before returning/creating the
+    # section matrix. force_refresh is set only after the user explicitly
+    # chooses to review an unchanged document version again.
+    force_refresh: bool = False
 
 # 1. Map Schema models for the Wiki extraction payload boundaries
 class HLDIngestionRequest(BaseModel):
@@ -158,11 +163,15 @@ class HLDIngestionRequest(BaseModel):
 class HLDReviewStartRequest(BaseModel):
     document_title: str
     review_scopes: list[str] = []
+    force_new_review: bool = False
     selected_section_ids: list[int] = []
     project_scope: Optional[str] = "IVR Context Validation"
     source_version: Optional[str] = None
     source_version_timestamp: Optional[str] = None
     source_version_source: Optional[str] = None
+    document_last_updated: Optional[str] = None
+    document_last_updated_by: Optional[str] = None
+    document_created_by: Optional[str] = None
     source_content_hash: Optional[str] = None
     review_type: Optional[str] = "Technical Document Review"
     review_plan: dict = {}
@@ -719,23 +728,57 @@ class HLDReviewPlanRequest(BaseModel):
 
 
 async def extract_confluence_source_metadata_async(page, page_url: str) -> dict:
-    """Best-effort extraction of Confluence page version/modified metadata.
+    """Extract the source timestamp shown in the visible Confluence page header.
 
-    Confluence deployments differ in their DOM. We prefer explicit version/modified
-    metadata and otherwise fall back to the current scrape timestamp.
+    Preference order:
+      1. Visible page-header text: "Created by ..., last updated by ... on ..."
+      2. Confluence meta/time elements for the modified timestamp
+      3. Scrape timestamp as an observation fallback (never presented as document last-updated)
     """
     observed_at = datetime.utcnow().isoformat(timespec="seconds") + "Z"
     try:
         data = await page.evaluate("""() => {
-            const pick = (selectors) => {
+            const text = document.body?.innerText || '';
+            const clean = value => (value || '').replace(/\s+/g, ' ').trim();
+
+            let createdBy = null;
+            let lastUpdatedBy = null;
+            let lastUpdated = null;
+
+            const headerMatch = text.match(
+                /Created\s+by\s+(.+?),\s*last\s+updated\s+by\s+(.+?)\s+on\s+([^\n•|]+?)(?:\s+•|\n|$)/i
+            );
+            if (headerMatch) {
+                createdBy = clean(headerMatch[1]);
+                lastUpdatedBy = clean(headerMatch[2]);
+                lastUpdated = clean(headerMatch[3]);
+            }
+
+            const pick = selectors => {
                 for (const selector of selectors) {
                     const el = document.querySelector(selector);
                     if (!el) continue;
-                    const value = el.getAttribute('content') || el.getAttribute('datetime') || el.textContent;
-                    if (value && value.trim()) return value.trim();
+                    const value = el.getAttribute('content') ||
+                        el.getAttribute('datetime') ||
+                        el.textContent;
+                    if (value && clean(value)) return clean(value);
                 }
                 return null;
             };
+
+            const metaModified = pick([
+                'meta[property="article:modified_time"]',
+                'meta[name="last-modified"]',
+                'meta[name="ajs-content-last-updated"]',
+                'time[datetime]'
+            ]);
+
+            const title = pick([
+                'meta[property="og:title"]',
+                'meta[name="ajs-content-title"]',
+                'title'
+            ]);
+
             const version = pick([
                 '[data-version-number]',
                 '[data-page-version]',
@@ -744,481 +787,49 @@ async def extract_confluence_source_metadata_async(page, page_url: str) -> dict:
                 'meta[name="page-version"]',
                 'meta[property="page:version"]'
             ]);
-            const modified = pick([
-                'meta[property="article:modified_time"]',
-                'meta[name="last-modified"]',
-                'meta[name="ajs-content-last-updated"]',
-                'time[datetime]'
-            ]);
-            const title = pick([
-                'meta[property="og:title"]',
-                'meta[name="ajs-content-title"]',
-                'title'
-            ]);
-            let bodyVersion = null;
-            if (!version) {
-                const text = document.body?.innerText || '';
-                const match = text.match(/\\bVersion\\s+(\\d+)\\b/i);
-                if (match) bodyVersion = match[1];
-            }
-            return { version: version || bodyVersion, modified, title };
+
+            return {
+                title,
+                version,
+                createdBy,
+                lastUpdatedBy,
+                lastUpdated,
+                metaModified
+            };
         }""")
-    except Exception:
+    except Exception as exc:
+        print(f"[SOURCE METADATA] Extraction failed: {exc}")
         data = {}
 
-    version = str(data.get("version") or "").strip() or None
-    modified = str(data.get("modified") or "").strip() or None
     title = str(data.get("title") or "").strip() or None
+    version = str(data.get("version") or "").strip() or None
+    created_by = str(data.get("createdBy") or "").strip() or None
+    last_updated_by = str(data.get("lastUpdatedBy") or "").strip() or None
+    last_updated = str(data.get("lastUpdated") or "").strip() or None
+    meta_modified = str(data.get("metaModified") or "").strip() or None
 
-    if version:
-        version_source = "confluence_page_version"
-    elif modified:
-        version = None
-        version_source = "confluence_modified_timestamp"
+    if last_updated:
+        timestamp_source = "confluence_page_header"
+    elif meta_modified:
+        # This is a Confluence modified timestamp, but not necessarily the human-visible header value.
+        last_updated = meta_modified
+        timestamp_source = "confluence_modified_metadata"
     else:
-        version_source = "scrape_timestamp"
-        modified = observed_at
+        timestamp_source = "scrape_timestamp"
 
     return {
         "document_url": page_url,
         "document_title": title or page_url,
         "document_version": version,
-        "document_version_timestamp": modified,
-        "document_version_source": version_source,
+        "document_version_timestamp": meta_modified,
+        "document_version_source": "confluence_page_version" if version else None,
+        "document_last_updated": last_updated,
+        "document_last_updated_by": last_updated_by,
+        "document_created_by": created_by,
+        "document_last_updated_source": timestamp_source,
         "observed_at": observed_at,
     }
 
-
-async def extract_confluence_section_inventory_async(page, selector):
-    """Run the rendered-DOM content type detection and record visual elements per section."""
-    result = await page.evaluate(SECTION_EXTRACT_JS, selector)
-    rows = []
-    for index, section in enumerate(result.get("sections", []), start=1):
-        types = section.get("types") or []
-        placeholder_count = int(section.get("placeholderCount") or 0)
-        status = "issue" if placeholder_count > 0 else ("empty" if not types else "ok")
-        content = (section.get("content") or "").strip()
-        rows.append({
-            "id": index,
-            "level": section.get("level", 1),
-            "heading": section.get("heading", "").strip(),
-            "numbering": section.get("numbering"),
-            "types": types,
-            "placeholderCount": placeholder_count,
-            "status": status,
-            "domId": section.get("domId"),
-            "content": content,
-            "visualElements": section.get("visualElements") or [],
-        })
-    return rows
-
-
-def _safe_section_file_name(section_id: int) -> str:
-    return f"section_{section_id:03d}.png"
-
-
-async def _download_original_asset_async(request_context, candidates, output_path: Path) -> tuple[bool, str | None, str | None]:
-    """Try authenticated browser-context downloads for original raster image assets."""
-    for candidate in candidates or []:
-        url = candidate.get("url") if isinstance(candidate, dict) else None
-        kind = candidate.get("kind") if isinstance(candidate, dict) else "unknown"
-        if not url or not url.startswith(("http://", "https://")):
-            continue
-        try:
-            response = await request_context.get(url, timeout=15000)
-            if not response.ok:
-                continue
-
-            content_type = (response.headers.get("content-type") or "").lower().split(";", 1)[0].strip()
-            # Prefer raster assets that can be normalized to PNG for consistent UI/vision input.
-            if content_type not in {"image/png", "image/jpeg", "image/jpg", "image/webp", "image/gif"}:
-                continue
-
-            body = await response.body()
-            if len(body) < 100:
-                continue
-
-            temp_path = output_path.with_suffix(".download")
-            temp_path.write_bytes(body)
-
-            try:
-                from PIL import Image
-                with Image.open(temp_path) as img:
-                    # Flatten animation/transparency safely into a standard RGB/RGBA PNG.
-                    if img.mode not in ("RGB", "RGBA"):
-                        img = img.convert("RGBA" if "transparency" in img.info else "RGB")
-                    img.save(output_path, format="PNG", optimize=True)
-            finally:
-                try:
-                    temp_path.unlink()
-                except OSError:
-                    pass
-
-            return True, kind, content_type
-        except Exception:
-            try:
-                temp_path = output_path.with_suffix(".download")
-                if temp_path.exists():
-                    temp_path.unlink()
-            except OSError:
-                pass
-            continue
-
-    return False, None, None
-
-
-async def _capture_interactive_viewer_export_async(page, context, element, output_path: Path, section_id: int, visual_idx: int) -> tuple[bool, str | None]:
-    """
-    Try to export an interactive Confluence diagram viewer before falling back to a screenshot.
-
-    Many Confluence diagram macros render an iframe/viewer with a toolbar that exposes an
-    Export/Download/Camera control. We prefer that export because it can preserve the
-    diagram's original resolution instead of capturing the viewer thumbnail.
-
-    Returns (success, method_name).
-    """
-    tag = await element.evaluate("el => el.tagName.toLowerCase()")
-    if tag != "iframe":
-        return False, None
-
-    try:
-        frame = await element.content_frame()
-    except Exception:
-        frame = None
-
-    if frame is None:
-        print(f"[VISUAL EXPORT] Section {section_id} visual {visual_idx}: iframe frame unavailable.")
-        return False, None
-
-    # Prefer explicit export/download controls, then the Camera control shown by many
-    # interactive viewers. We intentionally do not click arbitrary buttons.
-    selectors = [
-        "[aria-label*='export' i]",
-        "[title*='export' i]",
-        "[aria-label*='download' i]",
-        "[title*='download' i]",
-        "[aria-label*='camera' i]",
-        "[title*='camera' i]",
-        "button:has-text('Export')",
-        "button:has-text('Download')",
-    ]
-
-    for selector in selectors:
-        try:
-            controls = frame.locator(selector)
-            count = await controls.count()
-            for idx in range(count):
-                control = controls.nth(idx)
-                try:
-                    if not await control.is_visible():
-                        continue
-
-                    async with page.expect_download(timeout=10000) as download_info:
-                        await control.click(timeout=5000)
-
-                    download = await download_info.value
-                    suggested = download.suggested_filename or f"section_{section_id:03d}_visual_{visual_idx:02d}.png"
-                    print(f"[VISUAL EXPORT] Section {section_id} visual {visual_idx}: viewer export triggered via {selector} ({suggested}).")
-
-                    temp_path = output_path.with_suffix(".viewer_download")
-                    await download.save_as(str(temp_path))
-
-                    try:
-                        from PIL import Image
-                        with Image.open(temp_path) as img:
-                            if img.mode not in ("RGB", "RGBA"):
-                                img = img.convert("RGBA" if "transparency" in img.info else "RGB")
-                            img.save(output_path, format="PNG", optimize=True)
-                    finally:
-                        try:
-                            temp_path.unlink()
-                        except OSError:
-                            pass
-
-                    return True, "interactive-viewer-export"
-                except Exception as click_error:
-                    # Continue trying other controls. A viewer may expose multiple
-                    # toolbar buttons, only one of which actually creates a download.
-                    continue
-        except Exception:
-            continue
-
-    return False, None
-
-
-
-def _normalize_heading_text(value: str) -> str:
-    value = re.sub(r"[^a-z0-9]+", " ", (value or "").lower())
-    return re.sub(r"\s+", " ", value).strip()
-
-
-def _heading_similarity(expected: str, observed: str) -> float:
-    """Token-overlap similarity used to avoid deleting unrelated text from diagrams."""
-    expected_tokens = set(_normalize_heading_text(expected).split())
-    observed_tokens = set(_normalize_heading_text(observed).split())
-    if not expected_tokens or not observed_tokens:
-        return 0.0
-    return len(expected_tokens.intersection(observed_tokens)) / len(expected_tokens)
-
-
-def _find_matching_heading_band_with_ocr(image_path: Path, section_heading: str) -> tuple[int | None, float, str]:
-    """
-    OCR only the upper strip and find the section heading if the exported viewer
-    duplicated it as a title/header above the actual diagram.
-
-    The match threshold is deliberately high. If OCR is unavailable, inconclusive,
-    or the match is weak, no pixels are removed.
-    """
-    global _HEADING_OCR_READER
-
-    if not section_heading or len(_normalize_heading_text(section_heading)) < 5:
-        return None, 0.0, "no-section-heading"
-
-    try:
-        from PIL import Image
-
-        with Image.open(image_path) as img:
-            rgb = img.convert("RGB")
-            width, height = rgb.size
-            top_h = max(80, min(int(height * 0.20), 500))
-            top_strip = rgb.crop((0, 0, width, top_h))
-
-            # Convert to a temporary in-memory image file so EasyOCR can consume it.
-            temp_ocr = image_path.with_suffix(".heading_ocr.png")
-            top_strip.save(temp_ocr, format="PNG", optimize=True)
-
-        try:
-            if _HEADING_OCR_READER is None:
-                try:
-                    import easyocr
-                    _HEADING_OCR_READER = easyocr.Reader(["en"], gpu=False, verbose=False)
-                except Exception:
-                    _HEADING_OCR_READER = False
-
-            if _HEADING_OCR_READER is False:
-                return None, 0.0, "easyocr-unavailable"
-
-            detections = _HEADING_OCR_READER.readtext(str(temp_ocr), detail=1, paragraph=False)
-            expected = _normalize_heading_text(section_heading)
-            best = (None, 0.0, "no-match")
-
-            for bbox, observed, confidence in detections:
-                if confidence < 0.45:
-                    continue
-                score = _heading_similarity(expected, observed)
-                if score > best[1]:
-                    # bbox is four points: top-left, top-right, bottom-right, bottom-left.
-                    top_y = min(point[1] for point in bbox)
-                    bottom_y = max(point[1] for point in bbox)
-                    best = (int(bottom_y), score, str(observed))
-
-            crop_y, score, observed = best
-            if crop_y is None or score < 0.80:
-                return None, score, f"heading-match-too-weak:{score:.2f}:{observed}"
-
-            # Do not crop deep into the image. This is strictly a title/header cleanup.
-            if crop_y > min(140, top_h // 2):
-                return None, score, f"heading-band-too-tall:{crop_y}px"
-
-            return crop_y, score, f"heading-match:{observed}"
-        finally:
-            try:
-                temp_ocr.unlink()
-            except OSError:
-                pass
-
-    except Exception as exc:
-        return None, 0.0, f"ocr-error:{exc}"
-
-
-def _remove_exported_section_heading(image_path: Path, section_heading: str) -> tuple[bool, int | None, str]:
-    """
-    Remove only a confidently OCR-matched top title band from an interactive viewer export.
-
-    The original export is expected to be preserved separately by the caller. This helper
-    changes the working PNG only when the recognized top text strongly matches the HLD
-    section heading.
-    """
-    crop_y, score, reason = _find_matching_heading_band_with_ocr(image_path, section_heading)
-    if crop_y is None:
-        return False, None, reason
-
-    try:
-        from PIL import Image
-        with Image.open(image_path) as img:
-            width, height = img.size
-            # Add a small margin below the title so antialiased descenders do not remain.
-            crop_y = min(height - 1, crop_y + 8)
-            if crop_y < 18:
-                return False, None, f"crop-too-small:{crop_y}"
-            cleaned = img.crop((0, crop_y, width, height))
-            cleaned.save(image_path, format="PNG", optimize=True)
-        return True, crop_y, f"removed-heading-score:{score:.2f}"
-    except Exception as exc:
-        return False, None, f"crop-error:{exc}"
-
-
-async def capture_section_visuals_async(page, context, page_hash: str, rows: list[dict]) -> None:
-    """Prefer viewer exports/original Confluence assets; fall back to high-DPI screenshots."""
-    visual_root = HLD_VISUAL_CACHE_DIR / page_hash
-    visual_root.mkdir(parents=True, exist_ok=True)
-
-    visual_selector = '[data-hld-section-visual]'
-    total_original = 0
-    total_screenshot = 0
-
-    for row in rows:
-        types = set(row.get("types") or [])
-        if not types.intersection({"image", "diagram", "diagram-iframe"}):
-            row["visual_evidence"] = []
-            row["visual_review_available"] = False
-            row["visual_review_analyzed"] = False
-            continue
-
-        section_id = int(row["id"])
-        locator = page.locator(f'{visual_selector}[data-hld-section-visual="{section_id}"]')
-        count = await locator.count()
-        evidence = []
-
-        for idx in range(count):
-            element = locator.nth(idx)
-            try:
-                metadata = await element.evaluate("""el => ({
-                    tag: el.tagName.toLowerCase(),
-                    alt: el.getAttribute('alt'),
-                    title: el.getAttribute('title'),
-                    candidates: (el._hldAssetCandidates || []),
-                    rect: (() => { const r = el.getBoundingClientRect(); return {width: r.width, height: r.height}; })()
-                })""")
-
-                # Recompute candidates from the live DOM so wrapper links/data-* values are available.
-                candidates = await element.evaluate("""el => {
-                    const out = [];
-                    const add = (value, kind) => {
-                        if (!value) return;
-                        const raw = String(value).trim();
-                        if (!raw || raw.startsWith('data:') || raw.startsWith('blob:')) return;
-                        try {
-                            const absolute = new URL(raw, window.location.href).href;
-                            if (!out.some(c => c.url === absolute)) out.push({url: absolute, kind});
-                        } catch (_) {}
-                    };
-                    ['src','data-src','data-image-src','data-full-src','data-original','data-original-src'].forEach(a => add(el.getAttribute(a), a));
-                    const srcset = el.getAttribute('srcset');
-                    if (srcset) srcset.split(',').forEach(part => add(part.trim().split(/\\s+/)[0], 'srcset'));
-                    const a = el.closest('a[href]');
-                    if (a) add(a.getAttribute('href'), 'parent-link');
-                    return out;
-                }""")
-
-                output_dir = visual_root / str(section_id)
-                output_dir.mkdir(parents=True, exist_ok=True)
-                image_path = output_dir / f"visual_{idx + 1:02d}.png"
-
-                # Interactive diagram viewers (commonly iframe-backed) should be exported
-                # through their own toolbar first. This preserves much more detail than
-                # screenshotting the scaled viewer.
-                interactive_exported, export_method = await _capture_interactive_viewer_export_async(
-                    page,
-                    context,
-                    element,
-                    image_path,
-                    section_id,
-                    idx + 1,
-                )
-
-                if interactive_exported:
-                    total_original += 1
-
-                    # Preserve the raw viewer export, then remove a duplicated section
-                    # title only when OCR finds a strong match in the top band.
-                    raw_export_path = image_path.with_name(f"{image_path.stem}_raw.png")
-                    try:
-                        shutil.copy2(image_path, raw_export_path)
-                    except OSError:
-                        raw_export_path = None
-
-                    changed, crop_y, cleanup_reason = _remove_exported_section_heading(
-                        image_path,
-                        row.get("heading") or "",
-                    )
-                    if changed:
-                        print(
-                            f"[VISUAL CLEANUP] Section {section_id} visual {idx + 1}: "
-                            f"removed duplicated heading ({cleanup_reason})."
-                        )
-                    else:
-                        print(
-                            f"[VISUAL CLEANUP] Section {section_id} visual {idx + 1}: "
-                            f"left export unchanged ({cleanup_reason})."
-                        )
-
-                    evidence.append({
-                        "path": str(image_path.resolve()),
-                        "url": f"/api/hld/visual/{page_hash}/{section_id}/{idx + 1:02d}",
-                        "mimeType": "image/png",
-                        "displayName": f"section_{section_id:03d}_visual_{idx + 1:02d}.png",
-                        "sourceTag": metadata.get("tag"),
-                        "captureMethod": export_method,
-                        "viewerExport": True,
-                        "cleanedHeading": bool(changed),
-                        "headingCropY": crop_y,
-                        "rawExportPath": str(raw_export_path.resolve()) if raw_export_path else None,
-                    })
-                    continue
-
-                downloaded, source_kind, source_mime = await _download_original_asset_async(
-                    context.request,
-                    candidates,
-                    image_path,
-                )
-
-                if downloaded:
-                    total_original += 1
-                    evidence.append({
-                        "path": str(image_path.resolve()),
-                        "url": f"/api/hld/visual/{page_hash}/{section_id}/{idx + 1:02d}",
-                        "mimeType": "image/png",
-                        "displayName": f"section_{section_id:03d}_visual_{idx + 1:02d}.png",
-                        "sourceTag": metadata.get("tag"),
-                        "captureMethod": "original-asset",
-                        "originalSourceKind": source_kind,
-                        "originalMimeType": source_mime,
-                    })
-                    print(f"[VISUAL CAPTURE] Section {section_id} visual {idx + 1}: original asset downloaded ({source_kind}, {source_mime}) and normalized to PNG.")
-                    continue
-
-                # Fallback: capture the actual rendered element at device scale factor 2.
-                await element.scroll_into_view_if_needed(timeout=3000)
-                await page.wait_for_timeout(150)
-                box = await element.bounding_box()
-                if not box or box["width"] < 4 or box["height"] < 4:
-                    print(f"[VISUAL CAPTURE] Section {section_id} visual {idx + 1} skipped: element has no usable bounding box.")
-                    continue
-
-                await element.screenshot(path=str(image_path), type="png")
-                total_screenshot += 1
-                evidence.append({
-                    "path": str(image_path.resolve()),
-                    "url": f"/api/hld/visual/{page_hash}/{section_id}/{idx + 1:02d}",
-                    "mimeType": "image/png",
-                    "displayName": f"section_{section_id:03d}_visual_{idx + 1:02d}.png",
-                    "sourceTag": metadata.get("tag"),
-                    "captureMethod": "rendered-screenshot",
-                })
-                print(f"[VISUAL CAPTURE] Section {section_id} visual {idx + 1}: original unavailable; rendered screenshot captured.")
-            except Exception as exc:
-                print(f"[VISUAL CAPTURE] Section {section_id} visual {idx + 1} skipped: {exc}")
-
-        row["visual_evidence"] = evidence
-        row["visual_review_available"] = bool(evidence)
-        row["visual_review_analyzed"] = False
-
-    print(
-        f"[VISUAL CAPTURE] Original assets: {total_original}; "
-        f"rendered screenshot fallbacks: {total_screenshot}; "
-        f"total visual evidence assets: {total_original + total_screenshot} across {len(rows)} sections."
-    )
 
 # --- Phase 1: Ingestion & Matrix Compiling Endpoint ---
 def get_file_cache_path(filename: str) -> str:
@@ -1433,90 +1044,304 @@ async def discover_active_hld_review(
         "job": _job_public_view(job),
     }
 
+async def extract_confluence_section_inventory_async(page, selector):
+    """
+    Extract the section inventory from the rendered Confluence DOM.
+
+    SECTION_EXTRACT_JS is expected to return an array containing one record
+    per HLD section with fields such as:
+      - heading
+      - content
+      - types
+      - status
+      - level
+      - numbering
+      - placeholderCount
+      - domId
+    """
+    if not selector:
+        selector = "body"
+
+    result = await page.evaluate(
+        SECTION_EXTRACT_JS,
+        selector,
+    )
+
+    if not isinstance(result, list):
+        raise ValueError(
+            "SECTION_EXTRACT_JS did not return a list of section records."
+        )
+
+    rows = []
+
+    for index, raw_row in enumerate(result, start=1):
+        row = dict(raw_row or {})
+
+        row.setdefault(
+            "id",
+            index,
+        )
+
+        row.setdefault(
+            "heading",
+            "Unclassified section",
+        )
+
+        row.setdefault(
+            "content",
+            "",
+        )
+
+        row.setdefault(
+            "types",
+            [],
+        )
+
+        row.setdefault(
+            "status",
+            "empty" if not row.get("types") else "ok",
+        )
+
+        row.setdefault(
+            "level",
+            0,
+        )
+
+        row.setdefault(
+            "numbering",
+            "",
+        )
+
+        row.setdefault(
+            "placeholderCount",
+            0,
+        )
+
+        row.setdefault(
+            "domId",
+            "",
+        )
+
+        # Normalize types.
+        types = row.get("types")
+
+        if not isinstance(types, list):
+            types = (
+                list(types)
+                if isinstance(types, (set, tuple))
+                else []
+            )
+
+        row["types"] = [
+            str(value).strip().lower()
+            for value in types
+            if str(value).strip()
+        ]
+
+        # Preserve visual evidence fields expected by the
+        # downstream Copilot-review workflow.
+        row.setdefault(
+            "visual_evidence",
+            [],
+        )
+
+        row.setdefault(
+            "visual_review_available",
+            False,
+        )
+
+        row.setdefault(
+            "visual_review_analyzed",
+            False,
+        )
+
+        rows.append(row)
+
+    print(
+        f"[SECTION EXTRACTION] Extracted "
+        f"{len(rows)} section(s) from rendered DOM."
+    )
+
+    return rows
 
 @app.post("/api/hld/generate-matrix")
 async def generate_verified_matrix(payload: ConfluenceURLRequest):
     """
-    Phase 1 Replacement: Ingests an HLD directly from a Confluence Wiki URL
-    using saved session states and structural async chunking arrays.
-    """
-    # Generate clean cache identifier from URL text structures
-    url_hash = hashlib.sha256(payload.page_url.encode("utf-8")).hexdigest()
-    target_cache_path = get_wiki_cache_path(payload.page_url)
+    Phase 1: metadata-first document ingestion gate followed by section matrix extraction.
 
-    if SERVER_CONFIG.enable_persistence and os.path.exists(target_cache_path):
-        print(f"[CACHE HIT] Serving pre-existing matrix for wiki URL hash: {url_hash[:16]}")
-        with open(target_cache_path, "r", encoding="utf-8") as f:
-            matrix_chunks = json.load(f)
-        metadata_path = Path(str(target_cache_path) + ".meta.json")
-        if metadata_path.exists():
-            try:
-                with metadata_path.open("r", encoding="utf-8") as f:
-                    source_metadata = json.load(f)
-            except Exception:
-                source_metadata = {}
-        else:
-            source_metadata = {
-                "document_url": payload.page_url,
-                "document_title": payload.page_url,
-                "document_version": None,
-                "document_version_timestamp": datetime.fromtimestamp(os.path.getmtime(target_cache_path)).isoformat(timespec="seconds"),
-                "document_version_source": "cache_file_timestamp",
-                "observed_at": datetime.fromtimestamp(os.path.getmtime(target_cache_path)).isoformat(timespec="seconds"),
-                "source_content_hash": hashlib.sha256(
-                    json.dumps(matrix_chunks, sort_keys=True, ensure_ascii=False).encode("utf-8")
-                ).hexdigest(),
-            }
-        return {
-            "success": True,
-            "filename": payload.page_url,
-            "matrix": matrix_chunks,
-            "loaded_from_cache": True,
-            "source_metadata": source_metadata,
-        }
+    Normal flow:
+      1. Open the authenticated Confluence page.
+      2. Extract the visible document last-updated metadata only.
+      3. Check SQLite for a completed review of the same document revision.
+      4. If one exists, return a confirmation gate without extracting sections.
+      5. Otherwise, reuse a cache only when its stored document timestamp matches.
+      6. If extraction is required, continue with full content + visual capture.
+
+    force_refresh=True is used only after an explicit user decision to review the
+    unchanged document version again, or by the explicit Re-Scrape workflow.
+    """
+    page_url = payload.page_url.strip()
+    if not page_url:
+        raise HTTPException(status_code=400, detail="Missing Confluence page URL.")
+
+    url_hash = hashlib.sha256(page_url.encode("utf-8")).hexdigest()
+    target_cache_path = get_wiki_cache_path(page_url)
+    cache_metadata_path = Path(str(target_cache_path) + ".meta.json")
 
     if not os.path.exists(AUTH_STATE_FILE):
         raise HTTPException(
-            status_code=401, 
-            detail=f"No saved Confluence session found ({AUTH_STATE_FILE}). Run login locally first."
+            status_code=401,
+            detail=f"No saved Confluence session found ({AUTH_STATE_FILE}). Run login locally first.",
         )
 
+    browser = None
     try:
-        # 🟢 FIX: Initialize and orchestrate via async context managers and explicit keyword awaits
+        # ------------------------------------------------------------
+        # LIGHTWEIGHT REVISION CHECK
+        # ------------------------------------------------------------
+        # Do not call ensure_full_content_loaded_async() here. We only need
+        # enough of the page to read the title / last-updated metadata.
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
             context = await browser.new_context(
                 storage_state=AUTH_STATE_FILE,
                 viewport={"width": 1920, "height": 1200},
-                device_scale_factor=2,
+                device_scale_factor=1,
             )
             page = await context.new_page()
+            await page.goto(page_url, wait_until="domcontentloaded")
+            try:
+                await page.wait_for_timeout(750)
+            except Exception:
+                pass
 
-            await page.goto(payload.page_url)
-            
-            # 🟢 FIX: Invoke updated async helper sequence 
+            source_metadata = await extract_confluence_source_metadata_async(page, page_url)
+
+            if not source_metadata.get("document_title"):
+                source_metadata["document_title"] = page_url
+
+            current_last_updated = str(
+                source_metadata.get("document_last_updated") or ""
+            ).strip()
+
+            # --------------------------------------------------------
+            # EXISTING COMPLETED REVIEW GATE
+            # --------------------------------------------------------
+            if current_last_updated:
+                existing_completed = REVIEW_JOB_STORE.find_latest_completed_by_document_revision(
+                    document_url=page_url,
+                    document_last_updated=current_last_updated,
+                )
+            else:
+                existing_completed = None
+
+            if existing_completed and not payload.force_refresh:
+                print(
+                    "[DOCUMENT REVISION GATE] Completed review already exists: "
+                    f"job={existing_completed.get('job_id')} "
+                    f"updated={current_last_updated}"
+                )
+                await browser.close()
+                browser = None
+                return {
+                    "success": True,
+                    "requires_confirmation": True,
+                    "confirmation_type": "existing_completed_review",
+                    "message": (
+                        "A completed review already exists for the current Confluence "
+                        "document timestamp. No section matrix extraction was performed."
+                    ),
+                    "filename": page_url,
+                    "matrix": [],
+                    "loaded_from_cache": False,
+                    "source_metadata": source_metadata,
+                    "existing_review": _job_public_view(existing_completed),
+                    "cache_available": os.path.exists(target_cache_path),
+                }
+
+            # --------------------------------------------------------
+            # CACHE REUSE CHECK
+            # --------------------------------------------------------
+            # Only reuse an existing matrix when its source metadata matches
+            # the current Confluence last-updated timestamp. This prevents a
+            # stale URL-only cache from silently hiding a changed document.
+            cache_usable = False
+            cached_matrix = None
+            cached_metadata = None
+
+            if (
+                SERVER_CONFIG.enable_persistence
+                and os.path.exists(target_cache_path)
+                and cache_metadata_path.exists()
+                and not payload.force_refresh
+            ):
+                try:
+                    with cache_metadata_path.open("r", encoding="utf-8") as f:
+                        cached_metadata = json.load(f)
+                    cache_last_updated = str(
+                        cached_metadata.get("document_last_updated") or ""
+                    ).strip()
+                    cache_usable = bool(
+                        current_last_updated
+                        and cache_last_updated
+                        and current_last_updated == cache_last_updated
+                    )
+                except Exception:
+                    cache_usable = False
+
+            if cache_usable:
+                with open(target_cache_path, "r", encoding="utf-8") as f:
+                    cached_matrix = json.load(f)
+                print(
+                    f"[CACHE HIT] Serving revision-matched matrix for wiki URL hash: {url_hash[:16]} "
+                    f"last_updated={current_last_updated}"
+                )
+                await browser.close()
+                browser = None
+                return {
+                    "success": True,
+                    "requires_confirmation": False,
+                    "filename": page_url,
+                    "matrix": cached_matrix,
+                    "loaded_from_cache": True,
+                    "source_metadata": cached_metadata or source_metadata,
+                    "cache_revision_match": True,
+                }
+
+            # --------------------------------------------------------
+            # FULL DOCUMENT EXTRACTION
+            # --------------------------------------------------------
+            # We intentionally keep the same browser/page alive so the document
+            # isn't opened twice after the metadata gate.
+            print(
+                f"[DOCUMENT EXTRACTION] Proceeding with full section extraction: "
+                f"url_hash={url_hash[:16]} force_refresh={payload.force_refresh}"
+            )
+
             await ensure_full_content_loaded_async(page)
-
-            # Determine structural locator node wrapper
             selector = await _find_content_selector_async(page)
-
-            # IMPORTANT: classify the ACTUAL rendered DOM, not inner_text alone.
             matrix_rows = await extract_confluence_section_inventory_async(page, selector)
 
-            # Capture the actual rendered pixels for image/diagram sections. These files
-            # become optional visual evidence for the later Copilot vision review.
+            # Capture actual rendered pixels for image/diagram sections.
             await capture_section_visuals_async(page, context, url_hash[:16], matrix_rows)
-            source_metadata = await extract_confluence_source_metadata_async(page, payload.page_url)
+
+            # Re-read metadata after full content loading in case the page header
+            # is populated lazily by the Confluence client-side renderer.
+            refreshed_metadata = await extract_confluence_source_metadata_async(page, page_url)
+            for key, value in refreshed_metadata.items():
+                if value:
+                    source_metadata[key] = value
 
             source_metadata["source_content_hash"] = hashlib.sha256(
                 json.dumps(matrix_rows, sort_keys=True, ensure_ascii=False).encode("utf-8")
             ).hexdigest()
 
             if not matrix_rows:
-                raise HTTPException(status_code=422, detail="No HLD sections were detected in the rendered wiki content.")
+                raise HTTPException(
+                    status_code=422,
+                    detail="No HLD sections were detected in the rendered wiki content.",
+                )
 
-            # Add the existing audit-focus classification without changing the
-            # section inventory model used by the UI.
             matrix_chunks = []
             for row in matrix_rows:
                 content = row.get("content", "")
@@ -1535,29 +1360,47 @@ async def generate_verified_matrix(payload: ConfluenceURLRequest):
                     "visual_review_available": row.get("visual_review_available", False),
                     "visual_review_analyzed": row.get("visual_review_analyzed", False),
                 }
-                # Keep content at the top level so the React inventory can show it.
                 matrix_chunks.append(row)
 
+            # If the visible page metadata changed between the initial lightweight
+            # read and the final read, use the final observed value as authoritative.
+            if not source_metadata.get("document_last_updated"):
+                source_metadata["document_last_updated_source"] = (
+                    source_metadata.get("document_last_updated_source")
+                    or "unavailable"
+                )
+
+            if SERVER_CONFIG.enable_persistence:
+                with open(target_cache_path, "w", encoding="utf-8") as f:
+                    json.dump(matrix_chunks, f, indent=2)
+                with cache_metadata_path.open("w", encoding="utf-8") as f:
+                    json.dump(source_metadata, f, indent=2)
+                print("[PERSISTENCE] Wiki matrix successfully serialized to disk.")
+
             await browser.close()
+            browser = None
 
-        if SERVER_CONFIG.enable_persistence:
-            with open(target_cache_path, "w", encoding="utf-8") as f:
-                json.dump(matrix_chunks, f, indent=2)
-            metadata_path = Path(str(target_cache_path) + ".meta.json")
-            with metadata_path.open("w", encoding="utf-8") as f:
-                json.dump(source_metadata, f, indent=2)
-            print(f"[PERSISTENCE] Wiki matrix successfully serialized to disk.")
+            return {
+                "success": True,
+                "requires_confirmation": False,
+                "filename": page_url,
+                "matrix": matrix_chunks,
+                "loaded_from_cache": False,
+                "source_metadata": source_metadata,
+                "cache_revision_match": False,
+                "forced_refresh": bool(payload.force_refresh),
+            }
 
-        return {
-            "success": True,
-            "filename": payload.page_url,
-            "matrix": matrix_chunks,
-            "loaded_from_cache": False,
-            "source_metadata": source_metadata,
-        }
-
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if browser is not None:
+            try:
+                await browser.close()
+            except Exception:
+                pass
 
 @app.post("/api/hld/clear-matrix-cache")
 def clear_matrix_cache(payload: dict):
@@ -1765,6 +1608,10 @@ def _job_public_view(job: dict | None) -> dict | None:
         "source_version": job.get("source_version"),
         "source_version_timestamp": job.get("source_version_timestamp"),
         "source_version_source": job.get("source_version_source"),
+        "document_last_updated": job.get("document_last_updated"),
+        "document_last_updated_by": job.get("document_last_updated_by"),
+        "document_created_by": job.get("document_created_by"),
+        "document_last_updated_source": job.get("document_last_updated_source"),
         "source_content_hash": job.get("source_content_hash"),
         "review_type": job.get("review_type") or "Technical Document Review",
         "review_scopes": job.get("review_scopes", []),
@@ -1967,7 +1814,7 @@ def _start_or_resume_review_job(request: HLDReviewStartRequest) -> dict:
     if existing and existing.get("status") in {"RUNNING", "QUEUED", "CANCEL_REQUESTED"}:
         return _job_public_view(existing)
 
-    if existing and existing.get("status") == "COMPLETED":
+    if existing and existing.get("status") == "COMPLETED" and not request.force_new_review:
         return _job_public_view(existing)
 
     existing_completed = {
@@ -1989,6 +1836,13 @@ def _start_or_resume_review_job(request: HLDReviewStartRequest) -> dict:
         job["review_signature_version"] = 2
         job["document_title"] = request.document_title
         job["document_url"] = request.document_title
+        job["document_last_updated"] = request.document_last_updated
+        job["document_last_updated_by"] = request.document_last_updated_by
+        job["document_created_by"] = request.document_created_by
+        job["document_last_updated_source"] = (
+            request.document_last_updated_source
+            or ("confluence_page_header" if request.document_last_updated else None)
+        )
         job["review_scopes"] = scopes
         job["selected_section_ids"] = selected_ids
         job["eligible_section_ids"] = eligible_ids
@@ -2007,6 +1861,11 @@ def _start_or_resume_review_job(request: HLDReviewStartRequest) -> dict:
             "source_version": request.source_version,
             "source_version_timestamp": request.source_version_timestamp,
             "source_version_source": request.source_version_source,
+            "document_last_updated": request.document_last_updated,
+            "document_last_updated_by": request.document_last_updated_by,
+            "document_created_by": request.document_created_by,
+            "document_last_updated_source": request.document_last_updated_source
+            or ("confluence_page_header" if request.document_last_updated else None),
             "source_content_hash": request.source_content_hash,
             "review_type": request.review_type or "Technical Document Review",
             "review_scopes": scopes,

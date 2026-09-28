@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 DEFAULT_PAGE_SIZE = 100
 MAX_PAGE_SIZE = 500
 
@@ -75,6 +75,10 @@ class ReviewJobStore:
             source_version TEXT,
             source_version_timestamp TEXT,
             source_version_source TEXT,
+            document_last_updated TEXT,
+            document_last_updated_by TEXT,
+            document_created_by TEXT,
+            document_last_updated_source TEXT,
             source_content_hash TEXT,
             review_type TEXT NOT NULL DEFAULT 'Technical Document Review',
             project_scope TEXT,
@@ -119,8 +123,21 @@ class ReviewJobStore:
         """
         with self._lock, self._connect() as connection:
             connection.executescript(schema)
+            existing_columns = {
+                row[1]
+                for row in connection.execute("PRAGMA table_info(review_jobs)").fetchall()
+            }
+            migrations = {
+                "document_last_updated": "ALTER TABLE review_jobs ADD COLUMN document_last_updated TEXT",
+                "document_last_updated_by": "ALTER TABLE review_jobs ADD COLUMN document_last_updated_by TEXT",
+                "document_created_by": "ALTER TABLE review_jobs ADD COLUMN document_created_by TEXT",
+                "document_last_updated_source": "ALTER TABLE review_jobs ADD COLUMN document_last_updated_source TEXT",
+            }
+            for column, statement in migrations.items():
+                if column not in existing_columns:
+                    connection.execute(statement)
             connection.execute(
-                "INSERT OR IGNORE INTO schema_info(id, schema_version) VALUES(1, ?)",
+                "UPDATE schema_info SET schema_version = ? WHERE id = 1",
                 (SCHEMA_VERSION,),
             )
             connection.commit()
@@ -203,7 +220,8 @@ class ReviewJobStore:
                 INSERT INTO review_jobs (
                     job_id, document_url, document_title,
                     source_version, source_version_timestamp, source_version_source,
-                    source_content_hash, review_type, project_scope,
+                    document_last_updated, document_last_updated_by, document_created_by,
+                    document_last_updated_source, source_content_hash, review_type, project_scope,
                     review_scopes_json, selected_section_ids_json,
                     eligible_section_ids_json, review_signature, review_signature_version,
                     status, created_at, started_at, completed_at, updated_at,
@@ -212,8 +230,7 @@ class ReviewJobStore:
                     actual_models_json, auto_tiers_json, progress_json, usage_json,
                     review_plan_json, result_json, review_errors_json, error, recovery_note
                 ) VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
                 )
                 ON CONFLICT(job_id) DO UPDATE SET
                     document_url=excluded.document_url,
@@ -221,6 +238,10 @@ class ReviewJobStore:
                     source_version=excluded.source_version,
                     source_version_timestamp=excluded.source_version_timestamp,
                     source_version_source=excluded.source_version_source,
+                    document_last_updated=excluded.document_last_updated,
+                    document_last_updated_by=excluded.document_last_updated_by,
+                    document_created_by=excluded.document_created_by,
+                    document_last_updated_source=excluded.document_last_updated_source,
                     source_content_hash=excluded.source_content_hash,
                     review_type=excluded.review_type,
                     project_scope=excluded.project_scope,
@@ -260,6 +281,10 @@ class ReviewJobStore:
                     job.get("source_version"),
                     job.get("source_version_timestamp"),
                     job.get("source_version_source"),
+                    job.get("document_last_updated"),
+                    job.get("document_last_updated_by"),
+                    job.get("document_created_by"),
+                    job.get("document_last_updated_source"),
                     job.get("source_content_hash"),
                     job.get("review_type") or "Technical Document Review",
                     job.get("project_scope"),
@@ -340,6 +365,44 @@ class ReviewJobStore:
                 params + [limit, offset],
             ).fetchall()
         return [self._row_to_job(row) for row in rows], int(total)
+
+    def find_latest_completed_by_document_revision(
+        self,
+        *,
+        document_url: str,
+        document_last_updated: str,
+    ) -> dict | None:
+        """Find the newest completed review for the same document revision.
+
+        The document revision is identified by the human-visible Confluence
+        last-updated timestamp. URL fragments are ignored so the same page
+        with a different heading anchor still resolves to the same document.
+        """
+        target_url = str(document_url or "").strip()
+        if not target_url or not document_last_updated:
+            return None
+
+        def canonical_url(value: str) -> str:
+            return str(value or "").split("#", 1)[0].rstrip("/").strip()
+
+        target_canonical = canonical_url(target_url)
+        with self._lock, self._connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT * FROM review_jobs
+                WHERE status = 'COMPLETED'
+                  AND document_last_updated = ?
+                ORDER BY completed_at DESC, updated_at DESC
+                LIMIT 500
+                """,
+                (str(document_last_updated).strip(),),
+            ).fetchall()
+
+        for row in rows:
+            job = self._row_to_job(row)
+            if job and canonical_url(job.get("document_url")) == target_canonical:
+                return job
+        return None
 
     def find_latest(
         self,
