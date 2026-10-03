@@ -13,6 +13,7 @@ import traceback
 import asyncio # 🟢 Ensure this is imported at the top of server.py
 import threading  # 🟢 NEW: Import native thread locking module
 import time
+import hmac
 import hashlib
 from pathlib import Path
 from datetime import datetime
@@ -20,7 +21,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi import FastAPI, HTTPException, Request, Header, status, UploadFile, File, Form
 from fastapi.responses import FileResponse
 from fastapi import Query
 
@@ -2937,3 +2938,106 @@ def update_application_settings(payload: SystemSettingsProfile):
     save_settings_to_file(SERVER_CONFIG)
     print(f"[⚙ SYSTEM CONFIG UPDATE] Toggles adjusted -> Caching: {SERVER_CONFIG.enable_diagram_caching}, Simulation: {SERVER_CONFIG.enable_simulation_mode}, Persistence: {SERVER_CONFIG.enable_persistence}")
     return {"success": True, "current_settings": SERVER_CONFIG}
+
+
+GITHUB_WEBHOOK_SECRET = "SuperSecret123!" 
+
+def verify_signature(payload_body: bytes, signature_header: str) -> bool:
+    """
+    Cryptographically verifies that the payload was sent by GitHub using the configured secret.
+    """
+    if not signature_header:
+        return False
+    
+    # GitHub signatures look like: sha256=abcdef123456...
+    if not signature_header.startswith("sha256="):
+        return False
+    
+    expected_signature = signature_header.split("sha256=")[-1]
+    
+    # Generate the HMAC SHA256 hex digest using our secret
+    mac = hmac.new(
+        key=GITHUB_WEBHOOK_SECRET.encode(),
+        msg=payload_body,
+        digestmod=hashlib.sha256
+    )
+    generated_signature = mac.hexdigest()
+    
+    # Use hmac.compare_digest to prevent timing-attack vulnerabilities
+    return hmac.compare_digest(generated_signature, expected_signature)
+
+
+@app.post("/webhook/github", status_code=status.HTTP_200_OK)
+async def handle_github_webhook(
+    request: Request,
+    x_github_event: str = Header(..., description="The type of event sent by GitHub"),
+    x_hub_signature_256: str = Header(None, description="The cryptographic payload signature")
+):
+    """
+    Receives, verifies, and processes GitHub webhook events.
+    """
+    raw_body = await request.body()
+    
+    if GITHUB_WEBHOOK_SECRET:
+        if not verify_signature(raw_body, x_hub_signature_256):
+            print("🚫 [Security] Invalid signature header. Request rejected.")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid cryptographic signature."
+            )
+    
+    try:
+        payload = json.loads(raw_body)
+    except json.JSONDecodeError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid JSON body."
+        )
+
+    print(f"\n🔔 [GitHub Webhook] Received '{x_github_event}' event!")
+
+    # --- Enhanced Pull Request Event Handler ---
+    if x_github_event == "pull_request":
+        action = payload.get("action", "unknown")
+        pr_data = payload.get("pull_request", {})
+        
+        # Core PR Details
+        pr_number = pr_data.get("number")
+        pr_title = pr_data.get("title", "N/A")
+        pr_author = pr_data.get("user", {}).get("login", "N/A")
+        pr_state = pr_data.get("state", "N/A")
+        pr_url = pr_data.get("html_url", "#")
+        
+        # Branch Details
+        source_branch = pr_data.get("head", {}).get("ref", "N/A")
+        target_branch = pr_data.get("base", {}).get("ref", "N/A")
+
+        # PR Body/Description
+        pr_body = pr_data.get("body")
+        if not pr_body:
+            pr_body_summary = "No description provided."
+        else:
+            # Truncate long descriptions for cleaner logs
+            pr_body_summary = (pr_body[:100] + '...') if len(pr_body) > 100 else pr_body
+
+        print("="*50)
+        print(f"🔀 PULL REQUEST EVENT: #{pr_number} - {pr_title}")
+        print("="*50)
+        print(f"👤 Author:      {pr_author}")
+        print(f"⚡ Action:      {action.upper()}")
+        print(f"🚦 State:       {pr_state.upper()}")
+        print(f"🌿 Source:      {source_branch}")
+        print(f"🎯 Target:      {target_branch}")
+        print(f"🔗 URL:         {pr_url}")
+        print(f"📝 Description: {pr_body_summary.strip()}")
+        print("="*50)
+        
+    elif x_github_event == "ping":
+        print("🟢 Ping event received! Webhook handshake successful.")
+        return {"status": "ok", "message": "Handshake successful!"}
+        
+    else:
+        # Fallback for other events you selected
+        print(f"ℹ️ Unhandled event. Keys in payload: {list(payload.keys())}")
+
+    return {"status": "success", "event_processed": x_github_event}

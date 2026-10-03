@@ -249,6 +249,26 @@ cd IVR_SDLC_Analyst_UI\src\frontend
 npm install mermaid
 npm run dev
 
+Download Cloudflare
+-------------------
+winget install --id Cloudflare.cloudflared -e --accept-source-agreements --accept-package-agreements
+
+(or)
+
+Invoke-WebRequest -Uri "https://github.com/cloudflare/cloudflared/releases/download/2026.9.3/cloudflared-windows-amd64.exe" -OutFile "cloudflared.exe"
+
+.\cloudflared.exe tunnel --url http://127.0.0.1:8000
+
+
+From Browser :
+--------------
+
+https://cosmetic-britain-briefly-catalogs.trycloudflare.com/docs
+
+
+API: https://cosmetic-britain-briefly-catalogs.trycloudflare.com/webhook/github
+
+SuperSecret123!
 
 pip install pdfplumber
 
@@ -307,3 +327,4 @@ thread.
 That is a more substantial change to your /api/hld/generate-matrix implementation, 
 though, and I would not introduce it yet because your immediate issue can be 
 solved simply by removing --reload.
+
