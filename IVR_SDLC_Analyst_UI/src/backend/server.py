@@ -13,6 +13,7 @@ import traceback
 import asyncio # 🟢 Ensure this is imported at the top of server.py
 import threading  # 🟢 NEW: Import native thread locking module
 import time
+import hmac
 import hashlib
 from pathlib import Path
 from datetime import datetime
@@ -20,7 +21,7 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi import FastAPI, HTTPException, Request, Header, status, UploadFile, File, Form
 from fastapi.responses import FileResponse
 from fastapi import Query
 
@@ -34,6 +35,7 @@ from contextlib import asynccontextmanager
 import concurrent.futures
 from functools import partial
 from review_job_store import ReviewJobStore
+import requests
 
 from services.repo_tools import (
     find_files,
@@ -2937,3 +2939,185 @@ def update_application_settings(payload: SystemSettingsProfile):
     save_settings_to_file(SERVER_CONFIG)
     print(f"[⚙ SYSTEM CONFIG UPDATE] Toggles adjusted -> Caching: {SERVER_CONFIG.enable_diagram_caching}, Simulation: {SERVER_CONFIG.enable_simulation_mode}, Persistence: {SERVER_CONFIG.enable_persistence}")
     return {"success": True, "current_settings": SERVER_CONFIG}
+
+
+GITHUB_WEBHOOK_SECRET = "SuperSecret123!" 
+
+# ==========================================
+# CONFIGURATION & CREDENTIALS
+# ==========================================
+GITHUB_WEBHOOK_SECRET = os.getenv("GITHUB_WEBHOOK_SECRET", "SuperSecret123!")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")  # PAT with repo permissions
+
+JIRA_BASE_URL = os.getenv("JIRA_BASE_URL", "https://learningprojects.atlassian.net")
+JIRA_USER_EMAIL = os.getenv("JIRA_USER_EMAIL", "dear.ramas@gmail.com")
+JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")  # Generated from Atlassian Account Settings
+JIRA_PROJECT_KEY = os.getenv("JIRA_PROJECT_KEY", "IVR")  # e.g., 'SDLC', 'IVR', etc.
+
+
+# ==========================================
+# JIRA INTEGRATION SERVICE
+# ==========================================
+def create_jira_defect(pr_number: int, pr_url: str, defect: dict) -> str:
+    """
+    Creates a Bug/Defect issue in Jira for a review finding.
+    Returns the created Jira issue key (e.g., 'DEV-102').
+    """
+    url = f"{JIRA_BASE_URL}/rest/api/3/issue"
+    auth = (JIRA_USER_EMAIL, JIRA_API_TOKEN)
+    headers = {"Accept": "application/json", "Content-Type": "application/json"}
+
+    description_adf = {
+        "type": "doc",
+        "version": 1,
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    {"type": "text", "text": f"Found during automated review of PR #{pr_number}.\n"}
+                ]
+            },
+            {
+                "type": "paragraph",
+                "content": [
+                    {"type": "text", "text": f"File: {defect.get('file', 'N/A')} (Line: {defect.get('line', 'N/A')})\n"},
+                    {"type": "text", "text": f"Severity: {defect.get('severity', 'Medium')}\n"},
+                    {"type": "text", "text": f"PR Link: {pr_url}\n\n"}
+                ]
+            },
+            {
+                "type": "heading",
+                "attrs": {"level": 3},
+                "content": [{"type": "text", "text": "Issue Description"}]
+            },
+            {
+                "type": "paragraph",
+                "content": [{"type": "text", "text": defect.get("description", "")}]
+            },
+            {
+                "type": "heading",
+                "attrs": {"level": 3},
+                "content": [{"type": "text", "text": "Recommended Remediation"}]
+            },
+            {
+                "type": "codeBlock",
+                "attrs": {"language": "python"},
+                "content": [{"type": "text", "text": defect.get("suggestion", "N/A")}]
+            }
+        ]
+    }
+
+    payload = {
+        "fields": {
+            "project": {"key": JIRA_PROJECT_KEY},
+            "summary": f"[PR #{pr_number} Review Defect]: {defect.get('title', 'Code Quality Issue')}",
+            "description": description_adf,
+            "issuetype": {"name": "Task"},
+            "labels": ["automated-review", f"pr-{pr_number}"]
+        }
+    }
+
+    response = requests.post(url, json=payload, auth=auth, headers=headers, verify=False)
+    if response.status_code == 201:
+        issue_key = response.json()["key"]
+        print(f"✅ [Jira] Successfully logged defect: {issue_key}")
+        return issue_key
+    else:
+        print(f"❌ [Jira Error] {response.status_code}: {response.text}")
+        return None
+
+
+# ==========================================
+# GITHUB & LLM REVIEW HELPERS
+# ==========================================
+def get_pr_diff(diff_url: str) -> str:
+    """Fetches the unified git diff from GitHub for the PR."""
+    headers = {"Authorization": f"Bearer {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3.diff"}
+    resp = requests.get(diff_url, headers=headers, verify=False)
+    return resp.text if resp.status_code == 200 else ""
+
+
+def analyze_diff_with_llm(diff_text: str) -> list:
+    """
+    Simulated LLM review agent. Analyzes diff and returns structured defects.
+    (Replace with OpenAI / Copilot / Gemini API client in production).
+    """
+    defects = []
+    
+    # Example heuristic/LLM detection:
+    if "password" in diff_text.lower() or "secret" in diff_text.lower():
+        defects.append({
+            "title": "Potential Hardcoded Secret or Plaintext Password",
+            "file": "config.py",
+            "line": 14,
+            "severity": "High",
+            "description": "Sensitive credentials or secrets appear hardcoded in the source code.",
+            "suggestion": "# Use environment variables instead:\nimport os\nSECRET = os.getenv('APP_SECRET')"
+        })
+    if "select *" in diff_text.lower():
+        defects.append({
+            "title": "Unbounded Query Performance Defect",
+            "file": "database.py",
+            "line": 42,
+            "severity": "Medium",
+            "description": "Using SELECT * can cause latency and excessive memory usage on large tables.",
+            "suggestion": "SELECT id, status, created_at FROM tbl..."
+        })
+        
+    return defects
+
+
+def post_github_pr_comment(comments_url: str, created_jira_keys: list):
+    """Posts a comment on the GitHub PR listing the raised Jira defects."""
+    if not created_jira_keys:
+        body = "✅ **Automated Review:** No critical defects found. Code looks clean!"
+    else:
+        links = "\n".join([f"- [{key}]({JIRA_BASE_URL}/browse/{key})" for key in created_jira_keys])
+        body = f"⚠️ **Automated Review:** The following review defects were raised in Jira:\n\n{links}\n\nPlease resolve them before merge."
+
+    headers = {"Authorization": f"Bearer {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
+    requests.post(comments_url, json={"body": body}, headers=headers, verify=False)
+
+
+# ==========================================
+# WEBHOOK ENDPOINT
+# ==========================================
+@app.post("/webhook/github", status_code=status.HTTP_200_OK)
+async def handle_github_webhook(
+    request: Request,
+    x_github_event: str = Header(...)
+):
+    raw_body = await request.body()
+    payload = json.loads(raw_body)
+
+    if x_github_event == "pull_request":
+        action = payload.get("action")
+        pr_data = payload.get("pull_request", {})
+        pr_number = pr_data.get("number")
+        pr_url = pr_data.get("html_url")
+        diff_url = pr_data.get("diff_url")
+        comments_url = pr_data.get("comments_url")
+
+        # Trigger analysis when PR is opened or new commits are pushed (synchronize)
+        if action in ["opened", "synchronize"]:
+            print(f"\n🔍 [Reviewer] Starting automated review for PR #{pr_number}...")
+            
+            # 1. Fetch Diff
+            diff = get_pr_diff(diff_url)
+            
+            # 2. Run LLM Analysis
+            defects = analyze_diff_with_llm(diff)
+            print(f"📊 [Reviewer] Found {len(defects)} defects.")
+
+            # 3. Create Jira Defect Issues
+            created_keys = []
+            for defect in defects:
+                issue_key = create_jira_defect(pr_number, pr_url, defect)
+                if issue_key:
+                    created_keys.append(issue_key)
+
+            # 4. Comment on PR
+            post_github_pr_comment(comments_url, created_keys)
+
+    return {"status": "success", "event": x_github_event}
+
