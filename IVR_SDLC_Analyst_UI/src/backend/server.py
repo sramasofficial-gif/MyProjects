@@ -2952,7 +2952,7 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")  # PAT with repo permissions
 JIRA_BASE_URL = os.getenv("JIRA_BASE_URL", "https://learningprojects.atlassian.net")
 JIRA_USER_EMAIL = os.getenv("JIRA_USER_EMAIL", "dear.ramas@gmail.com")
 JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")  # Generated from Atlassian Account Settings
-JIRA_PROJECT_KEY = os.getenv("JIRA_PROJECT_KEY", "DEV")  # e.g., 'SDLC', 'IVR', etc.
+JIRA_PROJECT_KEY = os.getenv("JIRA_PROJECT_KEY", "IVR")  # e.g., 'SDLC', 'IVR', etc.
 
 
 # ==========================================
@@ -3012,7 +3012,7 @@ def create_jira_defect(pr_number: int, pr_url: str, defect: dict) -> str:
             "project": {"key": JIRA_PROJECT_KEY},
             "summary": f"[PR #{pr_number} Review Defect]: {defect.get('title', 'Code Quality Issue')}",
             "description": description_adf,
-            "issuetype": {"name": "Bug"},
+            "issuetype": {"name": "Task"},
             "labels": ["automated-review", f"pr-{pr_number}"]
         }
     }
