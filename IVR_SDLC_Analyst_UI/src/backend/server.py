@@ -35,6 +35,7 @@ from contextlib import asynccontextmanager
 import concurrent.futures
 from functools import partial
 from review_job_store import ReviewJobStore
+import requests
 
 from services.repo_tools import (
     find_files,
