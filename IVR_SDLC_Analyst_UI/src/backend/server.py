@@ -3017,7 +3017,7 @@ def create_jira_defect(pr_number: int, pr_url: str, defect: dict) -> str:
         }
     }
 
-    response = requests.post(url, json=payload, auth=auth, headers=headers)
+    response = requests.post(url, json=payload, auth=auth, headers=headers, verify=False)
     if response.status_code == 201:
         issue_key = response.json()["key"]
         print(f"✅ [Jira] Successfully logged defect: {issue_key}")
@@ -3033,7 +3033,7 @@ def create_jira_defect(pr_number: int, pr_url: str, defect: dict) -> str:
 def get_pr_diff(diff_url: str) -> str:
     """Fetches the unified git diff from GitHub for the PR."""
     headers = {"Authorization": f"Bearer {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3.diff"}
-    resp = requests.get(diff_url, headers=headers)
+    resp = requests.get(diff_url, headers=headers, verify=False)
     return resp.text if resp.status_code == 200 else ""
 
 
@@ -3076,7 +3076,7 @@ def post_github_pr_comment(comments_url: str, created_jira_keys: list):
         body = f"⚠️ **Automated Review:** The following review defects were raised in Jira:\n\n{links}\n\nPlease resolve them before merge."
 
     headers = {"Authorization": f"Bearer {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
-    requests.post(comments_url, json={"body": body}, headers=headers)
+    requests.post(comments_url, json={"body": body}, headers=headers, verify=False)
 
 
 # ==========================================
